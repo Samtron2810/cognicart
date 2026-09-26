@@ -26,7 +26,6 @@ import Careers from "../pages/public/Careers"
 import Privacy from "../pages/public/Privacy"
 import Terms from "../pages/public/Terms"
 import WhatsAppApi from "../pages/public/WhatsAppApi"
-import Demo from "../pages/public/Demo"
 import Search from "../pages/Search"
 import Cart from "../pages/Cart"
 import Checkout from "../pages/Checkout"
@@ -80,7 +79,6 @@ export function AppRoutes() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/whatsapp-api" element={<WhatsAppApi />} />
-        <Route path="/demo" element={<Demo />} />
         <Route path="/search" element={<Search />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />

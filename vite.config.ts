@@ -19,9 +19,9 @@ export default defineConfig({
       'X-Frame-Options': 'SAMEORIGIN',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
       'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-      // CSP for dev: allow Paystack + images
+      // Development CSP permits the configured API origin. Production CSP belongs at the hosting edge.
       'Content-Security-Policy':
-        "default-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://api.paystack.co https://images.unsplash.com https://res.cloudinary.com data: blob:; connect-src 'self' http://localhost:5000 https://api.paystack.co https://js.paystack.co;",
+        "default-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://api.paystack.co https://images.unsplash.com https://res.cloudinary.com data: blob:; connect-src 'self' https: http:;",
     },
   },
   preview: {

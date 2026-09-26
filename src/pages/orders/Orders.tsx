@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { Search, Plus, Trash2, Eye, Package, Filter } from "lucide-react"
+import { Search, Eye, Package, Filter } from "lucide-react"
 import { orderService } from "../../services/orderService"
-import { productService } from "../../services/productService"
 import { ORDER_STATUSES } from "../../types/order"
 import type { Order, OrderStatus } from "../../types/order"
 
@@ -20,8 +19,6 @@ export default function Orders() {
   const [search, setSearch] = useState("")
   const [status, setStatus] = useState("")
   const [loading, setLoading] = useState(true)
-  const [creating, setCreating] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const load = async () => {
     setLoading(true)
@@ -31,8 +28,6 @@ export default function Orders() {
   }
 
   useEffect(() => {
-    productService.seedDemo()
-    orderService.seedDemo()
     load()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -43,40 +38,6 @@ export default function Orders() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, status])
 
-  const handleCreateTest = async () => {
-    setCreating(true)
-    setError(null)
-    try {
-      const products = await productService.list({ isActive: true })
-      const available = products.filter((p) => p.stock > 0)
-      if (available.length === 0) throw new Error("No products with stock. Add stock first.")
-      const randomProduct = available[Math.floor(Math.random() * available.length)]
-      const qty = Math.random() > 0.7 ? 2 : 1
-      const customers = [
-        { name: "Chiamaka Nnaji", phone: "+234801000000" + Math.floor(Math.random() * 9), address: "22 Bode Thomas, Surulere, Lagos" },
-        { name: "Emeka John", phone: "+234802000000" + Math.floor(Math.random() * 9), address: "10 Stadium Road, Port Harcourt" },
-        { name: "Fatima Bello", phone: "+234803000000" + Math.floor(Math.random() * 9), address: "3 Wuse 2, Abuja" },
-      ]
-      const customer = customers[Math.floor(Math.random() * customers.length)]
-      await orderService.create({
-        customer,
-        items: [{ productId: randomProduct.id, quantity: qty }],
-        deliveryAddress: customer.address,
-      })
-      load()
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Failed to create order"
-      setError(msg)
-    } finally {
-      setCreating(false)
-    }
-  }
-
-  const handleClear = () => {
-    if (!confirm("Clear all demo orders for this seller?")) return
-    orderService.clearAll()
-    load()
-  }
 
   return (
     <div className="space-y-5">
@@ -84,16 +45,8 @@ export default function Orders() {
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">Orders</h1>
           <p className="text-sm text-[#6b6b6b]">Every order from WhatsApp lands here. Customer, items, total and status are tenant-isolated by sellerId.</p>
-          {error && <div className="mt-2 rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">{error}</div>}
         </div>
-        <div className="flex flex-wrap gap-2">
-          <button onClick={handleCreateTest} disabled={creating} className="inline-flex items-center gap-2 rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66] disabled:opacity-60">
-            <Plus className="h-4 w-4" /> {creating ? "Creating..." : "Create test order"}
-          </button>
-          <button onClick={handleClear} className="inline-flex items-center gap-2 rounded-full bg-white border border-[#F3E6D3] px-4 py-2.5 text-sm font-bold hover:bg-[#FFF1DA]">
-            <Trash2 className="h-4 w-4" /> Clear
-          </button>
-        </div>
+
       </div>
 
       <div className="rounded-2xl bg-white border border-[#F3E6D3] p-4">
@@ -120,8 +73,7 @@ export default function Orders() {
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-10 text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-[#FFF1DA] border border-[#F3E6D3] grid place-items-center"><Package className="h-6 w-6 text-[#E85D26]" /></div>
           <div className="mt-3 font-bold">No orders yet</div>
-          <div className="text-sm text-[#6b6b6b]">Create a test order. In production WhatsApp AI will create orders via the test endpoint before AI is connected.</div>
-          <button onClick={handleCreateTest} className="mt-4 inline-flex rounded-full bg-[#1a1a1a] px-5 py-2.5 text-sm font-bold text-white hover:bg-black">Create test order</button>
+          <div className="text-sm text-[#6b6b6b]">Orders created through checkout, WhatsApp, or the API will appear here.</div>
         </div>
       ) : (
         <div className="space-y-3">
@@ -169,7 +121,7 @@ export default function Orders() {
       )}
 
       <div className="rounded-2xl bg-[#1a1a1a] text-white p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="text-sm"><span className="font-bold">Backend test endpoint:</span> <span className="text-white/70">POST /api/orders will also create orders. For now use Create test order above.</span></div>
+        <div className="text-sm"><span className="font-bold">Backend orders API:</span> <span className="text-white/70">POST /api/orders creates orders from checkout, WhatsApp, or approved integrations.</span></div>
         <Link to="/dashboard/customers" className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#1a1a1a] hover:bg-[#FFF1DA]">View customers</Link>
       </div>
     </div>

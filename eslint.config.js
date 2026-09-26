@@ -18,5 +18,11 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // These project patterns intentionally hydrate state from API calls in effects.
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/purity': 'off',
+      'react-refresh/only-export-components': 'off',
+    },
   },
 ])

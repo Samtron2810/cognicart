@@ -32,7 +32,6 @@ export function Footer() {
               <li><Link to="/store" className="hover:text-white transition">Marketplace</Link></li>
               <li><a href="/#pricing" className="hover:text-white transition">Pricing</a></li>
               <li><Link to="/whatsapp-api" className="hover:text-white transition">WhatsApp API</Link></li>
-              <li><Link to="/demo" className="hover:text-white transition">Watch demo</Link></li>
               <li><Link to="/search" className="hover:text-white transition">Search</Link></li>
             </ul>
           </div>

@@ -13,7 +13,6 @@ export default function Search() {
   useEffect(() => { setInput(q) }, [q])
 
   useEffect(() => {
-    productService.seedDemo()
     if (!q) { setResults([]); return }
     productService.listPublic({ search: q }).then((data) => setResults(data.filter((p) => p.isActive))).catch(() => setResults([]))
   }, [q])

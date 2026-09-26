@@ -14,11 +14,15 @@ export default function SellerDetails() {
     try {
       const res = await adminService.getSellerDetails(id)
       setData(res)
-    } catch {}
+    } catch {
+      setData(null)
+    }
     setLoading(false)
   }
 
-  useEffect(() => { load() }, [id])
+  // The route parameter is the refresh boundary for this detail page.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { void load() }, [id])
 
   const toggle = async () => {
     if (!data) return

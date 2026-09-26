@@ -3,8 +3,6 @@ import { Search, User, MapPin, Phone, ShoppingBag } from "lucide-react"
 import { Link } from "react-router-dom"
 import { customerService } from "../../services/customerService"
 import type { Customer } from "../../types/customer"
-import { orderService } from "../../services/orderService"
-import { productService } from "../../services/productService"
 
 export default function Customers() {
   const [customers, setCustomers] = useState<Customer[]>([])
@@ -19,10 +17,6 @@ export default function Customers() {
   }
 
   useEffect(() => {
-    productService.seedDemo()
-    // ensure demo customers and orders exist so aggregates are populated
-    customerService.seedDemo()
-    orderService.seedDemo()
     load()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -53,7 +47,7 @@ export default function Customers() {
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-10 text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-[#FFF1DA] border border-[#F3E6D3] grid place-items-center"><User className="h-6 w-6 text-[#E85D26]" /></div>
           <div className="mt-3 font-bold">No customers yet</div>
-          <div className="text-sm text-[#6b6b6b]">Customers appear when WhatsApp orders are created. Create a test order in Orders to generate one.</div>
+          <div className="text-sm text-[#6b6b6b]">Customers appear as WhatsApp conversations and orders are received by the backend.</div>
           <Link to="/dashboard/orders" className="mt-4 inline-flex rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66]">Go to orders</Link>
         </div>
       ) : (

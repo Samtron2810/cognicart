@@ -35,13 +35,6 @@ export default function Login() {
     }
   }
 
-  const fillDemo = (role: "seller" | "admin") => {
-    if (role === "admin") {
-      setForm({ email: "admin@cognicart.ng", password: "Admin123!" })
-    } else {
-      setForm({ email: "demo@cognicart.ng", password: "demo123" })
-    }
-  }
 
   return (
     <AuthLayout>
@@ -66,14 +59,6 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          <button onClick={() => fillDemo("seller")} className="rounded-xl border border-[#F3E6D3] bg-[#FFFBF5] px-3 py-2 text-xs font-bold hover:bg-[#FFF1DA]">Fill seller demo</button>
-          <button onClick={() => fillDemo("admin")} className="rounded-xl border border-[#F3E6D3] bg-[#1a1a1a] text-white px-3 py-2 text-xs font-bold hover:bg-black">Fill admin demo</button>
-        </div>
-        <div className="mt-2 rounded-xl bg-[#FFFBF5] border border-[#F3E6D3] p-3 text-xs leading-5 text-[#6b6b6b]">
-          <div className="font-bold text-[#1a1a1a]">Demo accounts</div>
-          Seller: demo@cognicart.ng / demo123 • Admin: admin@cognicart.ng / Admin123! • Owner: owner@cognicart.ng / Owner123!
-        </div>
 
         <p className="mt-6 text-center text-sm text-[#6b6b6b]">
           No account? <Link to="/register" className="font-bold text-[#0B9C74] hover:underline">Create one</Link>

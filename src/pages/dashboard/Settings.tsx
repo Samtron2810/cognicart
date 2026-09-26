@@ -3,8 +3,6 @@ import { useAuth } from "../../context/AuthContext"
 import { useBusiness } from "../../context/BusinessContext"
 import { Upload, Store, Truck, CreditCard, MessageCircle, Info } from "lucide-react"
 import { Link } from "react-router-dom"
-import { paymentService } from "../../services/paymentService"
-import { adminService } from "../../services/adminService"
 
 export default function Settings() {
   const { user } = useAuth()
@@ -97,7 +95,7 @@ export default function Settings() {
         <p className="text-sm text-[#6b6b6b]">Sellers create their business profile, delivery and payment settings. This is the source AI uses to answer "where do you deliver?" and "how do I pay?"</p>
       </div>
 
-      {saved && <div className="rounded-xl bg-[#E6F7F1] border border-[#0B9C74]/20 px-3 py-2.5 text-sm font-medium text-[#0B9C74]">Business profile saved locally. Backend sync will use PATCH /business.</div>}
+      {saved && <div className="rounded-xl bg-[#E6F7F1] border border-[#0B9C74]/20 px-3 py-2.5 text-sm font-medium text-[#0B9C74]">Business profile saved to the backend.</div>}
 
       <form onSubmit={handleSave} className="space-y-6">
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-6">
@@ -115,7 +113,7 @@ export default function Settings() {
                   <Upload className="h-3.5 w-3.5" /> Upload
                   <input type="file" accept="image/*" onChange={handleLogo} className="hidden" />
                 </label>
-                <div className="text-xs text-[#9a9a9a] mt-1">Cloudinary in production. Local preview now.</div>
+                <div className="text-xs text-[#9a9a9a] mt-1">The selected logo is uploaded with your business profile.</div>
               </div>
             </label>
 
@@ -172,12 +170,12 @@ export default function Settings() {
 
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-6">
           <div className="flex items-center gap-2 text-sm font-bold"><CreditCard className="h-4 w-4 text-[#0B9C74]" /> Payment settings — Phase 7 Paystack</div>
-          <p className="text-xs text-[#6b6b6b] mt-1">Paystack is live. Mock success when VITE_PAYSTACK_PUBLIC_KEY is not set. Every Paid order splits platform fee {adminService.getFeeConfig().percentage}% + ₦{adminService.getFeeConfig().fixed} and Paystack 1.5% capped ₦2000. Verified in Revenue and Admin Payments.</p>
+          <p className="text-xs text-[#6b6b6b] mt-1">Payments are initialized and verified by the backend's Paystack integration. Revenue and payment status update after the backend receives confirmation.</p>
           <div className="mt-3 rounded-xl bg-[#E6F7F1] border border-[#0B9C74]/20 p-3 text-xs leading-5 flex gap-2">
             <Info className="h-4 w-4 text-[#0B9C74] mt-0.5 shrink-0" />
             <div>
-              <div className="font-bold text-[#0B9C74]">Paystack status: {paymentService.getPublicKey() ? "Live key detected — real popup will open" : "Test/mock — payment auto-verifies in 1.2s"}</div>
-              <div className="text-[#6b6b6b]">Set VITE_PAYSTACK_PUBLIC_KEY in env to use real cards. Seller enable toggle below controls checkout display. Platform fee is configured in Admin → Settings.</div>
+              <div className="font-bold text-[#0B9C74]">Paystack is backend-managed</div>
+              <div className="text-[#6b6b6b]">Configure payment credentials and webhook settings on the backend. This toggle controls whether customers see Paystack at checkout.</div>
             </div>
           </div>
           <div className="mt-4 space-y-4">

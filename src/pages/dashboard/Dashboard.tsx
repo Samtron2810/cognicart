@@ -11,8 +11,6 @@ export default function Dashboard() {
   const [orders, setOrders] = useState<Order[]>([])
 
   useEffect(() => {
-    productService.seedDemo()
-    orderService.seedDemo()
     productService.list().then(setProducts)
     orderService.list().then(setOrders)
   }, [])
@@ -107,7 +105,7 @@ export default function Dashboard() {
                   <span className={`rounded-full px-2.5 py-1 text-xs font-bold border shrink-0 ${o.orderStatus === "Delivered" ? "bg-[#1a1a1a] text-white" : o.orderStatus === "Pending" ? "bg-[#FFF1DA] text-[#E85D26]" : "bg-[#E6F7F1] text-[#0B9C74]"}`}>{o.orderStatus}</span>
                 </Link>
               ))}
-              {orders.length === 0 && <div className="text-sm text-[#6b6b6b] py-6 text-center">No orders yet. Create a test order.</div>}
+              {orders.length === 0 && <div className="text-sm text-[#6b6b6b] py-6 text-center">No orders yet. Orders from checkout and WhatsApp will appear here.</div>}
             </div>
           </div>
 
@@ -136,14 +134,14 @@ export default function Dashboard() {
 
         <div className="space-y-6">
           <div className="rounded-2xl bg-[#1a1a1a] text-white p-6">
-            <h3 className="font-bold">Phase 4 live</h3>
-            <p className="mt-2 text-sm text-white/70 leading-6">Order creation, listing, detail and status updates are ready. Orders are created via the test endpoint before WhatsApp is connected.</p>
+            <h3 className="font-bold">Live order management</h3>
+            <p className="mt-2 text-sm text-white/70 leading-6">Order creation, listing, detail, payment reconciliation, and status updates are handled by the backend.</p>
             <Link to="/dashboard/orders" className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-sm font-bold text-[#1a1a1a] hover:bg-[#FFF1DA]">
               Manage orders
             </Link>
             <div className="mt-6 rounded-xl bg-white/10 p-3 text-xs leading-5 text-white/70">
-              <div className="font-bold text-white">Try it</div>
-              Create a test order from Orders. Stock is checked and price is preserved at order time. Customer is upserted by phone + sellerId.
+              <div className="font-bold text-white">How it works</div>
+              A checkout or WhatsApp order is checked against live stock and its price is preserved at order time.
             </div>
           </div>
 

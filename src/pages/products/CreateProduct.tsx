@@ -161,7 +161,7 @@ export default function CreateProduct() {
         <div className="grid sm:grid-cols-2 gap-4">
           <label className="sm:col-span-2">
             <span className="text-xs font-bold">Product name *</span>
-            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Elixir Glow Serum" className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] focus:ring-2 focus:ring-[#0B9C74]/15 outline-none" />
+            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Product name" className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] focus:ring-2 focus:ring-[#0B9C74]/15 outline-none" />
           </label>
           <label className="sm:col-span-2">
             <span className="text-xs font-bold">Description</span>

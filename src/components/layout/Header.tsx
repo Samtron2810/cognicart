@@ -1,32 +1,15 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Search, ShoppingBag, Menu, X, MessageCircle, ChevronDown } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
+import { useCart } from "../../context/CartContext"
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { isAuthenticated, user } = useAuth()
+  const { items } = useCart()
   const navigate = useNavigate()
-  const [cartCount, setCartCount] = useState(0)
-
-  useEffect(() => {
-    const read = () => {
-      try {
-        const raw = localStorage.getItem("cognicart_cart")
-        const arr = raw ? JSON.parse(raw) : []
-        setCartCount(Array.isArray(arr) ? arr.length : 0)
-      } catch {
-        setCartCount(0)
-      }
-    }
-    read()
-    window.addEventListener("storage", read)
-    const id = setInterval(read, 800)
-    return () => {
-      window.removeEventListener("storage", read)
-      clearInterval(id)
-    }
-  }, [])
+  const cartCount = items.length
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id)

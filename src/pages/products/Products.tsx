@@ -20,7 +20,6 @@ export default function Products() {
   }
 
   useEffect(() => {
-    productService.seedDemo()
     load()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

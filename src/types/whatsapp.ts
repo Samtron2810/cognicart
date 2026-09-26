@@ -20,6 +20,7 @@ export type WhatsAppConfig = {
   accessToken: string
   webhookUrl: string
   webhookVerified: boolean
+  whatsappConnected?: boolean
   verifiedAt?: string
   connectedAt: string
   createdAt: string

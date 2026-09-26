@@ -19,8 +19,8 @@ export function DashboardLayout() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     navigate("/login")
   }
 

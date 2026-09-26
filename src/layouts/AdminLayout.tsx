@@ -21,8 +21,8 @@ export function AdminLayout() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     navigate("/login")
   }
 
@@ -75,10 +75,6 @@ export function AdminLayout() {
                 </NavLink>
               ))}
             </nav>
-            <div className="mt-3 rounded-xl bg-[#FFFBF5] border border-[#F3E6D3] p-3 text-xs leading-5 text-[#6b6b6b]">
-              <div className="font-bold text-[#1a1a1a]">admin@cognicart.ng / Admin123!</div>
-              <div>owner@cognicart.ng / Owner123!</div>
-            </div>
             <button onClick={handleLogout} className="mt-3 w-full lg:hidden flex items-center gap-2 rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm font-medium">
               <LogOut className="h-4 w-4" /> Logout
             </button>

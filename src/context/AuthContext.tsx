@@ -8,7 +8,7 @@ type AuthContextValue = {
   isLoading: boolean
   login: (payload: LoginPayload) => Promise<void>
   register: (payload: RegisterPayload) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -19,23 +19,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const init = async () => {
-      const token = authService.getToken()
-      if (!token) {
-        setIsLoading(false)
-        return
-      }
-      const stored = authService.getStoredSeller()
-      if (stored) setUser(stored)
-      // Try to validate with backend, fallback to stored
-      try {
-        const me = await authService.me(token)
-        if (me) setUser(me)
-      } catch {
-        // keep stored
-      }
+      // The backend's httpOnly session cookie is the source of truth after a refresh.
+      const authenticatedUser = await authService.me()
+      setUser(authenticatedUser)
       setIsLoading(false)
     }
-    init()
+    void init()
   }, [])
 
   const login = async (payload: LoginPayload) => {
@@ -50,20 +39,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(seller)
   }
 
-  const logout = () => {
-    authService.logout()
+  const logout = async () => {
+    await authService.logout()
     setUser(null)
   }
 
-  return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, register, logout }}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, register, logout }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider")
-  return ctx
+  const context = useContext(AuthContext)
+  if (!context) throw new Error("useAuth must be used within AuthProvider")
+  return context
 }

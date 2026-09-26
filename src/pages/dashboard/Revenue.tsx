@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { Wallet, TrendingUp, PieChart, Calendar, Award, ArrowUpRight, Download, Filter, ArrowUpDown } from "lucide-react"
 import { orderService } from "../../services/orderService"
-import { productService } from "../../services/productService"
-import { adminService } from "../../services/adminService"
 import { paymentService } from "../../services/paymentService"
 import type { Order } from "../../types/order"
 import type { Transaction } from "../../types/payment"
@@ -13,62 +11,21 @@ type Range = "7" | "30" | "all"
 export default function Revenue() {
   const [orders, setOrders] = useState<Order[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [fee, setFee] = useState({ percentage: 5, fixed: 0 })
   const [loading, setLoading] = useState(true)
   const [range, setRange] = useState<Range>("30")
   const [txFilter, setTxFilter] = useState<"all" | "success" | "pending" | "abandoned">("all")
 
   useEffect(() => {
-    productService.seedDemo()
-    orderService.seedDemo()
-    // Seed transactions for demo Paid orders if none exist
-    const demoTxCheck = () => {
-      const txs = paymentService.list()
-      if (txs.length === 0) {
-        const allOrdersRaw = localStorage.getItem("cognicart_orders")
-        const feeCfg = adminService.getFeeConfig()
-        if (allOrdersRaw) {
-          const allOrders = JSON.parse(allOrdersRaw) as Order[]
-          const sellerId = (() => {
-            try { return JSON.parse(localStorage.getItem("cognicart_seller") || "{}").id || "mock_seller" } catch { return "mock_seller" }
-          })()
-          const paidWithoutTx = allOrders.filter((o) => o.sellerId === sellerId && o.paymentStatus === "Paid" && !txs.find((t) => t.orderId === o.id))
-          if (paidWithoutTx.length > 0) {
-            const existing = JSON.parse(localStorage.getItem("cognicart_transactions") || "[]")
-            paidWithoutTx.forEach((o) => {
-              const platformFee = Math.round(o.total * (feeCfg.percentage / 100) + feeCfg.fixed)
-              const paystackFee = Math.min(Math.round(o.total * 0.015), 2000)
-              existing.push({
-                id: "txn_" + o.id,
-                sellerId: o.sellerId,
-                orderId: o.id,
-                amount: o.total,
-                subtotal: o.subtotal,
-                deliveryFee: o.deliveryFee,
-                platformFee,
-                sellerAmount: o.total - platformFee - paystackFee,
-                paystackFee,
-                currency: "NGN",
-                reference: o.paymentReference || "PSK_DEMO_" + o.id.slice(-6).toUpperCase(),
-                email: `${o.customerPhone.replace(/[^0-9]/g, "")}@cognicart.test`,
-                status: "success",
-                createdAt: o.createdAt,
-                verifiedAt: o.updatedAt,
-                channel: "paystack",
-              })
-            })
-            localStorage.setItem("cognicart_transactions", JSON.stringify(existing))
-          }
-        }
+    const load = async () => {
+      try {
+        const [liveOrders, liveTransactions] = await Promise.all([orderService.list(), paymentService.list()])
+        setOrders(liveOrders)
+        setTransactions(liveTransactions)
+      } finally {
+        setLoading(false)
       }
     }
-    demoTxCheck()
-    setFee(adminService.getFeeConfig())
-    orderService.list().then((data) => {
-      setOrders(data)
-      setTransactions(paymentService.list())
-      setLoading(false)
-    })
+    void load()
   }, [])
 
   const filteredByRange = useMemo(() => {
@@ -83,7 +40,7 @@ export default function Revenue() {
   const failedCount = filteredByRange.filter((o) => o.paymentStatus === "Failed").length
   const totalSales = paidOrders.reduce((sum, o) => sum + o.total, 0)
   const txSuccess = transactions.filter((t) => t.status === "success")
-  const platformFee = txSuccess.length > 0 ? txSuccess.reduce((sum, t) => sum + t.platformFee, 0) : Math.round(totalSales * (fee.percentage / 100) + paidOrders.length * fee.fixed)
+  const platformFee = txSuccess.reduce((sum, t) => sum + t.platformFee, 0)
   const paystackFees = txSuccess.reduce((sum, t) => sum + t.paystackFee, 0)
   const sellerEarnings = Math.max(0, totalSales - platformFee - paystackFees)
   const pendingOrders = filteredByRange.filter((o) => o.orderStatus === "Pending").length
@@ -144,7 +101,7 @@ export default function Revenue() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">Sales and Revenue — Phase 8</h1>
-          <p className="text-sm text-[#6b6b6b]">Transaction ledger shows orderAmount, platformFee, sellerAmount, paystackFee, currency, reference, status per plan 17. Fee {fee.percentage}% + ₦{fee.fixed} configurable in Admin Settings.</p>
+          <p className="text-sm text-[#6b6b6b]">Transaction ledger is sourced from the backend payment records, including payment references and settlement amounts.</p>
         </div>
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-[#9a9a9a]" />
@@ -171,7 +128,7 @@ export default function Revenue() {
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5">
           <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-[#9a9a9a]"><PieChart className="h-4 w-4" /> PLATFORM FEE</div>
           <div className="mt-2 text-2xl font-bold">₦{platformFee.toLocaleString()}</div>
-          <div className="text-xs text-[#6b6b6b]">{fee.percentage}% • {paidOrders.length} orders • NGN</div>
+          <div className="text-xs text-[#6b6b6b]">{paidOrders.length} paid orders • NGN</div>
         </div>
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5">
           <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-[#9a9a9a]"><Calendar className="h-4 w-4" /> RECONCILIATION</div>

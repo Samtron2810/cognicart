@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
-import { ArrowLeft, Package, User, MapPin, Phone, Clock, CreditCard, Truck, CheckCircle } from "lucide-react"
+import { ArrowLeft, Package, User, MapPin, Phone, Clock, CreditCard, Truck } from "lucide-react"
 import { orderService } from "../../services/orderService"
 import { paymentService } from "../../services/paymentService"
 import { ORDER_STATUSES } from "../../types/order"
@@ -22,7 +22,6 @@ export default function OrderDetail() {
   const [txn, setTxn] = useState<Transaction | null>(null)
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
-  const [paying, setPaying] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const load = async () => {
@@ -31,7 +30,7 @@ export default function OrderDetail() {
     try {
       const o = await orderService.getById(id)
       setOrder(o)
-      setTxn(paymentService.getByOrderId(o.id))
+      setTxn(o.paymentReference ? await paymentService.getByReference(o.paymentReference).catch(() => null) : null)
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load")
     } finally {
@@ -58,43 +57,7 @@ export default function OrderDetail() {
     }
   }
 
-  const handleMarkPaid = async () => {
-    if (!order || !id) return
-    setUpdating(true)
-    setError(null)
-    try {
-      const updated = await orderService.updatePaymentStatus(id, "Paid")
-      setOrder(updated)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to update payment")
-    } finally {
-      setUpdating(false)
-    }
-  }
 
-  const handlePaystack = async () => {
-    if (!order) return
-    setPaying(true)
-    setError(null)
-    try {
-      const email = `${order.customerPhone.replace(/[^0-9]/g, "")}@cognicart.test`
-      const ref = await paymentService.payWithPaystack({
-        orderId: order.id,
-        amount: order.total,
-        email,
-        sellerId: order.sellerId,
-        subtotal: order.subtotal,
-        deliveryFee: order.deliveryFee,
-      })
-      const updated = await orderService.getById(order.id)
-      setOrder(updated)
-      setTxn(paymentService.getByReference(ref) || paymentService.getByOrderId(order.id))
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Paystack failed")
-    } finally {
-      setPaying(false)
-    }
-  }
 
   if (loading) return <div className="grid place-items-center py-16"><div className="h-8 w-8 rounded-full border-2 border-[#0B9C74] border-t-transparent animate-spin" /></div>
   if (error && !order) return <div className="rounded-2xl bg-white border border-[#F3E6D3] p-8 text-center"><div className="font-bold">Not found</div><div className="text-sm text-[#6b6b6b]">{error}</div><Link to="/dashboard/orders" className="mt-4 inline-flex rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white">Back to orders</Link></div>
@@ -173,17 +136,9 @@ export default function OrderDetail() {
                 <div className="text-xs text-[#9a9a9a]">Order totals use price at creation, not current product price.</div>
               </div>
               {order.paymentStatus === "Pending" ? (
-                <div className="mt-3 space-y-2">
-                  <button onClick={handlePaystack} disabled={paying} className="w-full flex justify-center items-center gap-2 rounded-full bg-[#0B9C74] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66] disabled:opacity-60">
-                    <CreditCard className="h-4 w-4" /> {paying ? "Processing..." : "Pay with Paystack (test)"}
-                  </button>
-                  <button onClick={handleMarkPaid} disabled={updating} className="w-full flex justify-center items-center gap-2 rounded-full bg-white border border-[#F3E6D3] px-4 py-2.5 text-sm font-bold hover:bg-[#FFF1DA] disabled:opacity-60">
-                    <CheckCircle className="h-4 w-4" /> Mark as Paid (manual)
-                  </button>
-                  <div className="rounded-xl bg-[#FFF1DA] border border-[#F3E6D3] p-3 text-xs leading-5">Pending. Customer can pay via Paystack link. Platform fee from Settings will be split on verification.</div>
-                </div>
+                <div className="mt-3 rounded-xl bg-[#FFF1DA] border border-[#F3E6D3] p-3 text-xs leading-5">Payment is pending. The backend verifies Paystack payments and updates this order automatically.</div>
               ) : (
-                <div className="mt-3 rounded-xl bg-[#E6F7F1] border border-[#0B9C74]/20 p-3 text-xs leading-5 text-[#0B9C74]">Paid. Platform fee split recorded. Payout to seller bank on file.</div>
+                <div className="mt-3 rounded-xl bg-[#E6F7F1] border border-[#0B9C74]/20 p-3 text-xs leading-5 text-[#0B9C74]">Paid. The platform fee split was recorded by the backend.</div>
               )}
             </div>
 

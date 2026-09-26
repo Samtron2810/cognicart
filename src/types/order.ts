@@ -44,6 +44,8 @@ export type Order = {
 }
 
 export type CreateOrderPayload = {
+  /** Required for unauthenticated storefront checkout; the backend ignores it for a signed-in seller. */
+  sellerId?: string
   customer: {
     name: string
     phone: string

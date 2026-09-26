@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { ArrowLeft, ShoppingBag, Heart, Check, Truck, Shield, Share2, Copy, MessageCircle, Store, ChevronRight, Tag, Palette } from "lucide-react"
 import { productService } from "../../services/productService"
+import { useCart } from "../../context/CartContext"
 import { useSEO } from "../../hooks/useSEO"
 import type { Product } from "../../types/product"
 import { getEffectivePrice, getDisplayPrice, getTotalStock } from "../../types/product"
@@ -16,28 +17,30 @@ export default function ProductDetail() {
   const [added, setAdded] = useState(false)
   const [copied, setCopied] = useState(false)
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null)
+  const { items: cartItems, addItem } = useCart()
 
   useEffect(() => {
     if (!id) return
-    productService.seedDemo()
-    productService.getById(id).then((p) => {
-      setProduct(p)
-      setSellerId(p.sellerId)
-      if (p.variants && p.variants.length > 0) setSelectedVariant(p.variants[0].id)
+    const load = async () => {
       try {
-        const sellersRaw = localStorage.getItem("cognicart_mock_sellers")
-        const sellers = sellersRaw ? JSON.parse(sellersRaw) : []
-        const bizRaw = localStorage.getItem("cognicart_business")
-        const businesses = bizRaw ? JSON.parse(bizRaw) : []
-        const s = sellers.find((x: { id: string }) => x.id === p.sellerId)
-        const b = businesses.find((x: { sellerId: string }) => x.sellerId === p.sellerId)
-        if (b?.name) setSellerName(b.name)
-        else if (s?.businessName) setSellerName(s.businessName)
-        if (b?.whatsappPhone) setSellerPhone(b.whatsappPhone)
-        else if (b?.phone) setSellerPhone(b.phone)
-        else if (s?.phone) setSellerPhone(s.phone)
-      } catch {}
-    }).catch(() => setProduct(null)).finally(() => setLoading(false))
+        const nextProduct = await productService.getById(id)
+        setProduct(nextProduct)
+        setSellerId(nextProduct.sellerId)
+        if (nextProduct.variants && nextProduct.variants.length > 0) setSelectedVariant(nextProduct.variants[0].id)
+        try {
+          const store = await productService.getStorefront(nextProduct.sellerId)
+          setSellerName(store.name)
+          setSellerPhone(store.whatsappPhone || store.phone || "")
+        } catch {
+          // The product can still be viewed if optional public business metadata is unavailable.
+        }
+      } catch {
+        setProduct(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+    void load()
   }, [id])
 
   const variant = product?.variants?.find((v) => v.id === selectedVariant) || null
@@ -86,13 +89,11 @@ export default function ProductDetail() {
       return
     }
     if (isOut) return
-    const raw = localStorage.getItem("cognicart_cart")
-    let cart: Array<string | { productId: string; variantId?: string }>
-    try { cart = raw ? JSON.parse(raw) : [] } catch { cart = [] }
-    // normalize to objects
-    const normalized: Array<{ productId: string; variantId?: string }> = cart.map((c: unknown) => typeof c === "string" ? { productId: c } : c as { productId: string; variantId?: string })
-    normalized.push({ productId: product.id, variantId: selectedVariant || undefined })
-    localStorage.setItem("cognicart_cart", JSON.stringify(normalized))
+    if (cartItems.length > 0 && cartItems[0].sellerId !== product.sellerId) {
+      alert("Checkout supports one store at a time. Complete or clear your current cart first.")
+      return
+    }
+    addItem({ productId: product.id, sellerId: product.sellerId, variantId: selectedVariant || undefined })
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }

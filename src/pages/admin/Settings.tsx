@@ -6,12 +6,13 @@ export default function AdminSettings() {
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
-    setFee(adminService.getFeeConfig())
+    void adminService.getFeeConfig().then(setFee)
   }, [])
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    adminService.setFeeConfig(fee)
+    const updated = await adminService.setFeeConfig(fee)
+    setFee(updated)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
@@ -33,7 +34,7 @@ export default function AdminSettings() {
           <input type="number" min={0} value={fee.fixed} onChange={(e) => setFee({ ...fee, fixed: Number(e.target.value) })} className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none" />
         </label>
         <div className="rounded-xl bg-[#FFFBF5] border border-[#F3E6D3] p-3 text-xs leading-5 text-[#6b6b6b]">
-          Example: ₦10,000 order at 5% + ₦0 = ₦500 platform, ₦9,500 seller. Change reflects in Admin Revenue and seller Revenue (mock 5%).
+          Example: ₦10,000 order at 5% + ₦0 = ₦500 platform, ₦9,500 seller. Changes are saved by the backend and applied to newly initialized payments.
         </div>
         <button type="submit" className="rounded-full bg-[#0B9C74] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66]">Save fee</button>
       </form>
