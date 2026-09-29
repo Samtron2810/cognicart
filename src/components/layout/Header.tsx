@@ -32,7 +32,7 @@ export function Header() {
                 <MessageCircle className="h-5 w-5 fill-white/20" />
               </span>
               <span className="font-display text-[22px] font-bold tracking-tight leading-none">Cognicart</span>
-              <span className="hidden sm:block text-[11px] font-bold tracking-widest text-[#0B9C74] border border-[#0B9C74]/20 bg-[#E6F7F1] px-1.5 py-0.5 rounded">WHATSAPP AI</span>
+              <span className="hidden sm:block text-[11px] font-bold tracking-widest text-[#1c82b3] border border-[#229ED9]/25 bg-[#E7F4FB] px-1.5 py-0.5 rounded">TELEGRAM AI</span>
             </Link>
             <nav className="hidden lg:flex items-center gap-1 text-[14px] font-medium text-[#2b2b2b]">
               <button onClick={() => scrollTo("features")} className="px-3 py-2 rounded-full hover:bg-[#FFF1DA] transition">Features</button>

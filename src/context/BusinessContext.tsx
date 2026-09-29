@@ -8,8 +8,6 @@ type BusinessContextValue = {
   isLoading: boolean
   refresh: () => Promise<void>
   updateBusiness: (payload: Partial<Business>) => Promise<Business>
-  connectWhatsApp: (phone: string) => Promise<void>
-  disconnectWhatsApp: () => Promise<void>
 }
 
 const BusinessContext = createContext<BusinessContextValue | null>(null)
@@ -47,18 +45,8 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
     return updated
   }
 
-  const connectWhatsApp = async (phone: string) => {
-    const updated = await businessService.connectWhatsApp(phone)
-    setBusiness(updated)
-  }
-
-  const disconnectWhatsApp = async () => {
-    const updated = await businessService.disconnectWhatsApp()
-    setBusiness(updated)
-  }
-
   return (
-    <BusinessContext.Provider value={{ business, isLoading, refresh, updateBusiness, connectWhatsApp, disconnectWhatsApp }}>
+    <BusinessContext.Provider value={{ business, isLoading, refresh, updateBusiness }}>
       {children}
     </BusinessContext.Provider>
   )

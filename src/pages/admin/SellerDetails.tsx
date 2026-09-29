@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
-import { ArrowLeft, Ban, CheckCircle, Package, ShoppingCart, UserCircle, MessageSquare } from "lucide-react"
+import { ArrowLeft, Ban, CheckCircle, Package, ShoppingCart, UserCircle, Send } from "lucide-react"
 import { adminService } from "../../services/adminService"
 
 export default function SellerDetails() {
@@ -35,7 +35,7 @@ export default function SellerDetails() {
   if (loading) return <div className="grid place-items-center py-16"><div className="h-8 w-8 rounded-full border-2 border-[#0B9C74] border-t-transparent animate-spin" /></div>
   if (!data) return <div className="rounded-2xl bg-white border border-[#F3E6D3] p-8 text-center">Seller not found <Link to="/admin/sellers" className="ml-2 font-bold text-[#0B9C74]">Back</Link></div>
 
-  const { seller, business, products, orders, customers, messages, config } = data
+  const { seller, business, products, orders, customers, messages } = data
   const revenue = orders.filter((o) => o.paymentStatus === "Paid").reduce((sum, o) => sum + o.total, 0)
 
   return (
@@ -74,21 +74,21 @@ export default function SellerDetails() {
               <div><span className="font-bold">Phone:</span> {business.phone || "—"}</div>
               <div><span className="font-bold">Location:</span> {business.location || "—"}</div>
               <div><span className="font-bold">Delivery:</span> {business.deliveryInfo || "—"} • Fee ₦{business.deliveryFee ?? "—"}</div>
-              <div><span className="font-bold">WhatsApp:</span> {business.whatsappPhone || "—"} {business.whatsappConnected ? "Connected" : "Not connected"}</div>
+              <div><span className="font-bold">Telegram:</span> {business.telegramBotUsername ? `@${business.telegramBotUsername}` : "—"} {business.telegramConnected ? "Connected" : "Not connected"}</div>
             </div>
           ) : <div className="text-sm text-[#6b6b6b]">No business yet</div>}
         </div>
 
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5">
-          <h3 className="font-bold flex items-center gap-2"><MessageSquare className="h-4 w-4 text-[#0B9C74]" /> WhatsApp</h3>
-          {config ? (
-            <div className="mt-3 space-y-2 text-sm font-mono text-xs">
-              <div>Phone: {config.businessPhone}</div>
-              <div>PNID: {config.phoneNumberId}</div>
-              <div>Verified: {config.webhookVerified ? "Yes" : "No"}</div>
-              <div>Messages: {messages.length} ({messages.filter((m) => m.direction === "inbound").length} in / {messages.filter((m) => m.direction === "outbound").length} out)</div>
+          <h3 className="font-bold flex items-center gap-2"><Send className="h-4 w-4 text-[#229ED9]" /> Telegram bot</h3>
+          {business?.telegramConnected ? (
+            <div className="mt-3 space-y-2 font-mono text-xs">
+              <div>Bot: @{business.telegramBotUsername || business.telegramBotId}</div>
+              <div>Webhook: {business.telegramWebhookVerified ? "Registered" : "Polling (dev)"}</div>
+              <div>Connected: {business.telegramConnectedAt ? new Date(business.telegramConnectedAt).toLocaleDateString() : "—"}</div>
+              <div>Messages: {messages.length} ({messages.filter((m) => m.direction === "inbound").length} in / {messages.filter((m) => m.direction === "outbound").length} out / {messages.filter((m) => m.direction === "outbound" && !m.deterministic).length} AI)</div>
             </div>
-          ) : <div className="text-sm text-[#6b6b6b]">No WhatsApp config</div>}
+          ) : <div className="text-sm text-[#6b6b6b]">No Telegram bot connected</div>}
         </div>
       </div>
 

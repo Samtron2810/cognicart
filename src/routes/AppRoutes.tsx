@@ -11,7 +11,10 @@ import OrderDetail from "../pages/orders/OrderDetail"
 import Customers from "../pages/customers/Customers"
 import Settings from "../pages/dashboard/Settings"
 import Revenue from "../pages/dashboard/Revenue"
-import WhatsAppPage from "../pages/whatsapp/WhatsApp"
+import TelegramPage from "../pages/telegram/Telegram"
+import Campaigns from "../pages/campaigns/Campaigns"
+import CampaignDetail from "../pages/campaigns/CampaignDetail"
+import ManualOrderForm from "../pages/orders/ManualOrderForm"
 import Storefront from "../pages/storefront/Storefront"
 import ProductDetail from "../pages/storefront/ProductDetail"
 import SellerStorefront from "../pages/storefront/SellerStorefront"
@@ -20,12 +23,15 @@ import { AdminLayout } from "../layouts/AdminLayout"
 import { PublicLayout } from "../layouts/PublicLayout"
 import { ProtectedRoute } from "./ProtectedRoute"
 import { AdminRoute } from "./AdminRoute"
+import { GuestRoute } from "./GuestRoute"
 import About from "../pages/public/About"
 import Contact from "../pages/public/Contact"
 import Careers from "../pages/public/Careers"
 import Privacy from "../pages/public/Privacy"
 import Terms from "../pages/public/Terms"
-import WhatsAppApi from "../pages/public/WhatsAppApi"
+import TelegramCommerce from "../pages/public/TelegramCommerce"
+import Track from "../pages/buyer/Track"
+import TrackOrder from "../pages/buyer/TrackOrder"
 import Search from "../pages/Search"
 import Cart from "../pages/Cart"
 import Checkout from "../pages/Checkout"
@@ -36,7 +42,7 @@ import AdminOrders from "../pages/admin/Orders"
 import AdminCustomers from "../pages/admin/Customers"
 import AdminRevenue from "../pages/admin/Revenue"
 import AdminPayments from "../pages/admin/Payments"
-import AdminWhatsApp from "../pages/admin/WhatsApp"
+import AdminTelegram from "../pages/admin/Telegram"
 import AdminSubscriptions from "../pages/admin/Subscriptions"
 import AdminReports from "../pages/admin/Reports"
 import AdminSettings from "../pages/admin/Settings"
@@ -63,8 +69,8 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+      <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
 
       <Route element={<PublicLayout />}>
         <Route path="/store" element={<Storefront />} />
@@ -78,7 +84,9 @@ export function AppRoutes() {
         <Route path="/careers" element={<Careers />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
-        <Route path="/whatsapp-api" element={<WhatsAppApi />} />
+        <Route path="/telegram-commerce" element={<TelegramCommerce />} />
+        <Route path="/track" element={<Track />} />
+        <Route path="/track/orders/:id" element={<TrackOrder />} />
         <Route path="/search" element={<Search />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
@@ -96,11 +104,15 @@ export function AppRoutes() {
         <Route path="/dashboard/products/new" element={<CreateProduct />} />
         <Route path="/dashboard/products/:id/edit" element={<EditProduct />} />
         <Route path="/dashboard/orders" element={<Orders />} />
+        <Route path="/dashboard/orders/manual/new" element={<ManualOrderForm />} />
+        <Route path="/dashboard/orders/manual/:id/edit" element={<ManualOrderForm />} />
         <Route path="/dashboard/orders/:id" element={<OrderDetail />} />
         <Route path="/dashboard/customers" element={<Customers />} />
         <Route path="/dashboard/revenue" element={<Revenue />} />
         <Route path="/dashboard/settings" element={<Settings />} />
-        <Route path="/dashboard/whatsapp" element={<WhatsAppPage />} />
+        <Route path="/dashboard/telegram" element={<TelegramPage />} />
+        <Route path="/dashboard/campaigns" element={<Campaigns />} />
+        <Route path="/dashboard/campaigns/:id" element={<CampaignDetail />} />
       </Route>
 
       <Route
@@ -117,7 +129,7 @@ export function AppRoutes() {
         <Route path="/admin/customers" element={<AdminCustomers />} />
         <Route path="/admin/revenue" element={<AdminRevenue />} />
         <Route path="/admin/payments" element={<AdminPayments />} />
-        <Route path="/admin/whatsapp" element={<AdminWhatsApp />} />
+        <Route path="/admin/telegram" element={<AdminTelegram />} />
         <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
         <Route path="/admin/reports" element={<AdminReports />} />
         <Route path="/admin/settings" element={<AdminSettings />} />

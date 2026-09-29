@@ -210,7 +210,7 @@ export default function Revenue() {
               </div>
             </div>
           ))}
-          {filteredTx.length === 0 && <div className="text-sm text-[#6b6b6b] py-6 text-center">No transactions in range. Pay via Cart or Checkout, or use WhatsApp AI pay flow.</div>}
+          {filteredTx.length === 0 && <div className="text-sm text-[#6b6b6b] py-6 text-center">No transactions in range. Paid storefront and Telegram orders will appear here.</div>}
         </div>
       </div>
 

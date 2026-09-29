@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
-import { MessageCircle, LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, Store, Wallet, MessageSquare, Shield } from "lucide-react"
+import { LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, Store, Wallet, Send, Megaphone, Shield } from "lucide-react"
 import { useAuth } from "../context/AuthContext"
 import { useState } from "react"
 
@@ -9,7 +9,8 @@ const nav = [
   { to: "/dashboard/orders", label: "Orders", icon: ShoppingCart },
   { to: "/dashboard/customers", label: "Customers", icon: Users },
   { to: "/dashboard/revenue", label: "Revenue", icon: Wallet },
-  { to: "/dashboard/whatsapp", label: "WhatsApp", icon: MessageSquare },
+  { to: "/dashboard/telegram", label: "Telegram", icon: Send },
+  { to: "/dashboard/campaigns", label: "Campaigns", icon: Megaphone },
   { to: "/store", label: "Storefront", icon: Store },
   { to: "/dashboard/settings", label: "Settings", icon: Settings },
 ]
@@ -34,7 +35,7 @@ export function DashboardLayout() {
             </button>
             <div className="flex items-center gap-2.5">
               <span className="h-8 w-8 rounded-lg bg-[#0B9C74] grid place-items-center text-white">
-                <MessageCircle className="h-4 w-4 fill-white/20" />
+                <Store className="h-4 w-4" />
               </span>
               <span className="font-display font-bold">Cognicart</span>
               <span className="hidden sm:inline-flex text-[11px] font-bold tracking-widest text-[#0B9C74] bg-[#E6F7F1] px-2 py-0.5 rounded">SELLER</span>

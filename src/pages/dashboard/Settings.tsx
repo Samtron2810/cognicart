@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useAuth } from "../../context/AuthContext"
 import { useBusiness } from "../../context/BusinessContext"
-import { Upload, Store, Truck, CreditCard, MessageCircle, Info } from "lucide-react"
+import { Upload, Store, Truck, CreditCard, Send, Info } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export default function Settings() {
@@ -143,7 +143,7 @@ export default function Settings() {
             </label>
 
             <label className="sm:col-span-2">
-              <span className="text-xs font-bold">Delivery info (shown to customers on WhatsApp)</span>
+              <span className="text-xs font-bold">Delivery info (shown to customers on your storefront and Telegram)</span>
               <input value={form.deliveryInfo} onChange={(e) => setForm({ ...form, deliveryInfo: e.target.value })} placeholder="Lagos 1-2 days, outside Lagos 2-4 days" className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none" />
             </label>
           </div>
@@ -212,10 +212,10 @@ export default function Settings() {
 
         <div className="rounded-2xl bg-[#1a1a1a] text-white p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div>
-            <div className="text-sm font-bold flex items-center gap-2"><MessageCircle className="h-4 w-4 text-[#0B9C74]" /> WhatsApp Business</div>
-            <div className="text-xs text-white/70">Connect your WhatsApp to let AI sell. Manage in WhatsApp page.</div>
+            <div className="text-sm font-bold flex items-center gap-2"><Send className="h-4 w-4 text-[#229ED9]" /> Telegram bot</div>
+            <div className="text-xs text-white/70">Connect your Telegram bot to let AI sell in chat. Manage on the Telegram page.</div>
           </div>
-          <Link to="/dashboard/whatsapp" className="rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#1a1a1a] hover:bg-[#FFF1DA]">Open WhatsApp settings</Link>
+          <Link to="/dashboard/telegram" className="rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#1a1a1a] hover:bg-[#FFF1DA]">Open Telegram settings</Link>
         </div>
 
         <button type="submit" disabled={saving} className="rounded-full bg-[#0B9C74] px-8 py-3 text-sm font-bold text-white hover:bg-[#0a8a66] disabled:opacity-60">

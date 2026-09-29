@@ -1,23 +1,25 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
-import { ArrowLeft, ShoppingBag, Heart, Check, Truck, Shield, Share2, Copy, MessageCircle, Store, ChevronRight, Tag, Palette } from "lucide-react"
+import { ArrowLeft, ShoppingBag, Heart, Check, Truck, Shield, Share2, Copy, Send, Store, ChevronRight, Tag, Palette } from "lucide-react"
 import { productService } from "../../services/productService"
 import { useCart } from "../../context/CartContext"
 import { useSEO } from "../../hooks/useSEO"
 import type { Product } from "../../types/product"
+import type { StorefrontProfile } from "../../types/business"
 import { getEffectivePrice, getDisplayPrice, getTotalStock } from "../../types/product"
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>()
   const [product, setProduct] = useState<Product | null>(null)
-  const [sellerName, setSellerName] = useState("Cognicart Seller")
-  const [sellerPhone, setSellerPhone] = useState("")
+  const [store, setStore] = useState<StorefrontProfile | null>(null)
   const [sellerId, setSellerId] = useState("")
   const [loading, setLoading] = useState(true)
   const [added, setAdded] = useState(false)
   const [copied, setCopied] = useState(false)
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null)
   const { items: cartItems, addItem } = useCart()
+
+  const sellerName = store?.name || "Cognicart Seller"
 
   useEffect(() => {
     if (!id) return
@@ -28,9 +30,7 @@ export default function ProductDetail() {
         setSellerId(nextProduct.sellerId)
         if (nextProduct.variants && nextProduct.variants.length > 0) setSelectedVariant(nextProduct.variants[0].id)
         try {
-          const store = await productService.getStorefront(nextProduct.sellerId)
-          setSellerName(store.name)
-          setSellerPhone(store.whatsappPhone || store.phone || "")
+          setStore(await productService.getStorefront(nextProduct.sellerId))
         } catch {
           // The product can still be viewed if optional public business metadata is unavailable.
         }
@@ -52,7 +52,7 @@ export default function ProductDetail() {
 
   const url = typeof window !== "undefined" ? window.location.href : `https://cognicart.ng/store/${id}`
   const title = product ? `${product.name} — ₦${effectivePrice.toLocaleString()}${display.hasDiscount ? ` (was ₦${display.original.toLocaleString()})` : ""} | ${sellerName} on Cognicart` : "Product — Cognicart"
-  const desc = product ? `${product.description.slice(0, 155)} • ${product.category}${product.variants ? ` • ${product.variants.length} variants` : ""} • ${totalStock > 0 ? `In stock ${totalStock}` : "Out of stock"} • Order on WhatsApp in one message.` : "Product on Cognicart"
+  const desc = product ? `${product.description.slice(0, 155)} • ${product.category}${product.variants ? ` • ${product.variants.length} variants` : ""} • ${totalStock > 0 ? `In stock ${totalStock}` : "Out of stock"} • Guest checkout online${store?.telegramBotUrl ? " or order in Telegram chat" : ""}.` : "Product on Cognicart"
   const ogImage = product?.images[0] || "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=1200&h=630&fit=crop"
 
   useSEO({
@@ -105,8 +105,10 @@ export default function ProductDetail() {
   }
 
   const variantLabel = variant ? [variant.size, variant.color].filter(Boolean).join(" / ") || variant.sku || "" : ""
-  const waText = product ? `Hi ${sellerName}, is ${product.name}${variantLabel ? ` (${variantLabel})` : ""} still available for ₦${effectivePrice.toLocaleString()}? ${url}` : ""
-  const waLink = `https://wa.me/${sellerPhone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(waText)}`
+  // Share-only wa.me link: opens the visitor's own WhatsApp with pre-filled
+  // text so they can share the product. Not a checkout or notification channel.
+  const waShareText = product ? `${product.name}${variantLabel ? ` (${variantLabel})` : ""} — ₦${effectivePrice.toLocaleString()} from ${sellerName} on Cognicart: ${url}` : ""
+  const waShareLink = `https://wa.me/?text=${encodeURIComponent(waShareText)}`
 
   if (loading) return <div className="min-h-[50vh] grid place-items-center"><div className="h-8 w-8 rounded-full border-2 border-[#0B9C74] border-t-transparent animate-spin" /></div>
   if (!product) return <div className="min-h-[50vh] grid place-items-center px-4"><div className="text-center"><div className="font-bold">Product not found</div><Link to="/store" className="mt-3 inline-flex rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white">Back to store</Link></div></div>
@@ -128,7 +130,7 @@ export default function ProductDetail() {
             <div className="aspect-square rounded-2xl bg-[#FFFBF5] border border-[#F3E6D3] p-6 flex items-center justify-center"><img src={variant?.image || product.images[0]} alt={product.name} className="h-full w-full object-contain mix-blend-multiply" /></div>
             {product.images.length > 1 && <div className="mt-3 grid grid-cols-4 gap-3">{product.images.slice(1, 4).map((src, i) => <img key={i} src={src} alt="" className="h-20 w-full rounded-xl object-cover border border-[#F3E6D3] bg-white" />)}</div>}
             <div className="mt-4 flex gap-2">
-              <a href={waLink} target="_blank" rel="noreferrer" className="flex-1 inline-flex justify-center items-center gap-2 rounded-full bg-[#0B9C74] px-4 py-3 text-sm font-bold text-white hover:bg-[#0a8a66]"><MessageCircle className="h-4 w-4" /> Order on WhatsApp</a>
+              <button onClick={handleAdd} disabled={isOut} className="flex-1 inline-flex justify-center items-center gap-2 rounded-full bg-[#0B9C74] px-4 py-3 text-sm font-bold text-white hover:bg-[#0a8a66] disabled:opacity-50"><ShoppingBag className="h-4 w-4" /> {added ? "Added" : isOut ? "Out of stock" : "Buy now"}</button>
               <button onClick={handleCopy} className="inline-flex items-center gap-2 rounded-full bg-white border border-[#F3E6D3] px-4 py-3 text-sm font-bold hover:bg-[#FFF1DA]">{copied ? <Check className="h-4 w-4 text-[#0B9C74]" /> : <Copy className="h-4 w-4" />} {copied ? "Copied" : "Copy link"}</button>
             </div>
           </div>
@@ -138,7 +140,7 @@ export default function ProductDetail() {
             <h1 className="font-display text-[30px] font-bold leading-tight mt-3">{product.name}</h1>
             <div className="mt-2 flex items-center gap-2 text-xs">
               <Link to={sellerId ? `/store/seller/${sellerId}` : "/store"} className="inline-flex items-center gap-1 rounded-full bg-white border border-[#F3E6D3] px-3 py-1 font-bold hover:bg-[#FFF1DA]"><Store className="h-3 w-3" /> {sellerName}</Link>
-              <a href={waLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-[#E6F7F1] border border-[#0B9C74]/20 px-3 py-1 font-bold text-[#0B9C74]">Chat seller</a>
+              {store?.telegramBotUrl && <a href={store.telegramBotUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-[#E7F4FB] border border-[#229ED9]/25 px-3 py-1 font-bold text-[#1c82b3]"><Send className="h-3 w-3" /> Open in Telegram</a>}
             </div>
             <p className="mt-3 text-sm leading-6 text-[#5a5a5a]">{product.description}</p>
 
@@ -183,20 +185,22 @@ export default function ProductDetail() {
               <button onClick={handleAdd} disabled={isOut} className="inline-flex items-center gap-2 rounded-full bg-[#0B9C74] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#0a8a66] disabled:opacity-50">
                 <ShoppingBag className="h-4 w-4" /> {added ? "Added" : isOut ? "Out of stock" : "Add to cart"}
               </button>
-              <a href={waLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-7 py-3.5 text-sm font-bold text-white hover:bg-black"><MessageCircle className="h-4 w-4" /> Order on WhatsApp</a>
+              {store?.telegramBotUrl && (
+                <a href={store.telegramBotUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#229ED9] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#1c82b3]"><Send className="h-4 w-4" /> Open in Telegram</a>
+              )}
               <button className="inline-flex items-center gap-2 rounded-full bg-white border border-[#F3E6D3] px-6 py-3.5 text-sm font-bold hover:bg-[#FFF1DA]"><Heart className="h-4 w-4" /> Wishlist</button>
             </div>
             {added && <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-3 py-1.5 text-xs font-bold text-white"><Check className="h-4 w-4" /> Added to cart • <Link to="/cart" className="underline">View cart</Link></div>}
 
             <div className="mt-4 flex flex-wrap gap-2">
               <button onClick={handleCopy} className="inline-flex items-center gap-2 rounded-full bg-white border border-[#F3E6D3] px-4 py-2 text-xs font-bold hover:bg-[#FFF1DA]"><Share2 className="h-3.5 w-3.5" /> {copied ? "Link copied" : "Share this product"}</button>
-              <a href={`https://wa.me/?text=${encodeURIComponent(`${product.name}${variantLabel ? ` (${variantLabel})` : ""} — ₦${effectivePrice.toLocaleString()} ${url}`)}`} target="_blank" rel="noreferrer" className="rounded-full bg-[#E6F7F1] border border-[#0B9C74]/20 px-4 py-2 text-xs font-bold text-[#0B9C74] hover:bg-[#0B9C74] hover:text-white">Share on WhatsApp</a>
+              <a href={waShareLink} target="_blank" rel="noreferrer" className="rounded-full bg-white border border-[#F3E6D3] px-4 py-2 text-xs font-bold hover:bg-[#FFF1DA]">Share on WhatsApp</a>
               <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(product.name)}&url=${encodeURIComponent(url)}`} target="_blank" rel="noreferrer" className="rounded-full bg-white border border-[#F3E6D3] px-4 py-2 text-xs font-bold hover:bg-[#FFF1DA]">Share on X</a>
             </div>
 
             <div className="mt-6 grid sm:grid-cols-2 gap-3 text-sm">
-              <div className="rounded-2xl bg-white border border-[#F3E6D3] p-4 flex gap-3"><Truck className="h-5 w-5 text-[#0B9C74]" /><div><div className="font-bold">Delivery</div><div className="text-[#6b6b6b] text-xs leading-5">Lagos 1-2 days. Rest of Nigeria 2-4 days. Fee is confirmed in WhatsApp checkout.</div></div></div>
-              <div className="rounded-2xl bg-white border border-[#F3E6D3] p-4 flex gap-3"><Shield className="h-5 w-5 text-[#0B9C74]" /><div><div className="font-bold">WhatsApp verified</div><div className="text-[#6b6b6b] text-xs leading-5">Same price and stock AI will confirm inside WhatsApp.</div></div></div>
+              <div className="rounded-2xl bg-white border border-[#F3E6D3] p-4 flex gap-3"><Truck className="h-5 w-5 text-[#0B9C74]" /><div><div className="font-bold">Delivery</div><div className="text-[#6b6b6b] text-xs leading-5">{store?.deliveryInfo || "Lagos 1-2 days. Rest of Nigeria 2-4 days."} Fee is calculated by the store at checkout.</div></div></div>
+              <div className="rounded-2xl bg-white border border-[#F3E6D3] p-4 flex gap-3"><Shield className="h-5 w-5 text-[#0B9C74]" /><div><div className="font-bold">Live price & stock</div><div className="text-[#6b6b6b] text-xs leading-5">The same catalog powers this page{store?.telegramBotUrl ? " and the store's Telegram bot" : ""} — no stale prices.</div></div></div>
             </div>
 
             <div className="mt-6 rounded-2xl bg-white border border-[#F3E6D3] p-4">
@@ -204,7 +208,7 @@ export default function ProductDetail() {
               <p className="text-xs text-[#6b6b6b] leading-5 mt-1">View all products from this seller in their SEO-friendly store. Shareable link for Google and social.</p>
               <div className="mt-3 flex gap-2">
                 <Link to={sellerId ? `/store/seller/${sellerId}` : "/store"} className="inline-flex rounded-full bg-[#FFF1DA] border border-[#F3E6D3] px-4 py-2 text-xs font-bold hover:bg-white">Visit {sellerName} store</Link>
-                <a href={waLink} target="_blank" rel="noreferrer" className="inline-flex rounded-full bg-[#0B9C74] px-4 py-2 text-xs font-bold text-white hover:bg-[#0a8a66]">Chat on WhatsApp</a>
+                {store?.telegramBotUrl && <a href={store.telegramBotUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-[#229ED9] px-4 py-2 text-xs font-bold text-white hover:bg-[#1c82b3]"><Send className="h-3 w-3" /> Chat on Telegram</a>}
               </div>
             </div>
           </div>

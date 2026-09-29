@@ -14,7 +14,7 @@ const features = [
   {
     icon: Store,
     title: "One Tap Checkout",
-    desc: "Customers check out inside WhatsApp. Cash, transfer or card. Auto receipts and tracking.",
+    desc: "Guest checkout on your storefront or order in Telegram chat. Card via Paystack. Auto email receipts and tracking.",
   },
   {
     icon: TrendingUp,

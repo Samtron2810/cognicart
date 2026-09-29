@@ -15,8 +15,8 @@ export default function Storefront() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
 
-  const title = q ? `Search "${q}" — Storefront | Cognicart` : category ? `${category} — Storefront | Cognicart` : "Storefront — WhatsApp AI Commerce | Cognicart"
-  const desc = "Public catalog on Cognicart. Same price and stock WhatsApp AI uses. Order on WhatsApp in one message."
+  const title = q ? `Search "${q}" — Storefront | Cognicart` : category ? `${category} — Storefront | Cognicart` : "Storefront — Shop African Sellers Online | Cognicart"
+  const desc = "Public catalog on Cognicart. Buy online with guest checkout, or chat with sellers' Telegram bots for the same live prices and stock."
   const canonical = typeof window !== "undefined" ? window.location.href : "https://cognicart.ng/store"
 
   useSEO({
@@ -48,7 +48,7 @@ export default function Storefront() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
           <div>
             <h1 className="font-display text-[34px] sm:text-[40px] font-bold tracking-tight leading-none">Storefront</h1>
-            <p className="mt-2 text-sm text-[#6b6b6b]">Public catalog. Prices and stock are the same WhatsApp AI uses. Chat to buy on WhatsApp. SEO-friendly store and product pages per seller.</p>
+            <p className="mt-2 text-sm text-[#6b6b6b]">Public catalog with live prices and stock. Buy online as a guest, or chat with a seller’s Telegram bot. SEO-friendly store and product pages per seller.</p>
           </div>
           <Link to="/cart" className="hidden lg:inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-5 py-2.5 text-sm font-bold text-white hover:bg-black">
             <ShoppingBag className="h-4 w-4" /> View cart
@@ -114,7 +114,7 @@ export default function Storefront() {
         )}
 
         <div className="mt-8 rounded-2xl bg-white border border-[#F3E6D3] p-6 flex flex-col lg:flex-row items-center justify-between gap-4">
-          <div className="text-sm"><span className="font-bold">Prefer to chat?</span> <span className="text-[#6b6b6b]">Message the seller on WhatsApp and AI will check the same stock and price.</span></div>
+          <div className="text-sm"><span className="font-bold">Prefer to chat?</span> <span className="text-[#6b6b6b]">Open a seller’s Telegram bot from their store page — the AI checks the same stock and price.</span></div>
           <Link to="/contact" className="rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66]">Talk to founder</Link>
         </div>
       </div>

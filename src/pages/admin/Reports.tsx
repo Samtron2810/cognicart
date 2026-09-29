@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react"
-import { adminService } from "../../services/adminService"
+import { adminService, type SellerSummary } from "../../services/adminService"
 
 export default function AdminReports() {
   const [stats, setStats] = useState<Awaited<ReturnType<typeof adminService.getPlatformStats>> | null>(null)
+  const [sellers, setSellers] = useState<SellerSummary[]>([])
 
-  useEffect(() => { adminService.getPlatformStats().then(setStats) }, [])
+  useEffect(() => {
+    adminService.getPlatformStats().then(setStats)
+    adminService.listSellers().then(setSellers).catch(() => setSellers([]))
+  }, [])
 
   if (!stats) return <div className="grid place-items-center py-10"><div className="h-8 w-8 rounded-full border-2 border-[#0B9C74] border-t-transparent animate-spin" /></div>
 
-  const flagged = (stats.sellers as Array<{ businessName: string; email: string; isActive?: boolean }>).filter((s) => s.isActive === false)
+  const flagged = sellers.filter((s) => s.seller.isActive === false).map((s) => ({ businessName: s.seller.businessName, email: s.seller.email }))
 
   return (
     <div className="space-y-5">
@@ -18,7 +22,7 @@ export default function AdminReports() {
       </div>
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5"><div className="text-xs tracking-widest text-[#9a9a9a]">TOTAL SELLERS</div><div className="text-2xl font-bold">{stats.totalSellers}</div><div className="text-xs text-[#6b6b6b]">{stats.activeSellers} active • {stats.suspendedSellers} suspended</div></div>
-        <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5"><div className="text-xs tracking-widest text-[#9a9a9a]">MESSAGES (API USAGE)</div><div className="text-2xl font-bold">{stats.totalMessages}</div><div className="text-xs text-[#6b6b6b]">{stats.inboundMessages} in • {stats.outboundMessages} out</div></div>
+        <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5"><div className="text-xs tracking-widest text-[#9a9a9a]">MESSAGES (TELEGRAM)</div><div className="text-2xl font-bold">{stats.totalMessages}</div><div className="text-xs text-[#6b6b6b]">{stats.inboundMessages} in • {stats.outboundMessages} out</div></div>
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5"><div className="text-xs tracking-widest text-[#9a9a9a]">ORDERS DISPUTES</div><div className="text-2xl font-bold">{stats.pendingOrders} pending</div><div className="text-xs text-[#6b6b6b]">{stats.totalOrders} total • check Orders</div></div>
       </div>
       <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5">
@@ -40,7 +44,7 @@ export default function AdminReports() {
         <div className="text-sm font-bold">System administration</div>
         <ul className="mt-2 space-y-1 text-sm list-disc pl-5 text-white/70">
           <li>All queries are <span className="font-mono font-bold text-white">WHERE sellerId = sellerId</span> — cross-tenant access blocked.</li>
-          <li>Logs: WhatsApp messages, orders, payments per sellerId. Check WhatsApp tab for API usage.</li>
+          <li>Logs: Telegram messages, orders, payments per sellerId. Check the Telegram tab for bot usage.</li>
           <li>Disputes: review Orders → SellerDetails → toggle active. Future: evidence upload, refunds.</li>
         </ul>
       </div>

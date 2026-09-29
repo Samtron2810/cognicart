@@ -38,9 +38,9 @@ export default function AdminSellers() {
 
       <div className="space-y-3">
         <div className="hidden lg:grid grid-cols-[1fr_90px_90px_110px_110px_160px] gap-3 px-4 text-xs font-bold tracking-widest text-[#9a9a9a]">
-          <span>SELLER</span><span>PRODUCTS</span><span>ORDERS</span><span>REVENUE</span><span>WHATSAPP</span><span className="text-right">ACTION</span>
+          <span>SELLER</span><span>PRODUCTS</span><span>ORDERS</span><span>REVENUE</span><span>TELEGRAM</span><span className="text-right">ACTION</span>
         </div>
-        {filtered.map(({ seller, productsCount, ordersCount, revenue, whatsappConnected, webhookVerified }) => (
+        {filtered.map(({ seller, productsCount, ordersCount, revenue, telegramConnected, business }) => (
           <div key={seller.id} className="rounded-2xl bg-white border border-[#F3E6D3] p-4 lg:grid lg:grid-cols-[1fr_90px_90px_110px_110px_160px] lg:items-center gap-4">
             <div className="min-w-0">
               <div className="text-sm font-bold truncate flex items-center gap-2">
@@ -55,10 +55,10 @@ export default function AdminSellers() {
             <div className="hidden lg:block text-sm font-bold">{ordersCount}</div>
             <div className="hidden lg:block text-sm font-bold">₦{revenue.toLocaleString()}</div>
             <div className="hidden lg:block">
-              <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold border ${whatsappConnected ? "bg-[#E6F7F1] text-[#0B9C74] border-[#0B9C74]/20" : "bg-[#FFF1DA] text-[#6b6b6b] border-[#F3E6D3]"}`}>
-                {whatsappConnected ? <><Store className="h-3 w-3" /> Connected</> : "Not connected"}
+              <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold border ${telegramConnected ? "bg-[#E7F4FB] text-[#1c82b3] border-[#229ED9]/25" : "bg-[#FFF1DA] text-[#6b6b6b] border-[#F3E6D3]"}`}>
+                {telegramConnected ? <><Store className="h-3 w-3" /> Telegram</> : "No Telegram"}
               </span>
-              {webhookVerified && <span className="ml-1 inline-flex rounded-full bg-[#1a1a1a] px-2 py-1 text-xs font-bold text-white">Verified</span>}
+              {business?.telegramBotUsername && <span className="ml-1 inline-flex rounded-full bg-[#1a1a1a] px-2 py-1 text-xs font-bold text-white">@{business.telegramBotUsername}</span>}
             </div>
             <div className="mt-3 lg:mt-0 flex justify-end gap-2">
               <Link to={`/admin/sellers/${seller.id}`} className="inline-flex items-center gap-1 rounded-full bg-[#1a1a1a] px-4 py-2 text-xs font-bold text-white hover:bg-black"><Eye className="h-3.5 w-3.5" /> View</Link>

@@ -152,7 +152,7 @@ export default function CreateProduct() {
 
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight">Add product</h1>
-        <p className="text-sm text-[#6b6b6b]">Price, discount and stock are the source of truth for WhatsApp AI and storefront.</p>
+        <p className="text-sm text-[#6b6b6b]">Price, discount and stock are the source of truth for your storefront and Telegram bot.</p>
       </div>
 
       {error && <div className="rounded-xl bg-red-50 border border-red-200 px-3 py-2.5 text-sm text-red-700">{error}</div>}
@@ -193,7 +193,7 @@ export default function CreateProduct() {
           </label>
           <label className="flex items-center gap-3 pt-6">
             <input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="h-4 w-4 rounded border-[#F3E6D3] text-[#0B9C74] focus:ring-[#0B9C74]" />
-            <span className="text-sm font-medium">Active (visible on WhatsApp)</span>
+            <span className="text-sm font-medium">Active (visible on storefront and Telegram)</span>
           </label>
         </div>
 
@@ -225,7 +225,7 @@ export default function CreateProduct() {
                 <span className="text-xs font-bold">Value {discountType === "percentage" ? "(1 - 90)" : "(NGN)"}</span>
                 <input type="number" min={1} value={discountValue} onChange={(e) => setDiscountValue(e.target.value)} placeholder={discountType === "percentage" ? "15" : "1000"} className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none" />
               </label>
-              <p className="sm:col-span-3 text-xs text-[#6b6b6b]">Toggle off to deactivate without deleting. Customers see discounted price everywhere including WhatsApp AI.</p>
+              <p className="sm:col-span-3 text-xs text-[#6b6b6b]">Toggle off to deactivate without deleting. Customers see the discounted price everywhere, including the Telegram bot.</p>
             </div>
           )}
         </div>

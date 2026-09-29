@@ -4,7 +4,7 @@ const steps = [
   {
     step: "01",
     title: "List your products",
-    desc: "Snap photos, add prices. We generate descriptions and WhatsApp catalogs automatically.",
+    desc: "Snap photos, add prices. Your storefront and Telegram bot use the same live catalog automatically.",
     icon: Store,
     img: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop",
   },
@@ -33,7 +33,7 @@ export function HowItWorks() {
             <Sparkles className="h-3.5 w-3.5" /> How Cognicart works
           </span>
           <h2 className="font-display text-[32px] lg:text-[40px] font-bold tracking-tight leading-none mt-4">From chat to checkout in 3 taps</h2>
-          <p className="mt-3 text-sm leading-6 text-[#5a5a5a]">No website needed. Your AI shop lives in WhatsApp where your customers already are.</p>
+          <p className="mt-3 text-sm leading-6 text-[#5a5a5a]">Your AI shop lives on Telegram and your free storefront — where your customers already are.</p>
         </div>
 
         <div className="mt-10 grid lg:grid-cols-3 gap-6">

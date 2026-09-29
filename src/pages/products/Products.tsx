@@ -55,7 +55,7 @@ export default function Products() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">Products</h1>
-          <p className="text-sm text-[#6b6b6b]">Manage catalog, discounts and size/color. Discount when active shows everywhere including WhatsApp AI.</p>
+          <p className="text-sm text-[#6b6b6b]">Manage catalog, discounts and size/color. Active discounts show everywhere, including your Telegram bot.</p>
         </div>
         <Link to="/dashboard/products/new" className="inline-flex items-center gap-2 rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66]">
           <Plus className="h-4 w-4" /> Add product

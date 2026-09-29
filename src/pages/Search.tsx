@@ -29,7 +29,7 @@ export default function Search() {
     <div className="min-h-screen bg-[#FFFBF5]">
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-10">
         <h1 className="font-display text-[34px] font-bold tracking-tight">Search</h1>
-        <p className="mt-2 text-sm text-[#5a5a5a]">Search the public storefront. Same results AI uses inside WhatsApp.</p>
+        <p className="mt-2 text-sm text-[#5a5a5a]">Search the public storefront. The same live catalog powers sellers’ Telegram bots.</p>
 
         <form onSubmit={handleSubmit} className="mt-6 flex gap-2 rounded-2xl bg-white border border-[#F3E6D3] p-3">
           <div className="relative flex-1">

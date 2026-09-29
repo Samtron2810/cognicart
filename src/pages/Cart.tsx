@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link } from "react-router-dom"
-import { CreditCard, ShoppingBag, Trash2 } from "lucide-react"
+import { CreditCard, ShoppingBag, Trash2, UserCheck } from "lucide-react"
 import { useCart } from "../context/CartContext"
+import { useShopper } from "../context/ShopperContext"
 import { orderService } from "../services/orderService"
 import { paymentService } from "../services/paymentService"
 import { productService } from "../services/productService"
+import { buildCheckoutPayload, validateCheckoutCustomer } from "../utils/checkout"
 import { getEffectivePrice, getTotalStock } from "../types/product"
 import type { Product, ProductVariant } from "../types/product"
 
@@ -12,8 +14,10 @@ type CartItem = { product: Product; variant: ProductVariant | null; effectivePri
 
 export default function Cart() {
   const { items: entries, removeItem, clear } = useCart()
+  const { shopper } = useShopper()
   const [items, setItems] = useState<CartItem[]>([])
   const [customer, setCustomer] = useState({ name: "", phone: "", email: "", address: "" })
+  const [prefilled, setPrefilled] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -31,6 +35,19 @@ export default function Cart() {
     return () => { active = false }
   }, [entries])
 
+  // A verified buyer session is optional: it only pre-fills the form.
+  // Guests continue exactly as before — no signup, no password, ever.
+  useEffect(() => {
+    if (!shopper || prefilled) return
+    setCustomer((current) => ({
+      name: current.name || shopper.name || "",
+      phone: current.phone || shopper.phone || "",
+      email: current.email || shopper.email || "",
+      address: current.address || shopper.addresses?.[0] || "",
+    }))
+    setPrefilled(true)
+  }, [shopper, prefilled])
+
   const sellerId = entries[0]?.sellerId
   const containsMultipleStores = entries.some((entry) => entry.sellerId !== sellerId)
   const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.effectivePrice, 0), [items])
@@ -41,8 +58,9 @@ export default function Cart() {
       setError("Checkout supports one store at a time. Remove items from the other store first.")
       return false
     }
-    if (!customer.name || !customer.phone || !customer.email || !customer.address) {
-      setError("Name, phone, email, and delivery address are required.")
+    const customerProblem = validateCheckoutCustomer(customer)
+    if (customerProblem) {
+      setError(customerProblem)
       return false
     }
     if (!items.length || !sellerId) {
@@ -56,13 +74,11 @@ export default function Cart() {
     return true
   }
 
-  const createOrder = () => orderService.create({
-    sellerId,
-    customer: { name: customer.name, phone: customer.phone, whatsappId: customer.phone, address: customer.address },
-    items: items.map((item) => ({ productId: item.product.id, variantId: item.variant?.id, quantity: 1 })),
-    deliveryAddress: customer.address,
-    paymentStatus: "Pending",
-  })
+  const createOrder = () => orderService.create(buildCheckoutPayload(
+    sellerId!,
+    customer,
+    items.map((item) => ({ productId: item.product.id, variantId: item.variant?.id, quantity: 1 })),
+  ))
 
   const handlePay = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -91,5 +107,5 @@ export default function Cart() {
     return <div className="min-h-[60vh] bg-[#FFFBF5] grid place-items-center px-4 py-10"><div className="text-center max-w-md"><div className="mx-auto h-12 w-12 rounded-full bg-[#FFF1DA] border border-[#F3E6D3] grid place-items-center"><ShoppingBag className="h-6 w-6 text-[#E85D26]" /></div><h1 className="font-display text-2xl font-bold mt-3">Cart is empty</h1><p className="text-sm text-[#6b6b6b] mt-1">Add a product from a live store to begin checkout.</p><Link to="/store" className="mt-4 inline-flex rounded-full bg-[#0B9C74] px-6 py-3 text-sm font-bold text-white">Browse stores</Link></div></div>
   }
 
-  return <div className="min-h-screen bg-[#FFFBF5] py-10"><div className="mx-auto max-w-[1000px] px-4 sm:px-6"><div className="flex items-center justify-between gap-3"><div><h1 className="font-display text-[34px] font-bold tracking-tight">Cart</h1><p className="text-sm text-[#6b6b6b]">Prices and stock are checked against the live catalog at checkout.</p></div><button onClick={clear} className="inline-flex items-center gap-2 rounded-full bg-white border border-[#F3E6D3] px-4 py-2 text-sm font-bold hover:bg-[#FFF1DA]"><Trash2 className="h-4 w-4" /> Clear cart</button></div>{error && <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">{error}</div>}<div className="mt-6 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]"><div className="space-y-3">{items.map((item, index) => <div key={`${item.product.id}-${item.variant?.id || "base"}-${index}`} className="flex gap-4 rounded-2xl border border-[#F3E6D3] bg-white p-4"><img src={item.variant?.image || item.product.images[0]} alt={item.product.name} className="h-16 w-16 rounded-xl border border-[#F3E6D3] bg-[#FFFBF5] object-cover"/><div className="min-w-0 flex-1"><div className="font-bold">{item.product.name}</div><div className="text-xs text-[#6b6b6b]">{[item.variant?.size, item.variant?.color].filter(Boolean).join(" / ") || item.product.category}</div><div className="mt-1 text-sm font-bold">₦{item.effectivePrice.toLocaleString()}</div></div><button onClick={() => removeItem(index)} aria-label={`Remove ${item.product.name}`} className="h-9 w-9 rounded-full border border-[#F3E6D3] grid place-items-center hover:bg-red-50 hover:text-red-700"><Trash2 className="h-4 w-4"/></button></div>)}</div><form onSubmit={handlePay} className="rounded-2xl border border-[#F3E6D3] bg-white p-5 space-y-3"><h2 className="font-bold">Secure checkout</h2><input required value={customer.name} onChange={(event) => setCustomer({ ...customer, name: event.target.value })} placeholder="Full name" className="w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm outline-none focus:border-[#0B9C74]"/><input required value={customer.phone} onChange={(event) => setCustomer({ ...customer, phone: event.target.value })} placeholder="Phone" className="w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm outline-none focus:border-[#0B9C74]"/><input required type="email" value={customer.email} onChange={(event) => setCustomer({ ...customer, email: event.target.value })} placeholder="Email for payment receipt" className="w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm outline-none focus:border-[#0B9C74]"/><textarea required value={customer.address} onChange={(event) => setCustomer({ ...customer, address: event.target.value })} placeholder="Delivery address" rows={3} className="w-full resize-none rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm outline-none focus:border-[#0B9C74]"/><div className="space-y-1 border-t border-[#F3E6D3] pt-3 text-sm"><div className="flex justify-between"><span>Subtotal</span><span>₦{subtotal.toLocaleString()}</span></div><div className="flex justify-between"><span>Delivery</span><span>Calculated by store</span></div><div className="flex justify-between text-base font-bold"><span>Items subtotal</span><span>₦{total.toLocaleString()}</span></div></div><button disabled={submitting || containsMultipleStores} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#0B9C74] px-5 py-3 text-sm font-bold text-white hover:bg-[#0a8a66] disabled:opacity-60"><CreditCard className="h-4 w-4"/>{submitting ? "Opening payment…" : "Continue to Paystack"}</button><p className="text-xs leading-5 text-[#6b6b6b]">The backend calculates delivery using the store settings, then opens Paystack for the final total.</p></form></div></div></div>
+  return <div className="min-h-screen bg-[#FFFBF5] py-10"><div className="mx-auto max-w-[1000px] px-4 sm:px-6"><div className="flex items-center justify-between gap-3"><div><h1 className="font-display text-[34px] font-bold tracking-tight">Cart</h1><p className="text-sm text-[#6b6b6b]">Prices and stock are checked against the live catalog at checkout. No account needed — checkout as a guest.</p></div><button onClick={clear} className="inline-flex items-center gap-2 rounded-full bg-white border border-[#F3E6D3] px-4 py-2 text-sm font-bold hover:bg-[#FFF1DA]"><Trash2 className="h-4 w-4" /> Clear cart</button></div>{error && <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">{error}</div>}<div className="mt-6 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]"><div className="space-y-3">{items.map((item, index) => <div key={`${item.product.id}-${item.variant?.id || "base"}-${index}`} className="flex gap-4 rounded-2xl border border-[#F3E6D3] bg-white p-4"><img src={item.variant?.image || item.product.images[0]} alt={item.product.name} className="h-16 w-16 rounded-xl border border-[#F3E6D3] bg-[#FFFBF5] object-cover"/><div className="min-w-0 flex-1"><div className="font-bold">{item.product.name}</div><div className="text-xs text-[#6b6b6b]">{[item.variant?.size, item.variant?.color].filter(Boolean).join(" / ") || item.product.category}</div><div className="mt-1 text-sm font-bold">₦{item.effectivePrice.toLocaleString()}</div></div><button onClick={() => removeItem(index)} aria-label={`Remove ${item.product.name}`} className="h-9 w-9 rounded-full border border-[#F3E6D3] grid place-items-center hover:bg-red-50 hover:text-red-700"><Trash2 className="h-4 w-4"/></button></div>)}</div><form onSubmit={handlePay} className="rounded-2xl border border-[#F3E6D3] bg-white p-5 space-y-3"><h2 className="font-bold">Secure guest checkout</h2>{shopper && <div className="flex items-center gap-2 rounded-xl border border-[#0B9C74]/20 bg-[#E6F7F1] px-3 py-2 text-xs text-[#0B9C74]"><UserCheck className="h-4 w-4"/>Signed in as {shopper.email || shopper.phone} — details pre-filled.</div>}<input required value={customer.name} onChange={(event) => setCustomer({ ...customer, name: event.target.value })} placeholder="Full name" className="w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm outline-none focus:border-[#0B9C74]"/><input required value={customer.phone} onChange={(event) => setCustomer({ ...customer, phone: event.target.value })} placeholder="Phone" className="w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm outline-none focus:border-[#0B9C74]"/><input required type="email" value={customer.email} onChange={(event) => setCustomer({ ...customer, email: event.target.value })} placeholder="Email for receipt & order tracking" className="w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm outline-none focus:border-[#0B9C74]"/><textarea required value={customer.address} onChange={(event) => setCustomer({ ...customer, address: event.target.value })} placeholder="Delivery address" rows={3} className="w-full resize-none rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm outline-none focus:border-[#0B9C74]"/><div className="space-y-1 border-t border-[#F3E6D3] pt-3 text-sm"><div className="flex justify-between"><span>Subtotal</span><span>₦{subtotal.toLocaleString()}</span></div><div className="flex justify-between"><span>Delivery</span><span>Calculated by store</span></div><div className="flex justify-between text-base font-bold"><span>Items subtotal</span><span>₦{total.toLocaleString()}</span></div></div><button disabled={submitting || containsMultipleStores} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#0B9C74] px-5 py-3 text-sm font-bold text-white hover:bg-[#0a8a66] disabled:opacity-60"><CreditCard className="h-4 w-4"/>{submitting ? "Opening payment…" : "Continue to Paystack"}</button><p className="text-xs leading-5 text-[#6b6b6b]">Your email is used for the Paystack receipt and Brevo order updates — no signup or password required. Already ordered before? <Link to="/track" className="font-bold text-[#0B9C74] hover:underline">Track your orders</Link>.</p></form></div></div></div>
 }

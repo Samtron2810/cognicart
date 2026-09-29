@@ -40,7 +40,7 @@ export default function Login() {
     <AuthLayout>
       <div className="rounded-2xl bg-white border border-[#F3E6D3] p-6 sm:p-8 shadow-sm">
         <h1 className="font-display text-2xl font-bold tracking-tight">Welcome back</h1>
-        <p className="mt-1 text-sm text-[#6b6b6b]">Login to manage your WhatsApp store or platform.</p>
+        <p className="mt-1 text-sm text-[#6b6b6b]">Login to manage your store, Telegram bot and orders.</p>
 
         {error && <div className="mt-4 rounded-xl bg-red-50 border border-red-200 px-3 py-2.5 text-sm text-red-700">{error}</div>}
 

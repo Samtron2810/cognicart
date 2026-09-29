@@ -2,6 +2,7 @@ import { BrowserRouter } from "react-router-dom"
 import { AuthProvider } from "./context/AuthContext"
 import { BusinessProvider } from "./context/BusinessContext"
 import { CartProvider } from "./context/CartContext"
+import { ShopperProvider } from "./context/ShopperContext"
 import { AppRoutes } from "./routes/AppRoutes"
 import { ErrorBoundary } from "./components/ErrorBoundary"
 
@@ -11,9 +12,11 @@ export default function App() {
       <BrowserRouter>
         <AuthProvider>
           <BusinessProvider>
-            <CartProvider>
-              <AppRoutes />
-            </CartProvider>
+            <ShopperProvider>
+              <CartProvider>
+                <AppRoutes />
+              </CartProvider>
+            </ShopperProvider>
           </BusinessProvider>
         </AuthProvider>
       </BrowserRouter>

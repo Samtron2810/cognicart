@@ -1,28 +1,41 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { Package, ShoppingCart, AlertTriangle, TrendingUp, Plus, ClipboardList, Clock, CheckCircle, Wallet } from "lucide-react"
+import { Package, ShoppingCart, AlertTriangle, TrendingUp, Plus, ClipboardList, Wallet, Banknote, Hourglass, Send } from "lucide-react"
 import { productService } from "../../services/productService"
 import { orderService } from "../../services/orderService"
+import { OrderSourceBadge } from "../../components/orders/OrderSourceBadge"
 import type { Product } from "../../types/product"
-import type { Order } from "../../types/order"
+import type { Order, OrderSummary } from "../../types/order"
 
 export default function Dashboard() {
   const [products, setProducts] = useState<Product[]>([])
-  const [orders, setOrders] = useState<Order[]>([])
+  const [recentOrders, setRecentOrders] = useState<Order[]>([])
+  const [summary, setSummary] = useState<OrderSummary | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
-    productService.list().then(setProducts)
-    orderService.list().then(setOrders)
+    productService.list().then(setProducts).catch(() => {})
+    orderService.list().then((orders) => setRecentOrders(orders.slice(0, 5))).catch(() => {})
+    // Global totals always come from the backend aggregation — never from
+    // whatever page of orders happens to be loaded in the browser.
+    orderService.summary().then(setSummary).catch(() => setLoadError("Unable to load order summary."))
   }, [])
 
   const totalProducts = products.length
   const lowStock = products.filter((p) => p.stock > 0 && p.stock <= 5).length
   const outOfStock = products.filter((p) => p.stock === 0).length
 
-  const totalOrders = orders.length
-  const pendingOrders = orders.filter((o) => o.orderStatus === "Pending").length
-  const deliveredOrders = orders.filter((o) => o.orderStatus === "Delivered").length
-  const totalSales = orders.filter((o) => o.paymentStatus === "Paid").reduce((sum, o) => sum + o.total, 0)
+  const totals = summary?.totals
+  const sourceCount = (source: string) => summary?.bySource.find((s) => s._id === source)?.orders ?? 0
+  const statusCount = (status: string) => summary?.byStatus.find((s) => s._id === status)?.orders ?? 0
+  const paymentCount = (status: string) => summary?.byPaymentStatus.find((s) => s._id === status)?.orders ?? 0
+
+  const orderStats = [
+    { label: "Total orders", value: totals ? totals.orders.toLocaleString() : "—", icon: ClipboardList, color: "bg-[#1a1a1a]" },
+    { label: "Gross order value", value: totals ? `₦${totals.grossOrderValue.toLocaleString()}` : "—", icon: Wallet, color: "bg-[#0B9C74]" },
+    { label: "Paid revenue", value: totals ? `₦${totals.paidRevenue.toLocaleString()}` : "—", icon: Banknote, color: "bg-[#0B9C74]" },
+    { label: "Outstanding", value: totals ? `₦${totals.outstanding.toLocaleString()}` : "—", icon: Hourglass, color: "bg-[#E85D26]" },
+  ]
 
   const productStats = [
     { label: "Total products", value: totalProducts, icon: Package, color: "bg-[#0B9C74]" },
@@ -31,23 +44,16 @@ export default function Dashboard() {
     { label: "Active", value: products.filter((p) => p.isActive).length, icon: TrendingUp, color: "bg-[#1a1a1a]" },
   ]
 
-  const orderStats = [
-    { label: "Total orders", value: totalOrders, icon: ClipboardList, color: "bg-[#1a1a1a]" },
-    { label: "Pending", value: pendingOrders, icon: Clock, color: "bg-[#E85D26]" },
-    { label: "Delivered", value: deliveredOrders, icon: CheckCircle, color: "bg-[#0B9C74]" },
-    { label: "Total sales", value: `₦${totalSales.toLocaleString()}`, icon: Wallet, color: "bg-[#0B9C74]" },
-  ]
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-[#6b6b6b]">Orders, products and customers for your WhatsApp store. Data is tenant-isolated by sellerId.</p>
+          <p className="text-sm text-[#6b6b6b]">Storefront, Telegram, and manually logged sales in one place. Data is tenant-isolated by sellerId.</p>
         </div>
         <div className="flex gap-2">
-          <Link to="/dashboard/orders" className="hidden sm:inline-flex items-center gap-2 rounded-full bg-white border border-[#F3E6D3] px-5 py-2.5 text-sm font-bold hover:bg-[#FFF1DA]">
-            <ClipboardList className="h-4 w-4" /> Orders
+          <Link to="/dashboard/orders/manual/new" className="hidden sm:inline-flex items-center gap-2 rounded-full bg-white border border-[#F3E6D3] px-5 py-2.5 text-sm font-bold hover:bg-[#FFF1DA]">
+            <ClipboardList className="h-4 w-4" /> Log manual order
           </Link>
           <Link to="/dashboard/products/new" className="inline-flex items-center gap-2 rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66]">
             <Plus className="h-4 w-4" /> Add product
@@ -55,8 +61,10 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {loadError && <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">{loadError}</div>}
+
       <div>
-        <h2 className="text-xs font-bold tracking-widest text-[#9a9a9a] mb-2">ORDERS</h2>
+        <h2 className="text-xs font-bold tracking-widest text-[#9a9a9a] mb-2">ORDERS & REVENUE (ALL TIME, SERVER-AGGREGATED)</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {orderStats.map((s) => (
             <div key={s.label} className="rounded-2xl bg-white border border-[#F3E6D3] p-4">
@@ -67,6 +75,33 @@ export default function Dashboard() {
               <div className="text-xs font-medium text-[#6b6b6b]">{s.label}</div>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-2xl bg-white border border-[#F3E6D3] p-4">
+          <h3 className="text-xs font-bold tracking-widest text-[#9a9a9a]">BY SOURCE</h3>
+          <div className="mt-3 space-y-2 text-sm">
+            <div className="flex items-center justify-between"><OrderSourceBadge source="storefront" /><span className="font-bold">{sourceCount("storefront")}</span></div>
+            <div className="flex items-center justify-between"><OrderSourceBadge source="telegram" /><span className="font-bold">{sourceCount("telegram")}</span></div>
+            <div className="flex items-center justify-between"><OrderSourceBadge source="manual" /><span className="font-bold">{sourceCount("manual")}</span></div>
+          </div>
+        </div>
+        <div className="rounded-2xl bg-white border border-[#F3E6D3] p-4">
+          <h3 className="text-xs font-bold tracking-widest text-[#9a9a9a]">FULFILMENT</h3>
+          <div className="mt-3 space-y-2 text-sm">
+            {["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].map((status) => (
+              <div key={status} className="flex items-center justify-between"><span>{status}</span><span className="font-bold">{statusCount(status)}</span></div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-2xl bg-white border border-[#F3E6D3] p-4">
+          <h3 className="text-xs font-bold tracking-widest text-[#9a9a9a]">PAYMENTS</h3>
+          <div className="mt-3 space-y-2 text-sm">
+            {["Paid", "Pending", "Failed", "Refunded"].map((status) => (
+              <div key={status} className="flex items-center justify-between"><span>{status}</span><span className="font-bold">{paymentCount(status)}</span></div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -95,17 +130,17 @@ export default function Dashboard() {
               </Link>
             </div>
             <div className="mt-4 space-y-3">
-              {orders.slice(0, 4).map((o) => (
+              {recentOrders.map((o) => (
                 <Link key={o.id} to={`/dashboard/orders/${o.id}`} className="flex items-center gap-3 rounded-xl border border-[#F3E6D3] p-3 hover:bg-[#FFFBF5] transition">
                   <div className="h-10 w-10 rounded-xl bg-[#1a1a1a] text-white grid place-items-center shrink-0"><ClipboardList className="h-4 w-4" /></div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold truncate">#{o.id.slice(-6).toUpperCase()} • {o.customerName}</div>
+                    <div className="text-sm font-bold truncate">{o.reference || `#${o.id.slice(-6).toUpperCase()}`} • {o.customerName}</div>
                     <div className="text-xs text-[#6b6b6b] truncate">{o.items.map((i) => i.name).join(", ")} • ₦{o.total.toLocaleString()}</div>
                   </div>
-                  <span className={`rounded-full px-2.5 py-1 text-xs font-bold border shrink-0 ${o.orderStatus === "Delivered" ? "bg-[#1a1a1a] text-white" : o.orderStatus === "Pending" ? "bg-[#FFF1DA] text-[#E85D26]" : "bg-[#E6F7F1] text-[#0B9C74]"}`}>{o.orderStatus}</span>
+                  <OrderSourceBadge source={o.source} sourceChannel={o.sourceChannel || ""} className="shrink-0" />
                 </Link>
               ))}
-              {orders.length === 0 && <div className="text-sm text-[#6b6b6b] py-6 text-center">No orders yet. Orders from checkout and WhatsApp will appear here.</div>}
+              {recentOrders.length === 0 && <div className="text-sm text-[#6b6b6b] py-6 text-center">No orders yet. Storefront and Telegram orders appear automatically; other sales can be logged manually.</div>}
             </div>
           </div>
 
@@ -134,14 +169,14 @@ export default function Dashboard() {
 
         <div className="space-y-6">
           <div className="rounded-2xl bg-[#1a1a1a] text-white p-6">
-            <h3 className="font-bold">Live order management</h3>
-            <p className="mt-2 text-sm text-white/70 leading-6">Order creation, listing, detail, payment reconciliation, and status updates are handled by the backend.</p>
-            <Link to="/dashboard/orders" className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-sm font-bold text-[#1a1a1a] hover:bg-[#FFF1DA]">
-              Manage orders
+            <h3 className="font-bold flex items-center gap-2"><Send className="h-4 w-4 text-[#229ED9]" /> Telegram commerce</h3>
+            <p className="mt-2 text-sm text-white/70 leading-6">Connect your Telegram bot so customers can browse and order in chat. Telegram orders join this dashboard automatically.</p>
+            <Link to="/dashboard/telegram" className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-sm font-bold text-[#1a1a1a] hover:bg-[#FFF1DA]">
+              Manage Telegram
             </Link>
             <div className="mt-6 rounded-xl bg-white/10 p-3 text-xs leading-5 text-white/70">
               <div className="font-bold text-white">How it works</div>
-              A checkout or WhatsApp order is checked against live stock and its price is preserved at order time.
+              Storefront and Telegram checkouts verify live stock and freeze prices at order time. Manual orders record sales you made anywhere else.
             </div>
           </div>
 

@@ -31,13 +31,13 @@ export default function Customers() {
     <div className="space-y-5">
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight">Customers</h1>
-        <p className="text-sm text-[#6b6b6b]">Seller-scoped by sellerId and phone. Same WhatsApp user can exist across different sellers but data is isolated.</p>
+        <p className="text-sm text-[#6b6b6b]">Seller-scoped by phone. The same buyer can shop from different sellers but data stays isolated per store.</p>
       </div>
 
       <div className="rounded-2xl bg-white border border-[#F3E6D3] p-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9a9a9a]" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, phone or WhatsApp" className="w-full rounded-xl border border-[#F3E6D3] bg-white pl-9 pr-3 py-2.5 text-sm focus:border-[#0B9C74] focus:ring-2 focus:ring-[#0B9C74]/15 outline-none" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or phone" className="w-full rounded-xl border border-[#F3E6D3] bg-white pl-9 pr-3 py-2.5 text-sm focus:border-[#0B9C74] focus:ring-2 focus:ring-[#0B9C74]/15 outline-none" />
         </div>
       </div>
 
@@ -47,7 +47,7 @@ export default function Customers() {
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-10 text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-[#FFF1DA] border border-[#F3E6D3] grid place-items-center"><User className="h-6 w-6 text-[#E85D26]" /></div>
           <div className="mt-3 font-bold">No customers yet</div>
-          <div className="text-sm text-[#6b6b6b]">Customers appear as WhatsApp conversations and orders are received by the backend.</div>
+          <div className="text-sm text-[#6b6b6b]">Customers appear as Telegram conversations, storefront checkouts and manual orders come in.</div>
           <Link to="/dashboard/orders" className="mt-4 inline-flex rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66]">Go to orders</Link>
         </div>
       ) : (
@@ -64,7 +64,7 @@ export default function Customers() {
                 <div className="h-11 w-11 rounded-full bg-[#FFF1DA] border border-[#F3E6D3] grid place-items-center shrink-0"><User className="h-5 w-5 text-[#E85D26]" /></div>
                 <div className="min-w-0">
                   <div className="text-sm font-bold leading-tight truncate">{c.name}</div>
-                  <div className="text-xs text-[#6b6b6b] flex items-center gap-1 truncate"><Phone className="h-3 w-3" /> {c.phone} • WhatsApp {c.whatsappId}</div>
+                  <div className="text-xs text-[#6b6b6b] flex items-center gap-1 truncate"><Phone className="h-3 w-3" /> {c.phone}{c.identities?.some((i) => i.channel === "telegram") ? " • Telegram" : ""}</div>
                   <div className="text-xs text-[#6b6b6b] flex items-center gap-1 truncate"><MapPin className="h-3 w-3" /> {c.addresses[0] || "No address"}</div>
                 </div>
               </div>

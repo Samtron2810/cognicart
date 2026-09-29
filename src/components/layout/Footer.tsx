@@ -1,4 +1,4 @@
-import { Share2, Mail, Globe } from "lucide-react"
+import { Send, Mail, Globe } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export function Footer() {
@@ -11,10 +11,10 @@ export function Footer() {
               <span className="h-8 w-8 rounded-lg bg-white text-[#1a1a1a] grid place-items-center font-bold text-sm">C</span>
               <span className="font-display font-bold text-lg">Cognicart</span>
             </Link>
-            <p className="mt-3 text-sm leading-6 text-white/60 max-w-[320px]">WhatsApp AI Commerce for African sellers. Sell where your customers chat.</p>
+            <p className="mt-3 text-sm leading-6 text-white/60 max-w-[320px]">Telegram AI commerce and online storefronts for African sellers. Sell where your customers chat.</p>
             <div className="mt-4 flex gap-2">
-              <a href="https://wa.me/2340000000000" target="_blank" rel="noreferrer" aria-label="Share" className="h-8 w-8 rounded-full bg-white/10 grid place-items-center hover:bg-white/20 transition">
-                <Share2 className="h-4 w-4" />
+              <a href="https://t.me/cognicart" target="_blank" rel="noreferrer" aria-label="Telegram" className="h-8 w-8 rounded-full bg-white/10 grid place-items-center hover:bg-white/20 transition">
+                <Send className="h-4 w-4" />
               </a>
               <Link to="/contact" aria-label="Mail" className="h-8 w-8 rounded-full bg-white/10 grid place-items-center hover:bg-white/20 transition">
                 <Mail className="h-4 w-4" />
@@ -31,7 +31,7 @@ export function Footer() {
               <li><a href="/#features" className="hover:text-white transition">Features</a></li>
               <li><Link to="/store" className="hover:text-white transition">Marketplace</Link></li>
               <li><a href="/#pricing" className="hover:text-white transition">Pricing</a></li>
-              <li><Link to="/whatsapp-api" className="hover:text-white transition">WhatsApp API</Link></li>
+              <li><Link to="/telegram-commerce" className="hover:text-white transition">Telegram Commerce</Link></li>
               <li><Link to="/search" className="hover:text-white transition">Search</Link></li>
             </ul>
           </div>
@@ -52,7 +52,7 @@ export function Footer() {
             <div className="text-sm font-bold">Get updates</div>
             <p className="mt-3 text-sm text-white/60">New sellers, tips and promo codes. No spam.</p>
             <form onSubmit={(e) => e.preventDefault()} className="mt-3 flex gap-2">
-              <input placeholder="Your WhatsApp or email" className="flex-1 rounded-full bg-white/10 border border-white/10 px-4 py-2.5 text-sm placeholder:text-white/40 focus:outline-none focus:border-[#0B9C74]" />
+              <input placeholder="Your email" className="flex-1 rounded-full bg-white/10 border border-white/10 px-4 py-2.5 text-sm placeholder:text-white/40 focus:outline-none focus:border-[#0B9C74]" />
               <button className="rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold hover:bg-[#0a8a66] transition">Join</button>
             </form>
             <div className="mt-3 flex gap-2 text-xs text-white/50">
@@ -67,7 +67,7 @@ export function Footer() {
 
         <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50">
           <span>© 2026 Cognicart. Built in Port Harcourt for sellers everywhere.</span>
-          <span>Made with love for WhatsApp • <Link to="/privacy" className="hover:text-white underline">Privacy and Terms</Link></span>
+          <span>Made with love in Port Harcourt • <Link to="/privacy" className="hover:text-white underline">Privacy and Terms</Link></span>
         </div>
       </div>
     </footer>

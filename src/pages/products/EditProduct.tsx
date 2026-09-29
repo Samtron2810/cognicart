@@ -158,7 +158,7 @@ export default function EditProduct() {
 
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight">Edit product</h1>
-        <p className="text-sm text-[#6b6b6b]">Discount toggle and size/color update immediately for WhatsApp AI.</p>
+        <p className="text-sm text-[#6b6b6b]">Discount toggle and size/color update immediately on your storefront and Telegram bot.</p>
       </div>
 
       {error && <div className="rounded-xl bg-red-50 border border-red-200 px-3 py-2.5 text-sm text-red-700">{error}</div>}

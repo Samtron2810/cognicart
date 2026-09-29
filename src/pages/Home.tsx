@@ -10,10 +10,10 @@ import { useSEO } from "../hooks/useSEO"
 
 export default function Home() {
   useSEO({
-    title: "Cognicart — WhatsApp AI Commerce for African Sellers",
-    description: "Sell where your customers chat. AI knows your products, prices and stock and replies inside WhatsApp in 3 seconds. No website needed.",
-    ogTitle: "Cognicart — WhatsApp AI Commerce",
-    ogDescription: "Give every seller an AI salesperson on WhatsApp. Search, price, stock, orders — all inside WhatsApp.",
+    title: "Cognicart — Telegram AI Commerce for African Sellers",
+    description: "Sell online and in chat. Your Telegram bot answers buyers from your live catalog, your storefront takes guest checkout, and every order lands in one dashboard.",
+    ogTitle: "Cognicart — Telegram AI Commerce",
+    ogDescription: "Give every seller an AI salesperson on Telegram plus a public storefront. Search, price, stock, orders — one unified dashboard.",
     ogImage: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=1200&h=630&fit=crop",
     ogUrl: typeof window !== "undefined" ? window.location.origin : "https://cognicart.ng",
   })

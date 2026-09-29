@@ -5,9 +5,10 @@ import type { Customer } from "../types/customer"
 import type { Order } from "../types/order"
 import type { Product } from "../types/product"
 import type { Transaction } from "../types/payment"
-import type { WhatsAppConfig, WhatsAppMessage } from "../types/whatsapp"
+import type { ChannelMessage } from "../types/telegram"
 
 export type PlatformFeeConfig = { percentage: number; fixed: number }
+
 export type SellerSummary = {
   seller: Seller
   business?: Business | null
@@ -17,18 +18,18 @@ export type SellerSummary = {
   customersCount: number
   messagesCount: number
   revenue: number
-  whatsappConnected: boolean
-  webhookVerified: boolean
+  telegramConnected: boolean
 }
+
 export type SellerDetails = {
   seller: Seller
   business: Business | null
   products: Product[]
   orders: Order[]
   customers: Customer[]
-  messages: WhatsAppMessage[]
-  config?: Partial<WhatsAppConfig> | null
+  messages: ChannelMessage[]
 }
+
 export type RevenueBreakdown = {
   breakdown: Array<{ orderId: string; sellerId: string; customerName: string; total: number; fee: number; paystackFee: number; sellerEarning: number; reference: string; createdAt: string }>
   totalSales: number
@@ -38,11 +39,11 @@ export type RevenueBreakdown = {
   fee: PlatformFeeConfig
   transactions: Transaction[]
 }
+
 export type PlatformStats = {
   totalSellers: number
   activeSellers: number
   suspendedSellers: number
-  sellers: Seller[]
   totalProducts: number
   activeProducts: number
   totalOrders: number
@@ -60,8 +61,21 @@ export type PlatformStats = {
   orders: Order[]
   products: Product[]
   customers: Customer[]
-  messages: WhatsAppMessage[]
+  messages: ChannelMessage[]
   transactions: Transaction[]
+}
+
+export type TelegramSellerStats = {
+  sellerId: string
+  businessName: string
+  email: string
+  botUsername: string
+  telegramConnected: boolean
+  totalMessages: number
+  inbound: number
+  outbound: number
+  aiMessages: number
+  lastMessageAt: string | null
 }
 
 export const adminService = {
@@ -100,8 +114,9 @@ export const adminService = {
     return data
   },
 
-  async getWhatsAppStats(): Promise<Array<{ sellerId: string; businessName: string; email: string; businessPhone: string; whatsappConnected?: boolean; webhookVerified: boolean; totalMessages: number; inbound: number; outbound: number; aiMessages: number; lastMessageAt: string | null }>> {
-    const { data } = await api.get("/admin/whatsapp")
+  /** Per-seller Telegram bot analytics: connection, bot username, and message volumes. */
+  async getTelegramStats(): Promise<TelegramSellerStats[]> {
+    const { data } = await api.get<TelegramSellerStats[]>("/admin/telegram")
     return data
   },
 

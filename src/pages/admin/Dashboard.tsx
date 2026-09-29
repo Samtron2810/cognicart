@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { Users, ShoppingCart, Wallet, Package, MessageSquare, TrendingUp, AlertTriangle, CreditCard } from "lucide-react"
+import { Users, ShoppingCart, Wallet, Package, Send, TrendingUp, AlertTriangle, CreditCard } from "lucide-react"
 import { adminService } from "../../services/adminService"
 
 export default function AdminDashboard() {
@@ -60,12 +60,12 @@ export default function AdminDashboard() {
 
         <div className="space-y-4">
           <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5">
-            <h3 className="font-bold flex items-center gap-2"><MessageSquare className="h-4 w-4 text-[#0B9C74]" /> WhatsApp usage</h3>
+            <h3 className="font-bold flex items-center gap-2"><Send className="h-4 w-4 text-[#229ED9]" /> Telegram usage</h3>
             <div className="mt-3 grid grid-cols-2 gap-3 text-center">
               <div className="rounded-xl bg-[#FFFBF5] border border-[#F3E6D3] p-3"><div className="text-lg font-bold">{stats.totalMessages}</div><div className="text-xs text-[#6b6b6b]">Messages</div></div>
               <div className="rounded-xl bg-[#FFFBF5] border border-[#F3E6D3] p-3"><div className="text-lg font-bold">{stats.inboundMessages}</div><div className="text-xs text-[#6b6b6b]">Inbound</div></div>
             </div>
-            <Link to="/admin/whatsapp" className="mt-3 inline-flex text-xs font-bold text-[#0B9C74] hover:underline">Monitor WhatsApp →</Link>
+            <Link to="/admin/telegram" className="mt-3 inline-flex text-xs font-bold text-[#0B9C74] hover:underline">Monitor Telegram →</Link>
           </div>
 
           <div className="rounded-2xl bg-[#1a1a1a] text-white p-6">

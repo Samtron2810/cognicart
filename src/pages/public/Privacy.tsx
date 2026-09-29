@@ -8,7 +8,7 @@ export default function Privacy() {
         <div className="mt-8 rounded-[22px] bg-white border border-[#F3E6D3] p-6 sm:p-8 space-y-6 text-sm leading-6 text-[#2b2b2b]">
           <section>
             <h2 className="font-bold text-base">1. Data we collect</h2>
-            <p className="mt-1 text-[#5a5a5a]">Seller account, business profile, products, orders, customers and WhatsApp messages needed to provide the AI sales agent. We store product images on Cloudinary. We never share seller data across tenants. Every query is scoped by sellerId.</p>
+            <p className="mt-1 text-[#5a5a5a]">Seller account, business profile, products, orders, customers and Telegram messages needed to provide the AI sales agent. Storefront buyers share name, phone, email and delivery address at checkout so orders can be fulfilled and email updates sent. We store product images on Cloudinary. We never share seller data across tenants. Every query is scoped by sellerId.</p>
           </section>
           <section>
             <h2 className="font-bold text-base">2. How AI uses data</h2>
@@ -20,16 +20,16 @@ export default function Privacy() {
           </section>
           <section>
             <h2 className="font-bold text-base">4. Your rights</h2>
-            <p className="mt-1 text-[#5a5a5a]">You can export or delete your business data. Contact hello@cognicart.ng for data requests. WhatsApp conversations follow WhatsApp Business policy.</p>
+            <p className="mt-1 text-[#5a5a5a]">You can export or delete your business data. Contact hello@cognicart.ng for data requests. Telegram conversations follow Telegram’s Bot API terms.</p>
           </section>
           <section>
             <h2 className="font-bold text-base">5. Terms</h2>
-            <p className="mt-1 text-[#5a5a5a]">Do not list prohibited items. You are responsible for accurate prices, stock and delivery promises shown on WhatsApp and storefront. Abusive use of AI or WhatsApp may result in suspension.</p>
+            <p className="mt-1 text-[#5a5a5a]">Do not list prohibited items. You are responsible for accurate prices, stock and delivery promises shown on Telegram and your storefront. Abusive use of AI or Telegram may result in suspension.</p>
           </section>
         </div>
 
         <div className="mt-6 rounded-2xl bg-[#1a1a1a] text-white p-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-sm"><span className="font-bold">Questions?</span> <span className="text-white/70">We reply fastest on WhatsApp.</span></div>
+          <div className="text-sm"><span className="font-bold">Questions?</span> <span className="text-white/70">We reply fastest by email.</span></div>
           <a href="/contact" className="rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#1a1a1a] hover:bg-[#FFF1DA]">Contact us</a>
         </div>
       </div>

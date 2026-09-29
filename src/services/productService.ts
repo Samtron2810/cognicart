@@ -1,6 +1,6 @@
 import api from "./api"
 import type { CreateProductPayload, Product, UpdateProductPayload } from "../types/product"
-import type { Business } from "../types/business"
+import type { StorefrontProfile } from "../types/business"
 import { getIdempotencyKey } from "../utils/idempotency"
 
 type ProductFilters = {
@@ -26,8 +26,8 @@ export const productService = {
     return data
   },
 
-  async getStorefront(identifier: string): Promise<Business> {
-    const { data } = await api.get<Business>(`/storefront/${identifier}`)
+  async getStorefront(identifier: string): Promise<StorefrontProfile> {
+    const { data } = await api.get<StorefrontProfile>(`/storefront/${identifier}`)
     return data
   },
 
@@ -36,8 +36,8 @@ export const productService = {
     return data.products
   },
 
-  async getStorefrontProduct(identifier: string, productId: string): Promise<{ store: Business; product: Product; relatedProducts: Product[] }> {
-    const { data } = await api.get<{ store: Business; product: Product; relatedProducts: Product[] }>(`/storefront/${identifier}/products/${productId}`)
+  async getStorefrontProduct(identifier: string, productId: string): Promise<{ store: StorefrontProfile; product: Product; relatedProducts: Product[] }> {
+    const { data } = await api.get<{ store: StorefrontProfile; product: Product; relatedProducts: Product[] }>(`/storefront/${identifier}/products/${productId}`)
     return data
   },
 
