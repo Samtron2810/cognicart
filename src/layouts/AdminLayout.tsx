@@ -27,7 +27,7 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFBF5] text-[#1a1a1a]">
+    <div className="min-h-screen overflow-x-clip bg-[#FFFBF5] text-[#1a1a1a]">
       <header className="sticky top-0 z-40 h-[64px] bg-[#1a1a1a] text-white flex items-center">
         <div className="mx-auto max-w-[1400px] w-full px-4 sm:px-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -57,8 +57,9 @@ export function AdminLayout() {
       </header>
 
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
-        <aside className={`${open ? "block" : "hidden"} lg:block`}>
-          <div className="sticky top-[80px] rounded-2xl bg-white border border-[#F3E6D3] p-3">
+        {open && <div className="fixed inset-0 z-30 bg-black/40 lg:hidden" onClick={() => setOpen(false)} aria-hidden="true" />}
+        <aside className={`${open ? "fixed left-4 right-4 top-[72px] z-50 lg:static lg:inset-auto lg:z-auto" : "hidden"} lg:block`}>
+          <div className="lg:sticky lg:top-[80px] max-h-[calc(100dvh-96px)] overflow-y-auto rounded-2xl bg-white border border-[#F3E6D3] p-3 shadow-2xl lg:max-h-none lg:shadow-none">
             <div className="px-3 py-2 text-[11px] font-bold tracking-widest text-[#9a9a9a]">PLATFORM OWNER</div>
             <nav className="grid gap-1">
               {nav.map((item) => (

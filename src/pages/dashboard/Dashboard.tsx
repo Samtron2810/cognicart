@@ -120,8 +120,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid min-w-0 lg:grid-cols-3 gap-6">
+        <div className="min-w-0 lg:col-span-2 space-y-6">
           <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5">
             <div className="flex items-center justify-between">
               <h2 className="font-bold">Recent orders</h2>
@@ -167,7 +167,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <div className="rounded-2xl bg-[#1a1a1a] text-white p-6">
             <h3 className="font-bold flex items-center gap-2"><Send className="h-4 w-4 text-[#229ED9]" /> Telegram commerce</h3>
             <p className="mt-2 text-sm text-white/70 leading-6">Connect your Telegram bot so customers can browse and order in chat. Telegram orders join this dashboard automatically.</p>
@@ -184,9 +184,9 @@ export default function Dashboard() {
             <h3 className="font-bold text-sm">Low stock alert</h3>
             <div className="mt-3 space-y-2">
               {products.filter((p) => p.stock > 0 && p.stock <= 5).slice(0, 3).map((p) => (
-                <div key={p.id} className="flex items-center justify-between text-sm">
-                  <span className="truncate font-medium">{p.name}</span>
-                  <span className="rounded-full bg-[#FFF1DA] border border-[#F3E6D3] px-2 py-1 text-xs font-bold text-[#E85D26]">Stock {p.stock}</span>
+                <div key={p.id} className="flex items-center justify-between gap-2 text-sm">
+                  <span className="min-w-0 flex-1 truncate font-medium">{p.name}</span>
+                  <span className="shrink-0 rounded-full bg-[#FFF1DA] border border-[#F3E6D3] px-2 py-1 text-xs font-bold text-[#E85D26]">Stock {p.stock}</span>
                 </div>
               ))}
               {products.filter((p) => p.stock > 0 && p.stock <= 5).length === 0 && <div className="text-xs text-[#6b6b6b]">No low stock items.</div>}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Bot, ExternalLink, Inbox, Megaphone, RefreshCw, Send, Shield, Unplug } from "lucide-react"
 import { telegramService } from "../../services/telegramService"
@@ -9,7 +9,8 @@ export default function TelegramPage() {
   const { refresh: refreshBusiness } = useBusiness()
   const [config, setConfig] = useState<TelegramConfig | null>(null)
   const [conversations, setConversations] = useState<ChannelConversation[]>([])
-  const [messages, setMessages] = useState<ChannelMessage[]>([])
+  const [selectedMessages, setSelectedMessages] = useState<ChannelMessage[]>([])
+  const [messagesLoading, setMessagesLoading] = useState(false)
   const [selectedUser, setSelectedUser] = useState("")
   const [botToken, setBotToken] = useState("")
   const [loading, setLoading] = useState(true)
@@ -20,27 +21,18 @@ export default function TelegramPage() {
 
   const isConnected = Boolean(config?.connected)
 
-  const selectedMessages = useMemo(
-    () => messages.filter((message) => message.channelUserId === selectedUser),
-    [messages, selectedUser],
-  )
-
   const refresh = async () => {
     setError(null)
     try {
       const nextConfig = await telegramService.getConfig()
       setConfig(nextConfig)
       if (nextConfig.connected) {
-        const [nextConversations, nextMessages] = await Promise.all([
-          telegramService.getConversations(),
-          telegramService.listMessages(),
-        ])
+        const nextConversations = await telegramService.getConversations()
         setConversations(nextConversations)
-        setMessages(nextMessages)
         setSelectedUser((current) => current || nextConversations[0]?.channelUserId || "")
       } else {
         setConversations([])
-        setMessages([])
+        setSelectedMessages([])
       }
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to load Telegram data.")
@@ -50,6 +42,23 @@ export default function TelegramPage() {
   }
 
   useEffect(() => { void refresh() }, [])
+
+  // Load the transcript for one conversation at a time — the full history of
+  // that buyer, without pulling every message of every conversation at once.
+  useEffect(() => {
+    if (!selectedUser) {
+      setSelectedMessages([])
+      return
+    }
+    let cancelled = false
+    setMessagesLoading(true)
+    telegramService
+      .listMessages({ channelUserId: selectedUser })
+      .then((next) => { if (!cancelled) setSelectedMessages(next) })
+      .catch(() => { if (!cancelled) setSelectedMessages([]) })
+      .finally(() => { if (!cancelled) setMessagesLoading(false) })
+    return () => { cancelled = true }
+  }, [selectedUser])
 
   const handleConnect = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -101,10 +110,10 @@ export default function TelegramPage() {
 
       <div className={`rounded-2xl border p-6 ${isConnected ? "border-[#229ED9]/25 bg-[#E7F4FB]" : "border-[#F3E6D3] bg-white"}`}>
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div className="flex gap-3">
-            <span className={`grid h-11 w-11 place-items-center rounded-xl ${isConnected ? "bg-[#229ED9] text-white" : "bg-[#FFF1DA] text-[#E85D26]"}`}><Send className="h-5 w-5" /></span>
+          <div className="flex min-w-0 gap-3">
+            <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${isConnected ? "bg-[#229ED9] text-white" : "bg-[#FFF1DA] text-[#E85D26]"}`}><Send className="h-5 w-5" /></span>
             <div>
-              <div className="font-bold">{isConnected ? `Connected — @${config?.botUsername || config?.botId}` : "No Telegram bot connected"}</div>
+              <div className="break-all font-bold">{isConnected ? `Connected — @${config?.botUsername || config?.botId}` : "No Telegram bot connected"}</div>
               <p className="mt-1 text-sm text-[#6b6b6b]">
                 {isConnected
                   ? `Mode: ${config?.mode === "webhook" ? "webhook (verified by the backend)" : config?.mode}. Connected ${config?.connectedAt ? new Date(config.connectedAt).toLocaleString() : ""}`
@@ -159,18 +168,18 @@ export default function TelegramPage() {
         </form>
       ) : (
         <>
-          <div className="grid gap-4 lg:grid-cols-[0.75fr_1.25fr]">
-            <section className="rounded-2xl border border-[#F3E6D3] bg-white p-4">
+          <div className="grid min-w-0 gap-4 lg:grid-cols-[0.75fr_1.25fr]">
+            <section className="min-w-0 rounded-2xl border border-[#F3E6D3] bg-white p-4">
               <h2 className="mb-3 flex items-center gap-2 font-bold"><Inbox className="h-4 w-4 text-[#229ED9]" />Conversations</h2>
-              <div className="space-y-2">
+              <div className="max-h-[320px] space-y-2 overflow-y-auto pr-1 lg:max-h-[480px]">
                 {conversations.map((conversation) => (
                   <button
                     key={conversation.channelUserId}
                     onClick={() => setSelectedUser(conversation.channelUserId)}
-                    className={`w-full rounded-xl border p-3 text-left ${selectedUser === conversation.channelUserId ? "border-[#1a1a1a] bg-[#1a1a1a] text-white" : "border-[#F3E6D3] hover:bg-[#FFFBF5]"}`}
+                    className={`w-full min-w-0 overflow-hidden rounded-xl border p-3 text-left ${selectedUser === conversation.channelUserId ? "border-[#1a1a1a] bg-[#1a1a1a] text-white" : "border-[#F3E6D3] hover:bg-[#FFFBF5]"}`}
                   >
-                    <div className="text-sm font-bold">{conversation.customerName || (conversation.channelUsername ? `@${conversation.channelUsername}` : conversation.channelUserId)}</div>
-                    <div className="mt-0.5 text-xs opacity-70">{conversation.channelUsername ? `@${conversation.channelUsername} · ` : ""}{conversation.customerPhone || "no phone shared yet"}</div>
+                    <div className="truncate text-sm font-bold">{conversation.customerName || (conversation.channelUsername ? `@${conversation.channelUsername}` : conversation.channelUserId)}</div>
+                    <div className="mt-0.5 truncate text-xs opacity-70">{conversation.channelUsername ? `@${conversation.channelUsername} · ` : ""}{conversation.customerPhone || "no phone shared yet"}</div>
                     <div className="mt-1 truncate text-xs opacity-70">{conversation.lastMessage || "No messages"}</div>
                   </button>
                 ))}
@@ -178,19 +187,20 @@ export default function TelegramPage() {
               </div>
             </section>
 
-            <section className="rounded-2xl border border-[#F3E6D3] bg-white p-4">
+            <section className="min-w-0 rounded-2xl border border-[#F3E6D3] bg-white p-4">
               <h2 className="font-bold">Message history</h2>
-              <div className="mt-3 min-h-[240px] space-y-3 rounded-xl bg-[#FFFBF5] p-3">
+              <div className="mt-3 max-h-[420px] min-h-[240px] space-y-3 overflow-y-auto rounded-xl bg-[#FFFBF5] p-3 lg:max-h-[520px]">
                 {selectedMessages.map((message) => (
-                  <div key={message.id} className={`max-w-[80%] rounded-2xl p-3 text-sm ${message.direction === "outbound" ? "ml-auto bg-[#1a1a1a] text-white" : "border border-[#F3E6D3] bg-white"}`}>
+                  <div key={message.id} className={`max-w-[85%] min-w-0 rounded-2xl p-3 text-sm ${message.direction === "outbound" ? "ml-auto bg-[#1a1a1a] text-white" : "border border-[#F3E6D3] bg-white"}`}>
                     <div className="text-xs font-bold opacity-60">
                       {message.direction === "outbound" ? (message.deterministic ? "Bot (automatic)" : "Bot (AI)") : message.customerName || "Customer"}
                       <span className="ml-2 font-normal">{new Date(message.timestamp).toLocaleString()}</span>
                     </div>
-                    <div className="mt-1 whitespace-pre-wrap">{message.body}</div>
+                    <div className="mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{message.body}</div>
                   </div>
                 ))}
-                {selectedUser && !selectedMessages.length && <p className="py-12 text-center text-sm text-[#6b6b6b]">No messages in this conversation.</p>}
+                {messagesLoading && <p className="py-12 text-center text-sm text-[#6b6b6b]">Loading transcript…</p>}
+                {!messagesLoading && selectedUser && !selectedMessages.length && <p className="py-12 text-center text-sm text-[#6b6b6b]">No messages in this conversation.</p>}
                 {!selectedUser && <p className="py-12 text-center text-sm text-[#6b6b6b]">Select a conversation to inspect its transcript.</p>}
               </div>
               <p className="mt-3 text-xs leading-5 text-[#9a9a9a]">Replies in this channel are handled by the commerce assistant inside Telegram. To reach these customers with promotions, use <Link to="/dashboard/campaigns" className="font-bold text-[#0B9C74] hover:underline">Telegram campaigns</Link>.</p>
