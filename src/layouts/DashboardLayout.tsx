@@ -1,8 +1,22 @@
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom"
-import { LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, Store, Wallet, Send, Megaphone, Shield } from "lucide-react"
-import { useAuth } from "../context/AuthContext"
-import { useBusiness } from "../context/BusinessContext"
-import { useState } from "react"
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Users,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+  Store,
+  Wallet,
+  Send,
+  Megaphone,
+  Shield,
+} from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { useBusiness } from "../context/BusinessContext";
+import { useState } from "react";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -14,53 +28,87 @@ const nav = [
   { to: "/dashboard/campaigns", label: "Campaigns", icon: Megaphone },
   { to: "/store", label: "Storefront", icon: Store },
   { to: "/dashboard/settings", label: "Settings", icon: Settings },
-]
+];
 
 export function DashboardLayout() {
-  const { user, logout } = useAuth()
-  const { business } = useBusiness()
-  const navigate = useNavigate()
-  const [open, setOpen] = useState(false)
+  const { user, logout } = useAuth();
+  const { business } = useBusiness();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   const handleLogout = async () => {
-    await logout()
-    navigate("/login")
-  }
+    await logout();
+    navigate("/login");
+  };
 
   return (
     <div className="min-h-screen overflow-x-clip bg-[#FFFBF5] text-[#1a1a1a]">
-      <header className="sticky top-0 z-40 h-[64px] bg-white border-b border-[#F3E6D3] flex items-center">
-        <div className="mx-auto max-w-[1400px] w-full px-4 sm:px-6 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 h-16 bg-white border-b border-[#F3E6D3] flex items-center">
+        <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <button onClick={() => setOpen(!open)} className="lg:hidden h-9 w-9 grid place-items-center rounded-xl border border-[#F3E6D3] bg-white">
+            <button
+              onClick={() => setOpen(!open)}
+              className="lg:hidden h-9 w-9 grid place-items-center rounded-xl border border-[#F3E6D3] bg-white"
+            >
               {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
-            <Link to="/" className="flex items-center gap-2.5" title="Go to homepage">
+            <Link
+              to="/"
+              className="flex items-center gap-2.5"
+              title="Go to homepage"
+            >
               <span className="h-8 w-8 rounded-lg bg-[#0B9C74] grid place-items-center text-white">
                 <Store className="h-4 w-4" />
               </span>
-              <span className="font-display font-bold hover:text-[#0B9C74] transition">Cognicart</span>
-              <span className="hidden sm:inline-flex text-[11px] font-bold tracking-widest text-[#0B9C74] bg-[#E6F7F1] px-2 py-0.5 rounded">SELLER</span>
+              <span className="font-display font-bold hover:text-[#0B9C74] transition">
+                Cognicart
+              </span>
+              <span className="hidden sm:inline-flex text-[11px] font-bold tracking-widest text-[#0B9C74] bg-[#E6F7F1] px-2 py-0.5 rounded">
+                SELLER
+              </span>
             </Link>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="hidden sm:block text-right">
-              <div className="text-sm font-bold leading-none">{user?.businessName || "Seller"}</div>
+              <div className="text-sm font-bold leading-none">
+                {user?.businessName || "Seller"}
+              </div>
               <div className="text-xs text-[#6b6b6b]">{user?.email}</div>
             </div>
-            <div className="h-9 w-9 overflow-hidden rounded-full bg-[#1a1a1a] text-white grid place-items-center text-sm font-bold">{business?.logo ? <img src={business.logo} alt="Business logo" className="h-full w-full object-cover" /> : user?.businessName?.charAt(0)?.toUpperCase() || "S"}</div>
-            <button onClick={handleLogout} className="hidden sm:inline-flex items-center gap-2 rounded-full border border-[#F3E6D3] bg-white px-3 py-1.5 text-sm font-medium hover:bg-[#FFF1DA]">
+            <div className="h-9 w-9 overflow-hidden rounded-full bg-[#1a1a1a] text-white grid place-items-center text-sm font-bold">
+              {business?.logo ? (
+                <img
+                  src={business.logo}
+                  alt="Business logo"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                user?.businessName?.charAt(0)?.toUpperCase() || "S"
+              )}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="hidden sm:inline-flex items-center gap-2 rounded-full border border-[#F3E6D3] bg-white px-3 py-1.5 text-sm font-medium hover:bg-[#FFF1DA]"
+            >
               <LogOut className="h-4 w-4" /> Logout
             </button>
           </div>
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
-        {open && <div className="fixed inset-0 z-30 bg-black/40 lg:hidden" onClick={() => setOpen(false)} aria-hidden="true" />}
-        <aside className={`${open ? "fixed left-4 right-4 top-[72px] z-50 lg:static lg:inset-auto lg:z-auto" : "hidden"} lg:block`}>
-          <div className="lg:sticky lg:top-[80px] max-h-[calc(100dvh-96px)] overflow-y-auto rounded-2xl bg-white border border-[#F3E6D3] p-3 shadow-2xl lg:max-h-none lg:shadow-none">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
+        {open && (
+          <div
+            className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+        <aside
+          className={`${open ? "fixed left-4 right-4 top-16 z-50 lg:static lg:inset-auto lg:z-auto" : "hidden"} lg:block`}
+        >
+          <div className="lg:sticky lg:top-20 max-h-[calc(100dvh-96px)] overflow-y-auto rounded-2xl bg-white border border-[#F3E6D3] p-3 shadow-2xl lg:max-h-none lg:shadow-none">
             <nav className="grid gap-1">
               {nav.map((item) => (
                 <NavLink
@@ -85,7 +133,10 @@ export function DashboardLayout() {
                 </NavLink>
               )}
             </nav>
-            <button onClick={handleLogout} className="mt-3 w-full lg:hidden flex items-center gap-2 rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm font-medium">
+            <button
+              onClick={handleLogout}
+              className="mt-3 w-full lg:hidden flex items-center gap-2 rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm font-medium"
+            >
               <LogOut className="h-4 w-4" /> Logout
             </button>
           </div>
@@ -96,5 +147,5 @@ export function DashboardLayout() {
         </main>
       </div>
     </div>
-  )
+  );
 }

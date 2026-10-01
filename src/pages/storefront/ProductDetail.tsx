@@ -115,7 +115,7 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-[#FFFBF5]">
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <nav className="flex items-center gap-1.5 text-xs text-[#6b6b6b]">
           <Link to="/" className="hover:text-[#1a1a1a]">Home</Link> <ChevronRight className="h-3 w-3" />
           <Link to="/store" className="hover:text-[#1a1a1a]">Store</Link> <ChevronRight className="h-3 w-3" />
