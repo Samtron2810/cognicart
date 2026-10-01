@@ -139,7 +139,7 @@ export default function ProductDetail() {
             <div className="inline-flex items-center gap-2 rounded-full bg-[#E6F7F1] border border-[#0B9C74]/15 px-3 py-1 text-xs font-bold text-[#0B9C74]">{product.category} {product.isActive ? "• Active" : "• Inactive"}</div>
             <h1 className="font-display text-[30px] font-bold leading-tight mt-3">{product.name}</h1>
             <div className="mt-2 flex items-center gap-2 text-xs">
-              <Link to={sellerId ? `/store/seller/${sellerId}` : "/store"} className="inline-flex items-center gap-1 rounded-full bg-white border border-[#F3E6D3] px-3 py-1 font-bold hover:bg-[#FFF1DA]"><Store className="h-3 w-3" /> {sellerName}</Link>
+              <Link to={sellerId ? `/store/seller/${sellerId}` : "/store"} className="inline-flex items-center gap-1.5 rounded-full bg-white border border-[#F3E6D3] py-1 pl-1.5 pr-3 font-bold hover:bg-[#FFF1DA]">{store?.logo ? <img src={store.logo} alt="" className="h-4 w-4 rounded-full object-cover" /> : <Store className="h-3 w-3" />} {sellerName}</Link>
               {store?.telegramBotUrl && <a href={store.telegramBotUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-[#E7F4FB] border border-[#229ED9]/25 px-3 py-1 font-bold text-[#1c82b3]"><Send className="h-3 w-3" /> Open in Telegram</a>}
             </div>
             <p className="mt-3 text-sm leading-6 text-[#5a5a5a]">{product.description}</p>
@@ -204,7 +204,7 @@ export default function ProductDetail() {
             </div>
 
             <div className="mt-6 rounded-2xl bg-white border border-[#F3E6D3] p-4">
-              <div className="text-sm font-bold">Seller — {sellerName}</div>
+              <div className="flex items-center gap-2.5"><span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-[#FFF1DA] border border-[#F3E6D3]">{store?.logo ? <img src={store.logo} alt="" className="h-full w-full object-cover" /> : <Store className="h-4 w-4 text-[#E85D26]" />}</span><div className="text-sm font-bold">Seller — {sellerName}</div></div>
               <p className="text-xs text-[#6b6b6b] leading-5 mt-1">View all products from this seller in their SEO-friendly store. Shareable link for Google and social.</p>
               <div className="mt-3 flex gap-2">
                 <Link to={sellerId ? `/store/seller/${sellerId}` : "/store"} className="inline-flex rounded-full bg-[#FFF1DA] border border-[#F3E6D3] px-4 py-2 text-xs font-bold hover:bg-white">Visit {sellerName} store</Link>

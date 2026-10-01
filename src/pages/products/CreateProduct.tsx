@@ -4,6 +4,7 @@ import { productService } from "../../services/productService"
 import { PRODUCT_CATEGORIES } from "../../types/product"
 import type { ProductDiscount, ProductVariant } from "../../types/product"
 import { Upload, X, ArrowLeft, Plus, Trash2, Tag, Palette } from "lucide-react"
+import { getApiErrorMessage } from "../../services/apiError"
 
 export default function CreateProduct() {
   const navigate = useNavigate()
@@ -128,7 +129,7 @@ export default function CreateProduct() {
       })
       navigate("/dashboard/products")
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to create product"
+      const msg = getApiErrorMessage(err, "Failed to create product")
       setError(msg)
     } finally {
       setLoading(false)

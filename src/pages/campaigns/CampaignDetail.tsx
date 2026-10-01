@@ -4,6 +4,7 @@ import { AlertTriangle, ArrowLeft, CheckCircle2, Send, Users } from "lucide-reac
 import { campaignService } from "../../services/campaignService"
 import { CAMPAIGN_SEGMENT_LABELS } from "../../types/campaign"
 import type { Campaign } from "../../types/campaign"
+import { getApiErrorMessage } from "../../services/apiError"
 
 export default function CampaignDetail() {
   const { id } = useParams<{ id: string }>()
@@ -18,7 +19,7 @@ export default function CampaignDetail() {
     try {
       setCampaign(await campaignService.getById(id))
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Campaign not found")
+      setError(getApiErrorMessage(reason, "Campaign not found"))
     } finally {
       setLoading(false)
     }
@@ -37,7 +38,7 @@ export default function CampaignDetail() {
       setCampaign(sent)
       setConfirmingSend(false)
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to send the campaign.")
+      setError(getApiErrorMessage(reason, "Unable to send the campaign."))
       await load()
     } finally {
       setSending(false)

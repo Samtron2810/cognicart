@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
+import { PasswordInput } from "../../components/forms/PasswordInput"
 import { AuthLayout } from "../../layouts/AuthLayout"
+import { getApiErrorMessage } from "../../services/apiError"
 
 export default function Register() {
   const { register } = useAuth()
@@ -30,7 +32,7 @@ export default function Register() {
       await register({ businessName: form.businessName, email: form.email, password: form.password, phone: form.phone })
       navigate("/dashboard")
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Registration failed"
+      const msg = getApiErrorMessage(err, "Registration failed")
       setError(msg)
     } finally {
       setLoading(false)
@@ -60,11 +62,11 @@ export default function Register() {
           </label>
           <label className="block">
             <span className="text-xs font-bold text-[#1a1a1a]">Password</span>
-            <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="At least 6 characters" className="mt-1 w-full rounded-xl border border-[#F3E6D3] bg-white px-3 py-2.5 text-sm focus:border-[#0B9C74] focus:ring-2 focus:ring-[#0B9C74]/15 outline-none" />
+            <PasswordInput value={form.password} onChange={(password) => setForm({ ...form, password })} placeholder="At least 6 characters" />
           </label>
           <label className="block">
             <span className="text-xs font-bold text-[#1a1a1a]">Confirm password</span>
-            <input type="password" value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} placeholder="Repeat password" className="mt-1 w-full rounded-xl border border-[#F3E6D3] bg-white px-3 py-2.5 text-sm focus:border-[#0B9C74] focus:ring-2 focus:ring-[#0B9C74]/15 outline-none" />
+            <PasswordInput value={form.confirm} onChange={(confirm) => setForm({ ...form, confirm })} placeholder="Repeat password" />
           </label>
 
           <button type="submit" disabled={loading} className="w-full rounded-full bg-[#0B9C74] py-3 text-sm font-bold text-white hover:bg-[#0a8a66] disabled:opacity-60 transition">

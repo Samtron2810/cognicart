@@ -4,6 +4,7 @@ import { AlarmClock, Megaphone, Plus, RefreshCw, Send, Users } from "lucide-reac
 import { campaignService } from "../../services/campaignService"
 import { CAMPAIGN_SEGMENTS, CAMPAIGN_SEGMENT_LABELS } from "../../types/campaign"
 import type { Campaign, CampaignSegment, SegmentPreview } from "../../types/campaign"
+import { getApiErrorMessage } from "../../services/apiError"
 
 const statusStyle: Record<Campaign["status"], string> = {
   draft: "bg-[#FFF1DA] text-[#6b6b6b] border-[#F3E6D3]",
@@ -33,7 +34,7 @@ export default function Campaigns() {
     try {
       setCampaigns(await campaignService.list())
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to load campaigns.")
+      setError(getApiErrorMessage(reason, "Unable to load campaigns."))
     } finally {
       setLoading(false)
     }
@@ -69,7 +70,7 @@ export default function Campaigns() {
       setNotice(`Campaign "${campaign.title}" created with ${campaign.stats.totalRecipients} Telegram recipient${campaign.stats.totalRecipients === 1 ? "" : "s"}. Open it to review and send.`)
       await load()
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to create the campaign.")
+      setError(getApiErrorMessage(reason, "Unable to create the campaign."))
     } finally {
       setCreating(false)
     }
@@ -83,7 +84,7 @@ export default function Campaigns() {
       const result = await campaignService.triggerAbandonedReminders()
       setNotice(`Sent ${result.remindersSentCount} abandoned-order reminder${result.remindersSentCount === 1 ? "" : "s"} on Telegram.`)
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to trigger reminders.")
+      setError(getApiErrorMessage(reason, "Unable to trigger reminders."))
     } finally {
       setTriggeringReminders(false)
     }

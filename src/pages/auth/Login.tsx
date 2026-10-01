@@ -1,8 +1,10 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
+import { PasswordInput } from "../../components/forms/PasswordInput"
 import { AuthLayout } from "../../layouts/AuthLayout"
 import { authService } from "../../services/authService"
+import { getApiErrorMessage } from "../../services/apiError"
 
 export default function Login() {
   const { login } = useAuth()
@@ -28,7 +30,7 @@ export default function Login() {
         navigate("/dashboard")
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Login failed"
+      const msg = getApiErrorMessage(err, "Login failed")
       setError(msg)
     } finally {
       setLoading(false)
@@ -51,7 +53,7 @@ export default function Login() {
           </label>
           <label className="block">
             <span className="text-xs font-bold text-[#1a1a1a]">Password</span>
-            <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Your password" className="mt-1 w-full rounded-xl border border-[#F3E6D3] bg-white px-3 py-2.5 text-sm focus:border-[#0B9C74] focus:ring-2 focus:ring-[#0B9C74]/15 outline-none" />
+            <PasswordInput value={form.password} onChange={(password) => setForm({ ...form, password })} placeholder="Your password" />
           </label>
 
           <button type="submit" disabled={loading} className="w-full rounded-full bg-[#1a1a1a] py-3 text-sm font-bold text-white hover:bg-black disabled:opacity-60 transition">

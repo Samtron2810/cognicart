@@ -8,10 +8,15 @@ import { logger } from "./logger"
  * localhost default only points to a running backend during local development;
  * it never falls back to browser-stored data.
  */
+/**
+ * 60s timeout: free-tier backend hosting cold-starts can take 30-50s after the
+ * server has been idle, and mobile networks can be slow. Cutting requests off
+ * at 15s made perfectly good requests fail with a timeout error.
+ */
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
   headers: { "Content-Type": "application/json" },
-  timeout: 15000,
+  timeout: 60000,
   withCredentials: true,
 })
 
@@ -44,6 +49,18 @@ api.interceptors.response.use(
   (error) => {
     const status = error.response?.status
     const url = error.config?.url
+
+    // Retry GETs once after a timeout or dropped connection. Reads are safe to
+    // repeat (never retry writes — payments/orders must not be double-submitted),
+    // and a single retry absorbs flaky mobile networks and server cold starts.
+    const config = error.config as (typeof error.config & { __retried?: boolean }) | undefined
+    const isTransient = error.code === "ECONNABORTED" || (!error.response && !axios.isCancel(error))
+    if (config && config.method === "get" && isTransient && !config.__retried) {
+      config.__retried = true
+      logger.warn("api: retrying GET after timeout/network error", { url })
+      return api.request(config)
+    }
+
     if (status === 401) {
       setAccessToken(null)
       logger.warn("api: unauthorized", { url })

@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom"
 import { CheckCircle, XCircle, RefreshCw, Clock } from "lucide-react"
 import { paymentService } from "../services/paymentService"
 import Cart from "./Cart"
+import { getApiErrorMessage } from "../services/apiError"
 
 type ReturnState = "success" | "failed" | "refunded" | "refund_pending" | "verifying" | null
 
@@ -54,7 +55,7 @@ export default function Checkout() {
       })
       .catch((err) => {
         setState("failed")
-        setVerifyError(err instanceof Error ? err.message : "Payment could not be verified.")
+        setVerifyError(getApiErrorMessage(err, "Payment could not be verified."))
         setVerified(true)
       })
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -4,6 +4,7 @@ import { Bot, ExternalLink, Inbox, Megaphone, RefreshCw, Send, Shield, Unplug } 
 import { telegramService } from "../../services/telegramService"
 import { useBusiness } from "../../context/BusinessContext"
 import type { ChannelConversation, ChannelMessage, TelegramConfig } from "../../types/telegram"
+import { getApiErrorMessage } from "../../services/apiError"
 
 export default function TelegramPage() {
   const { refresh: refreshBusiness } = useBusiness()
@@ -35,7 +36,7 @@ export default function TelegramPage() {
         setSelectedMessages([])
       }
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to load Telegram data.")
+      setError(getApiErrorMessage(reason, "Unable to load Telegram data."))
     } finally {
       setLoading(false)
     }
@@ -73,7 +74,7 @@ export default function TelegramPage() {
       setConfig(next)
       await Promise.all([refresh(), refreshBusiness()])
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to connect the Telegram bot.")
+      setError(getApiErrorMessage(reason, "Unable to connect the Telegram bot."))
     } finally {
       setConnecting(false)
     }
@@ -88,7 +89,7 @@ export default function TelegramPage() {
       setSelectedUser("")
       await Promise.all([refresh(), refreshBusiness()])
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to disconnect the Telegram bot.")
+      setError(getApiErrorMessage(reason, "Unable to disconnect the Telegram bot."))
     } finally {
       setDisconnecting(false)
     }

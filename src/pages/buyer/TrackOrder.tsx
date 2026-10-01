@@ -4,6 +4,7 @@ import { AlertTriangle, ArrowLeft, MapPin, Package, Store, X } from "lucide-reac
 import { useShopper } from "../../context/ShopperContext"
 import { shopperService } from "../../services/shopperService"
 import type { ShopperOrder } from "../../types/shopper"
+import { getApiErrorMessage } from "../../services/apiError"
 
 type CancelMode = "idle" | "confirm" | "guest_form" | "submitting" | "done"
 
@@ -60,7 +61,7 @@ export default function TrackOrder() {
       setOrder(updated)
       setCancelMode("done")
     } catch (err) {
-      setCancelError(err instanceof Error ? err.message : "Cancellation failed. Try again.")
+      setCancelError(getApiErrorMessage(err, "Cancellation failed. Try again."))
       setCancelMode("confirm")
     }
   }
@@ -78,7 +79,7 @@ export default function TrackOrder() {
       setOrder(updated)
       setCancelMode("done")
     } catch (err) {
-      setCancelError(err instanceof Error ? err.message : "Cancellation failed. Check the email and order reference.")
+      setCancelError(getApiErrorMessage(err, "Cancellation failed. Check the email and order reference."))
       setCancelMode("guest_form")
     }
   }

@@ -14,6 +14,7 @@ import {
   PAYMENT_STATUSES,
 } from "../../types/order"
 import type { ManualChannel, Order, OrderStatus, PaymentMethod, PaymentStatus } from "../../types/order"
+import { getApiErrorMessage } from "../../services/apiError"
 import {
   buildManualOrderPayload,
   buildManualOrderUpdatePayload,
@@ -139,7 +140,7 @@ export default function ManualOrderForm() {
         : await orderService.createManual(buildManualOrderPayload(draft))
       navigate(`/dashboard/orders/${order.id}`)
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to save the order.")
+      setError(getApiErrorMessage(reason, "Unable to save the order."))
     } finally {
       setSubmitting(false)
     }

@@ -14,6 +14,7 @@ import {
 } from "../../types/order"
 import type { Order, OrderShare, OrderShareVariant, OrderStatus, PaymentMethod, PaymentStatus } from "../../types/order"
 import type { Transaction } from "../../types/payment"
+import { getApiErrorMessage } from "../../services/apiError"
 
 const statusColor: Record<OrderStatus, string> = {
   Pending: "bg-[#FFF1DA] text-[#E85D26] border-[#F3E6D3]",
@@ -62,7 +63,7 @@ export default function OrderDetail() {
       setPaymentReference(o.paymentReference || "")
       setTxn(o.paymentReference && o.source !== "manual" ? await paymentService.getByReference(o.paymentReference).catch(() => null) : null)
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load")
+      setError(getApiErrorMessage(e, "Failed to load"))
     } finally {
       setLoading(false)
     }
@@ -94,7 +95,7 @@ export default function OrderDetail() {
       const updated = await orderService.updateStatus(id, newStatus)
       setOrder(updated)
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to update")
+      setError(getApiErrorMessage(e, "Failed to update"))
     } finally {
       setUpdating(false)
     }
@@ -112,7 +113,7 @@ export default function OrderDetail() {
       setPaymentSaved(true)
       setTimeout(() => setPaymentSaved(false), 2500)
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to record payment")
+      setError(getApiErrorMessage(e, "Failed to record payment"))
     } finally {
       setSavingPayment(false)
     }

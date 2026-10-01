@@ -16,7 +16,7 @@ export function Header() {
   const { isAuthenticated, user } = useAuth();
   const { items } = useCart();
   const navigate = useNavigate();
-  const cartCount = items.length;
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);

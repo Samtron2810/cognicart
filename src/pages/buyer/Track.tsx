@@ -5,6 +5,7 @@ import { useShopper } from "../../context/ShopperContext"
 import { shopperService } from "../../services/shopperService"
 import { useSEO } from "../../hooks/useSEO"
 import type { ShopperOrder } from "../../types/shopper"
+import { getApiErrorMessage } from "../../services/apiError"
 
 /**
  * Passwordless buyer area.
@@ -86,7 +87,7 @@ export default function Track() {
       setNotice(result.message)
       setStep("verify")
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to send the code.")
+      setError(getApiErrorMessage(reason, "Unable to send the code."))
     } finally {
       setBusy(false)
     }
@@ -100,7 +101,7 @@ export default function Track() {
       await verifyOtp({ phone: phone.trim(), email: email.trim(), code: code.trim() })
       setNotice("Verified — welcome back!")
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "That code didn't work. Try again.")
+      setError(getApiErrorMessage(reason, "That code didn't work. Try again."))
     } finally {
       setBusy(false)
     }
@@ -114,7 +115,7 @@ export default function Track() {
       await updateProfile({ name: editingName.trim() })
       setNotice("Profile updated.")
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to update your profile.")
+      setError(getApiErrorMessage(reason, "Unable to update your profile."))
     } finally {
       setSavingProfile(false)
     }

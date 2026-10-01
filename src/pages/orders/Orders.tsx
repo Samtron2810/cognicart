@@ -5,6 +5,7 @@ import { orderService } from "../../services/orderService"
 import { OrderSourceBadge } from "../../components/orders/OrderSourceBadge"
 import { MANUAL_CHANNELS, MANUAL_CHANNEL_LABELS, ORDER_SOURCES, ORDER_STATUSES, PAYMENT_STATUSES } from "../../types/order"
 import type { Order, OrderSource, OrderStatus } from "../../types/order"
+import { getApiErrorMessage } from "../../services/apiError"
 
 const statusColor: Record<OrderStatus, string> = {
   Pending: "bg-[#FFF1DA] text-[#E85D26] border-[#F3E6D3]",
@@ -45,7 +46,7 @@ export default function Orders() {
       })
       setOrders(data)
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to load orders.")
+      setError(getApiErrorMessage(reason, "Unable to load orders."))
     } finally {
       setLoading(false)
     }

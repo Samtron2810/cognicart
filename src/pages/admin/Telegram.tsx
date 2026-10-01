@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Bot, Send } from "lucide-react"
 import { adminService, type TelegramSellerStats } from "../../services/adminService"
+import { getApiErrorMessage } from "../../services/apiError"
 
 export default function AdminTelegram() {
   const [stats, setStats] = useState<TelegramSellerStats[]>([])
@@ -10,7 +11,7 @@ export default function AdminTelegram() {
   useEffect(() => {
     adminService.getTelegramStats()
       .then(setStats)
-      .catch((reason) => setError(reason instanceof Error ? reason.message : "Unable to load Telegram analytics."))
+      .catch((reason) => setError(getApiErrorMessage(reason, "Unable to load Telegram analytics.")))
       .finally(() => setLoading(false))
   }, [])
 
