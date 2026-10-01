@@ -115,6 +115,9 @@ export type Order = {
   inventoryAdjusted?: boolean
   currency?: string
   orderStatus: OrderStatus
+  cancellationReason?: string
+  cancelledBy?: "buyer" | "seller" | "system"
+  cancelledAt?: string | null
   createdAt: string
   updatedAt: string
 }

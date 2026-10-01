@@ -35,6 +35,7 @@ import TrackOrder from "../pages/buyer/TrackOrder"
 import Search from "../pages/Search"
 import Cart from "../pages/Cart"
 import Checkout from "../pages/Checkout"
+import PaymentDone from "../pages/checkout/PaymentDone"
 import AdminDashboard from "../pages/admin/Dashboard"
 import AdminSellers from "../pages/admin/Sellers"
 import AdminSellerDetails from "../pages/admin/SellerDetails"
@@ -90,6 +91,8 @@ export function AppRoutes() {
         <Route path="/search" element={<Search />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+        {/* Lightweight payment return for Telegram bot orders — no header/footer/cart */}
+        <Route path="/checkout/done" element={<PaymentDone />} />
       </Route>
 
       <Route

@@ -65,4 +65,27 @@ export const shopperService = {
     const { data } = await api.get<ShopperOrder>(`/shop/me/orders/${id}`)
     return data
   },
+
+  /**
+   * Cancel a verified buyer's own unpaid Pending/Confirmed order.
+   * Only works for automatic (storefront/telegram) orders with no payment.
+   */
+  async cancelMyOrder(id: string, reason?: string): Promise<ShopperOrder> {
+    const { data } = await api.post<ShopperOrder>(`/shop/me/orders/${id}/cancel`, { reason: reason || "Cancelled by buyer" })
+    return data
+  },
+
+  /**
+   * Cancel a guest order (no shopper session) by proving ownership with
+   * the email address used at checkout + the order reference/id.
+   * Used on the storefront for buyers who never verified their email.
+   */
+  async cancelGuestOrder(payload: { email: string; orderId: string; reason?: string }): Promise<ShopperOrder> {
+    const { data } = await api.post<ShopperOrder>("/orders/cancel-guest", {
+      email: payload.email.trim().toLowerCase(),
+      orderId: payload.orderId.trim(),
+      reason: payload.reason || "Cancelled by buyer (guest)",
+    })
+    return data
+  },
 }
