@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom"
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom"
 import { LayoutDashboard, Users, ShoppingCart, UserCircle, Wallet, CreditCard, Send, Crown, BarChart3, Settings, LogOut, Menu, X, Shield } from "lucide-react"
 import { useAuth } from "../context/AuthContext"
 import { useState } from "react"
@@ -34,13 +34,13 @@ export function AdminLayout() {
             <button onClick={() => setOpen(!open)} className="lg:hidden h-9 w-9 grid place-items-center rounded-xl border border-white/20 bg-white/10">
               {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
-            <div className="flex items-center gap-2.5">
+            <Link to="/" className="flex items-center gap-2.5" title="Go to homepage">
               <span className="h-8 w-8 rounded-lg bg-[#0B9C74] grid place-items-center text-white">
                 <Shield className="h-4 w-4" />
               </span>
-              <span className="font-display font-bold">Cognicart</span>
+              <span className="font-display font-bold hover:text-[#0B9C74] transition">Cognicart</span>
               <span className="hidden sm:inline-flex text-[11px] font-bold tracking-widest bg-[#E6F7F1] text-[#0B9C74] px-2 py-0.5 rounded">PLATFORM</span>
-            </div>
+            </Link>
           </div>
 
           <div className="flex items-center gap-3">

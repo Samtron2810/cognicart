@@ -4,7 +4,6 @@ import type { Business } from "../types/business"
 import type { Customer } from "../types/customer"
 import type { Order } from "../types/order"
 import type { Product } from "../types/product"
-import type { Transaction } from "../types/payment"
 import type { ChannelMessage } from "../types/telegram"
 
 export type PlatformFeeConfig = { percentage: number; fixed: number }
@@ -37,7 +36,10 @@ export type RevenueBreakdown = {
   paystackFees: number
   sellerEarnings: number
   fee: PlatformFeeConfig
-  transactions: Transaction[]
+  /** Successful transactions counted for this breakdown (the array itself was never used). */
+  transactionsCount: number
+  /** True when more paid orders exist than the breakdown cap returned. */
+  truncated: boolean
 }
 
 export type PlatformStats = {
@@ -58,11 +60,8 @@ export type PlatformStats = {
   paystackFees: number
   sellerEarnings: number
   fee: PlatformFeeConfig
-  orders: Order[]
-  products: Product[]
-  customers: Customer[]
-  messages: ChannelMessage[]
-  transactions: Transaction[]
+  /** The 5 newest platform orders for the overview table. */
+  recentOrders: Order[]
 }
 
 export type TelegramSellerStats = {
@@ -99,13 +98,14 @@ export const adminService = {
     return data
   },
 
-  async listAllOrders(): Promise<Order[]> {
-    const { data } = await api.get<Order[]>("/admin/orders")
+  /** Newest first, capped server-side (default 500, max 1000). */
+  async listAllOrders(limit?: number): Promise<Order[]> {
+    const { data } = await api.get<Order[]>("/admin/orders", { params: limit ? { limit } : undefined })
     return data
   },
 
-  async listAllCustomers(): Promise<Customer[]> {
-    const { data } = await api.get<Customer[]>("/admin/customers")
+  async listAllCustomers(limit?: number): Promise<Customer[]> {
+    const { data } = await api.get<Customer[]>("/admin/customers", { params: limit ? { limit } : undefined })
     return data
   },
 

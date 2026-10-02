@@ -44,7 +44,7 @@ export default function AdminDashboard() {
             <Link to="/admin/orders" className="text-sm font-bold text-[#0B9C74] hover:underline">View all</Link>
           </div>
           <div className="mt-4 space-y-2">
-            {(stats.orders as Array<{ id: string; sellerId: string; customerName: string; total: number; orderStatus: string; paymentStatus: string }>).slice(0, 5).map((o) => (
+            {(stats.recentOrders ?? []).map((o) => (
               <div key={o.id} className="flex items-center gap-3 rounded-xl border border-[#F3E6D3] p-3">
                 <div className="h-10 w-10 rounded-xl bg-[#1a1a1a] text-white grid place-items-center"><ShoppingCart className="h-4 w-4" /></div>
                 <div className="flex-1 min-w-0">
