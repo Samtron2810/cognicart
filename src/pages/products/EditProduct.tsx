@@ -5,12 +5,16 @@ import { PRODUCT_CATEGORIES } from "../../types/product"
 import type { ProductDiscount, ProductVariant } from "../../types/product"
 import { Upload, X, ArrowLeft, Plus, Trash2, Tag, Palette } from "lucide-react"
 import { getApiErrorMessage } from "../../services/apiError"
+import { uploadImages } from "../../services/uploadService"
 
 export default function EditProduct() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [form, setForm] = useState({ name: "", description: "", price: "", stock: "", category: "Beauty", isActive: true })
   const [images, setImages] = useState<string[]>([])
+  const [imagePublicIds, setImagePublicIds] = useState<string[]>([])
+  const [uploading, setUploading] = useState(false)
+  const [imageError, setImageError] = useState<string | null>(null)
   const [discountActive, setDiscountActive] = useState(false)
   const [discountType, setDiscountType] = useState<"percentage" | "fixed">("percentage")
   const [discountValue, setDiscountValue] = useState("")
@@ -27,6 +31,7 @@ export default function EditProduct() {
       .then((p) => {
         setForm({ name: p.name, description: p.description, price: String(p.price), stock: String(p.stock), category: p.category, isActive: p.isActive })
         setImages(p.images)
+        setImagePublicIds(p.imagePublicIds || [])
         if (p.discount) {
           setDiscountActive(!!p.discount.active)
           setDiscountType(p.discount.type)
@@ -41,18 +46,31 @@ export default function EditProduct() {
       .finally(() => setInitialLoading(false))
   }, [id])
 
-  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files) return
-    Array.from(files).forEach((file) => {
-      if (images.length >= 4) return
-      const reader = new FileReader()
-      reader.onload = () => {
-        if (typeof reader.result === "string") setImages((prev) => [...prev, reader.result as string].slice(0, 4))
-      }
-      reader.readAsDataURL(file)
-    })
+  // Each file goes straight to Cloudinary; the product stores only URLs.
+  const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
     e.target.value = ""
+    if (files.length === 0) return
+
+    const room = 4 - images.length
+    if (room <= 0) return
+
+    setImageError(null)
+    setUploading(true)
+    try {
+      const uploaded = await uploadImages(files.slice(0, room), "product")
+      setImages((prev) => [...prev, ...uploaded.map((a) => a.url)].slice(0, 4))
+      setImagePublicIds((prev) => [...prev, ...uploaded.map((a) => a.publicId)].slice(0, 4))
+    } catch (err: unknown) {
+      setImageError(getApiErrorMessage(err, "Could not upload that image. Please try again."))
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const removeImage = (idx: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== idx))
+    setImagePublicIds((prev) => prev.filter((_, i) => i !== idx))
   }
 
   const addVariant = () => {
@@ -122,6 +140,7 @@ export default function EditProduct() {
         stock,
         category: form.category,
         images,
+        imagePublicIds,
         isActive: form.isActive,
         discount: finalDiscount,
         variants: hasVariants ? (payloadVariants as ProductVariant[]) : [],
@@ -295,20 +314,25 @@ export default function EditProduct() {
             {images.map((src, idx) => (
               <div key={idx} className="relative rounded-xl overflow-hidden border border-[#F3E6D3] bg-[#FFFBF5] h-28">
                 <img src={src} alt="" className="h-full w-full object-cover" />
-                <button type="button" onClick={() => setImages(images.filter((_, i) => i !== idx))} className="absolute top-1 right-1 h-6 w-6 rounded-full bg-white border border-[#F3E6D3] grid place-items-center">
+                <button type="button" onClick={() => removeImage(idx)} className="absolute top-1 right-1 h-6 w-6 rounded-full bg-white border border-[#F3E6D3] grid place-items-center">
                   <X className="h-3 w-3" />
                 </button>
               </div>
             ))}
             {images.length < 4 && (
-              <label className="h-28 rounded-xl border-2 border-dashed border-[#F3E6D3] bg-[#FFFBF5] grid place-items-center cursor-pointer hover:bg-[#FFF1DA] text-sm font-medium text-[#6b6b6b]">
+              <label className={`h-28 rounded-xl border-2 border-dashed border-[#F3E6D3] bg-[#FFFBF5] grid place-items-center hover:bg-[#FFF1DA] text-sm font-medium text-[#6b6b6b] ${uploading ? "opacity-60 cursor-wait" : "cursor-pointer"}`}>
                 <span className="flex flex-col items-center gap-1">
-                  <Upload className="h-5 w-5" /> Upload
+                  <Upload className="h-5 w-5" /> {uploading ? "Uploading..." : "Upload"}
                 </span>
-                <input type="file" accept="image/*" multiple onChange={handleImage} className="hidden" />
+                <input type="file" accept="image/*" multiple disabled={uploading} onChange={(e) => void handleImage(e)} className="hidden" />
               </label>
             )}
           </div>
+          {imageError ? (
+            <p className="mt-2 text-xs text-red-600">{imageError}</p>
+          ) : (
+            <p className="mt-2 text-xs text-[#9a9a9a]">PNG, JPG or WEBP up to 5MB each. Uploaded directly to secure cloud storage. Removing an image deletes it from storage when you save.</p>
+          )}
         </div>
 
         <div className="flex gap-3">

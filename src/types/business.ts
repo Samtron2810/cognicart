@@ -8,6 +8,8 @@ export type Business = {
   email?: string
   location?: string
   logo?: string
+  /** Cloudinary asset id behind `logo`; lets the server destroy a replaced asset. */
+  logoPublicId?: string
   deliveryInfo?: string
   deliveryFee?: number
   deliveryTime?: string
@@ -41,6 +43,7 @@ export type StorefrontProfile = {
   email: string
   location: string
   logo: string
+  logoPublicId: string
   deliveryInfo: string
   deliveryFee: number
   deliveryTime: string

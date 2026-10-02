@@ -24,6 +24,8 @@ export type Product = {
   stock: number
   category: string
   images: string[]
+  /** Cloudinary asset ids aligned with `images`; lets the server delete removed assets. */
+  imagePublicIds?: string[]
   isActive: boolean
   discount?: ProductDiscount
   variants?: ProductVariant[]
@@ -39,6 +41,8 @@ export type CreateProductPayload = {
   stock: number
   category: string
   images: string[]
+  /** Cloudinary asset ids aligned with `images`; lets the server delete removed assets. */
+  imagePublicIds?: string[]
   isActive: boolean
   discount?: ProductDiscount
   variants?: ProductVariant[]

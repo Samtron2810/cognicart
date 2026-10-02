@@ -4,6 +4,7 @@ import { useBusiness } from "../../context/BusinessContext"
 import { Upload, Store, Truck, CreditCard, Send, Info, MailWarning, CheckCircle2 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { authService } from "../../services/authService"
+import { uploadImage } from "../../services/uploadService"
 import { getApiErrorMessage } from "../../services/apiError"
 
 function EmailVerificationNotice() {
@@ -72,9 +73,12 @@ export default function Settings() {
     accountNumber: "",
     accountName: "",
     logo: "",
+    logoPublicId: "",
   })
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [logoError, setLogoError] = useState<string | null>(null)
 
   useEffect(() => {
     if (business) {
@@ -93,21 +97,33 @@ export default function Settings() {
         accountNumber: business.accountNumber || "",
         accountName: business.accountName || "",
         logo: business.logo || "",
+        logoPublicId: business.logoPublicId || "",
       })
     } else if (user) {
       setForm((prev) => ({ ...prev, name: user.businessName || prev.name, phone: user.phone || prev.phone }))
     }
   }, [business, user])
 
-  const handleLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // The file goes straight to Cloudinary; only the resulting URL is ever sent
+  // to our API or stored on the business profile.
+  const handleLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
+    e.target.value = ""
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
-      if (typeof reader.result === "string") setForm({ ...form, logo: reader.result })
+
+    setLogoError(null)
+    setUploadingLogo(true)
+    try {
+      const asset = await uploadImage(file, "logo")
+      setForm((prev) => ({ ...prev, logo: asset.url, logoPublicId: asset.publicId }))
+    } catch (err: unknown) {
+      setLogoError(getApiErrorMessage(err, "Could not upload that image. Please try again."))
+    } finally {
+      setUploadingLogo(false)
     }
-    reader.readAsDataURL(file)
   }
+
+  const handleRemoveLogo = () => setForm((prev) => ({ ...prev, logo: "", logoPublicId: "" }))
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -128,6 +144,7 @@ export default function Settings() {
         accountNumber: form.accountNumber,
         accountName: form.accountName,
         logo: form.logo,
+        logoPublicId: form.logoPublicId,
       })
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
@@ -161,11 +178,22 @@ export default function Settings() {
               </div>
               <div>
                 <span className="text-xs font-bold">Logo</span>
-                <label className="mt-1 inline-flex items-center gap-2 rounded-full bg-white border border-[#F3E6D3] px-4 py-2 text-xs font-bold hover:bg-[#FFF1DA] cursor-pointer">
-                  <Upload className="h-3.5 w-3.5" /> Upload
-                  <input type="file" accept="image/*" onChange={handleLogo} className="hidden" />
-                </label>
-                <div className="text-xs text-[#9a9a9a] mt-1">The selected logo is uploaded with your business profile.</div>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <label className={`inline-flex items-center gap-2 rounded-full bg-white border border-[#F3E6D3] px-4 py-2 text-xs font-bold hover:bg-[#FFF1DA] ${uploadingLogo ? "opacity-60 cursor-wait" : "cursor-pointer"}`}>
+                    <Upload className="h-3.5 w-3.5" /> {uploadingLogo ? "Uploading..." : form.logo ? "Replace" : "Upload"}
+                    <input type="file" accept="image/*" onChange={(e) => void handleLogo(e)} disabled={uploadingLogo} className="hidden" />
+                  </label>
+                  {form.logo && !uploadingLogo && (
+                    <button type="button" onClick={handleRemoveLogo} className="rounded-full border border-[#F3E6D3] px-3 py-2 text-xs font-bold text-[#6b6b6b] hover:bg-[#FFF1DA]">
+                      Remove
+                    </button>
+                  )}
+                </div>
+                {logoError ? (
+                  <div className="text-xs text-red-600 mt-1">{logoError}</div>
+                ) : (
+                  <div className="text-xs text-[#9a9a9a] mt-1">PNG, JPG or WEBP up to 5MB. Uploaded straight to secure cloud storage.</div>
+                )}
               </div>
             </label>
 
