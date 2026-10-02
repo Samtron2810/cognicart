@@ -8,6 +8,10 @@ import type { ChannelMessage } from "../types/telegram"
 
 export type PlatformFeeConfig = { percentage: number; fixed: number }
 
+/** Which accounts the admin account list should return. */
+export type AccountRoleFilter = "seller" | "admin" | "all"
+
+
 export type SellerSummary = {
   seller: Seller
   business?: Business | null
@@ -43,9 +47,15 @@ export type RevenueBreakdown = {
 }
 
 export type PlatformStats = {
+  /** Sellers only - admin accounts are counted separately. */
   totalSellers: number
   activeSellers: number
   suspendedSellers: number
+  /** Admin + platform_owner accounts. */
+  totalAdmins: number
+  platformOwners: number
+  /** Sellers + admins, for when a true headcount is wanted. */
+  totalAccounts: number
   totalProducts: number
   activeProducts: number
   totalOrders: number
@@ -83,8 +93,12 @@ export const adminService = {
     return data
   },
 
-  async listSellers(): Promise<SellerSummary[]> {
-    const { data } = await api.get<SellerSummary[]>("/admin/sellers")
+  /**
+   * Platform accounts. Defaults to sellers; the admin workspace uses
+   * `role: "admin"` to audit who holds admin access, and `"all"` for both.
+   */
+  async listSellers(role: AccountRoleFilter = "seller"): Promise<SellerSummary[]> {
+    const { data } = await api.get<SellerSummary[]>("/admin/sellers", { params: { role } })
     return data
   },
 

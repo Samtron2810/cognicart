@@ -64,13 +64,4 @@ export const productService = {
   async toggleDiscount(id: string, discount: NonNullable<Product["discount"]>): Promise<Product> {
     return this.update(id, { discount })
   },
-
-  async uploadImages(files: File[]): Promise<string[]> {
-    const form = new FormData()
-    files.forEach((file) => form.append("images", file))
-    const { data } = await api.post<{ urls: string[] }>("/products/upload", form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    })
-    return data.urls
-  },
 }

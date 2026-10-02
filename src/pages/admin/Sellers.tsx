@@ -1,23 +1,26 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Search, Eye, Ban, CheckCircle, Store, Wallet } from "lucide-react"
-import { adminService } from "../../services/adminService"
+import { adminService, type AccountRoleFilter } from "../../services/adminService"
 
 export default function AdminSellers() {
   const [sellers, setSellers] = useState<Awaited<ReturnType<typeof adminService.listSellers>>>([])
   const [search, setSearch] = useState("")
+  // Sellers by default: admin accounts are User rows too, and mixing them in
+  // is what made the platform counts disagree with this page.
+  const [roleFilter, setRoleFilter] = useState<AccountRoleFilter>("seller")
 
-  const load = async () => {
-    const data = await adminService.listSellers()
+  const load = useCallback(async () => {
+    const data = await adminService.listSellers(roleFilter)
     setSellers(data)
-  }
+  }, [roleFilter])
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() }, [load])
 
   const filtered = sellers.filter((s) => !search || s.seller.businessName.toLowerCase().includes(search.toLowerCase()) || s.seller.email.toLowerCase().includes(search.toLowerCase()))
 
   const toggle = async (sellerId: string, isActive: boolean) => {
-    if (!confirm(isActive ? "Suspend this seller?" : "Activate this seller?")) return
+    if (!confirm(isActive ? "Suspend this account?" : "Activate this account?")) return
     await adminService.toggleSellerActive(sellerId, !isActive)
     load()
   }
@@ -25,8 +28,21 @@ export default function AdminSellers() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Manages sellers</h1>
-        <p className="text-sm text-[#6b6b6b]">Platform owner view. All sellers tenant-isolated. You can view business, products, orders, revenue and suspend for abuse.</p>
+        <h1 className="font-display text-2xl font-bold tracking-tight">Manage accounts</h1>
+        <p className="text-sm text-[#6b6b6b]">Platform owner view. All sellers tenant-isolated. You can view business, products, orders, revenue and suspend for abuse. Switch to Admins to audit who holds admin access.</p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {([["seller", "Sellers"], ["admin", "Admins"], ["all", "All accounts"]] as const).map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setRoleFilter(key)}
+            className={`rounded-full border px-4 py-2 text-xs font-bold ${roleFilter === key ? "bg-[#1a1a1a] text-white border-[#1a1a1a]" : "border-[#F3E6D3] bg-white hover:bg-[#FFF1DA]"}`}
+          >
+            {label}
+          </button>
+        ))}
+        <span className="self-center text-xs text-[#9a9a9a]">{filtered.length} shown</span>
       </div>
 
       <div className="rounded-2xl bg-white border border-[#F3E6D3] p-4">
@@ -46,6 +62,7 @@ export default function AdminSellers() {
               <div className="text-sm font-bold truncate flex items-center gap-2">
                 {seller.businessName}
                 {seller.role === "admin" && <span className="rounded-full bg-[#0B9C74] px-2 py-0.5 text-xs text-white">ADMIN</span>}
+                {seller.role === "platform_owner" && <span className="rounded-full bg-[#1a1a1a] px-2 py-0.5 text-xs text-white">OWNER</span>}
                 {seller.isActive === false && <span className="rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-xs font-bold text-red-700">SUSPENDED</span>}
               </div>
               <div className="text-xs text-[#6b6b6b] truncate">{seller.email} • {seller.phone || "—"}</div>

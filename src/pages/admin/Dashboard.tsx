@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { Users, ShoppingCart, Wallet, Package, Send, TrendingUp, AlertTriangle, CreditCard } from "lucide-react"
+import { Users, ShoppingCart, Wallet, Package, Send, TrendingUp, AlertTriangle, CreditCard, Shield } from "lucide-react"
 import { adminService } from "../../services/adminService"
 
 export default function AdminDashboard() {
@@ -13,7 +13,9 @@ export default function AdminDashboard() {
   if (!stats) return <div className="grid place-items-center py-16"><div className="h-8 w-8 rounded-full border-2 border-[#0B9C74] border-t-transparent animate-spin" /></div>
 
   const cards = [
+    // Sellers only. Admin accounts are their own card so neither number lies.
     { label: "Total sellers", value: stats.totalSellers, sub: `${stats.activeSellers} active`, icon: Users, color: "bg-[#1a1a1a]" },
+    { label: "Admin accounts", value: stats.totalAdmins, sub: stats.platformOwners > 0 ? `${stats.platformOwners} platform owner${stats.platformOwners === 1 ? "" : "s"}` : "no platform owner", icon: Shield, color: "bg-[#6b6b6b]" },
     { label: "Total orders", value: stats.totalOrders, sub: `${stats.pendingOrders} pending`, icon: ShoppingCart, color: "bg-[#E85D26]" },
     { label: "Platform revenue", value: `₦${stats.platformRevenue.toLocaleString()}`, sub: `${stats.fee.percentage}% fee • Paystack ₦${(stats as { paystackFees?: number }).paystackFees?.toLocaleString() || "0"}`, icon: Wallet, color: "bg-[#0B9C74]" },
     { label: "Total products", value: stats.totalProducts, sub: `${stats.activeProducts} active`, icon: Package, color: "bg-[#6b6b6b]" },
@@ -26,7 +28,7 @@ export default function AdminDashboard() {
         <p className="text-sm text-[#6b6b6b]">Transaction ledger shows orderAmount, platformFee, sellerAmount, paystackFee, currency, reference, status. Tenant data aggregated but isolated per sellerId.</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {cards.map((c) => (
           <div key={c.label} className="rounded-2xl bg-white border border-[#F3E6D3] p-4">
             <div className={`h-9 w-9 rounded-xl ${c.color} text-white grid place-items-center`}><c.icon className="h-4 w-4" /></div>

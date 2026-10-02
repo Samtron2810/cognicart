@@ -7,7 +7,8 @@ export default function AdminReports() {
 
   useEffect(() => {
     adminService.getPlatformStats().then(setStats)
-    adminService.listSellers().then(setSellers).catch(() => setSellers([]))
+    // Sellers only - a suspended admin is not a "flagged seller".
+    adminService.listSellers("seller").then(setSellers).catch(() => setSellers([]))
   }, [])
 
   if (!stats) return <div className="grid place-items-center py-10"><div className="h-8 w-8 rounded-full border-2 border-[#0B9C74] border-t-transparent animate-spin" /></div>
@@ -21,7 +22,7 @@ export default function AdminReports() {
         <p className="text-sm text-[#6b6b6b]">Sellers flagged, order disputes, API abuse. Platform owner can suspend and review logs.</p>
       </div>
       <div className="grid lg:grid-cols-3 gap-4">
-        <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5"><div className="text-xs tracking-widest text-[#9a9a9a]">TOTAL SELLERS</div><div className="text-2xl font-bold">{stats.totalSellers}</div><div className="text-xs text-[#6b6b6b]">{stats.activeSellers} active • {stats.suspendedSellers} suspended</div></div>
+        <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5"><div className="text-xs tracking-widest text-[#9a9a9a]">TOTAL SELLERS</div><div className="text-2xl font-bold">{stats.totalSellers}</div><div className="text-xs text-[#6b6b6b]">{stats.activeSellers} active • {stats.suspendedSellers} suspended</div><div className="text-xs text-[#9a9a9a]">excludes {stats.totalAdmins} admin account{stats.totalAdmins === 1 ? "" : "s"}</div></div>
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5"><div className="text-xs tracking-widest text-[#9a9a9a]">MESSAGES (TELEGRAM)</div><div className="text-2xl font-bold">{stats.totalMessages}</div><div className="text-xs text-[#6b6b6b]">{stats.inboundMessages} in • {stats.outboundMessages} out</div></div>
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5"><div className="text-xs tracking-widest text-[#9a9a9a]">ORDERS DISPUTES</div><div className="text-2xl font-bold">{stats.pendingOrders} pending</div><div className="text-xs text-[#6b6b6b]">{stats.totalOrders} total • check Orders</div></div>
       </div>
