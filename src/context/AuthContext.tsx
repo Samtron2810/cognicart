@@ -48,9 +48,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(seller)
   }
 
+  /**
+   * Ending the session must never depend on the network. The server call is
+   * best effort; the local session is dropped in `finally` so a failed or
+   * unreachable request cannot leave `user` set. That mattered: a signed-in
+   * but unverified seller whose logout request failed stayed "authenticated",
+   * and GuestRoute then bounced them from /login straight back to
+   * /verify-email - a sign-out that visibly did nothing.
+   */
   const logout = async () => {
-    await authService.logout()
-    setUser(null)
+    try {
+      await authService.logout()
+    } finally {
+      setUser(null)
+    }
   }
 
   const refreshUser = async () => {

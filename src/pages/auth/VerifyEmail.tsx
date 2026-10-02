@@ -137,14 +137,17 @@ export default function VerifyEmail() {
     }
   }
 
-  /** Abandon verification: drop the half-finished session and go to login. */
+  /**
+   * Abandon verification: drop the half-finished session, then go to login.
+   * The logout has to complete before navigating - /login is behind
+   * GuestRoute, which sends an authenticated-but-unverified user right back
+   * here, so leaving while still "signed in" looks like a dead button.
+   */
   const handleCancel = async () => {
-    if (isAuthenticated) {
-      try {
-        await logout()
-      } catch {
-        // Signing out server-side is best effort; never trap the user here.
-      }
+    try {
+      await logout()
+    } catch {
+      // `logout` already clears the local session in its own finally block.
     }
     navigate("/login", { replace: true })
   }
