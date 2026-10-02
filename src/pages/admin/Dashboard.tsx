@@ -22,7 +22,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Platform overview — Phase 8</h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight">Platform overview</h1>
         <p className="text-sm text-[#6b6b6b]">Transaction ledger shows orderAmount, platformFee, sellerAmount, paystackFee, currency, reference, status. Tenant data aggregated but isolated per sellerId.</p>
       </div>
 

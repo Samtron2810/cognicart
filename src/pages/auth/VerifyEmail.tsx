@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom"
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom"
 import { CheckCircle2, Mail, ShieldCheck } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { AuthLayout } from "../../layouts/AuthLayout"
@@ -12,7 +12,7 @@ const RESEND_COOLDOWN_SECONDS = 60
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { verifyEmailOtp, isAuthenticated, user } = useAuth()
+  const { verifyEmailOtp, isAuthenticated, user, logout } = useAuth()
 
   // The signup screen forwards the address; a seller arriving cold can type it.
   const emailFromQuery = (searchParams.get("email") || "").trim().toLowerCase()
@@ -137,6 +137,18 @@ export default function VerifyEmail() {
     }
   }
 
+  /** Abandon verification: drop the half-finished session and go to login. */
+  const handleCancel = async () => {
+    if (isAuthenticated) {
+      try {
+        await logout()
+      } catch {
+        // Signing out server-side is best effort; never trap the user here.
+      }
+    }
+    navigate("/login", { replace: true })
+  }
+
   // Someone who is already verified has nothing to do here - and because the
   // route guards now push unverified sellers in, this is what lets them back
   // out again once the code is accepted.
@@ -245,9 +257,12 @@ export default function VerifyEmail() {
         </div>
 
         <div className="mt-4 text-center">
-          <Link to={isAuthenticated ? "/dashboard" : "/login"} className="text-sm font-bold text-[#0B9C74] hover:underline">
-            {isAuthenticated ? "Back to dashboard" : "Back to login"}
-          </Link>
+          {/* Cancels verification. An unverified session cannot reach the
+              dashboard anyway, so backing out means ending the session and
+              returning to login rather than bouncing off a route guard. */}
+          <button onClick={() => void handleCancel()} className="text-sm font-bold text-[#0B9C74] hover:underline">
+            Back to login
+          </button>
         </div>
       </div>
     </AuthLayout>

@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom"
-import { LayoutDashboard, Users, ShoppingCart, UserCircle, Wallet, CreditCard, Send, Crown, BarChart3, Settings, LogOut, Menu, X, Shield } from "lucide-react"
+import { LayoutDashboard, Users, ShoppingCart, UserCircle, Wallet, CreditCard, Send, Crown, BarChart3, Settings, LogOut, Menu, X, Shield, Megaphone } from "lucide-react"
 import { useAuth } from "../context/AuthContext"
 import { useState } from "react"
 
@@ -11,6 +11,7 @@ const nav = [
   { to: "/admin/revenue", label: "Revenue", icon: Wallet },
   { to: "/admin/payments", label: "Payments", icon: CreditCard },
   { to: "/admin/telegram", label: "Telegram", icon: Send },
+  { to: "/admin/broadcasts", label: "Broadcasts", icon: Megaphone },
   { to: "/admin/subscriptions", label: "Subscriptions", icon: Crown },
   { to: "/admin/reports", label: "Reports", icon: BarChart3 },
   { to: "/admin/settings", label: "Settings", icon: Settings },

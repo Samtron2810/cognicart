@@ -249,7 +249,7 @@ export default function Settings() {
         </div>
 
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-6">
-          <div className="flex items-center gap-2 text-sm font-bold"><CreditCard className="h-4 w-4 text-[#0B9C74]" /> Payment settings — Phase 7 Paystack</div>
+          <div className="flex items-center gap-2 text-sm font-bold"><CreditCard className="h-4 w-4 text-[#0B9C74]" /> Payment settings</div>
           <p className="text-xs text-[#6b6b6b] mt-1">Payments are initialized and verified by the backend's Paystack integration. Revenue and payment status update after the backend receives confirmation.</p>
           <div className="mt-3 rounded-xl bg-[#E6F7F1] border border-[#0B9C74]/20 p-3 text-xs leading-5 flex gap-2">
             <Info className="h-4 w-4 text-[#0B9C74] mt-0.5 shrink-0" />

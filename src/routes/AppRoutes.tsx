@@ -33,6 +33,7 @@ import Careers from "../pages/public/Careers"
 import Privacy from "../pages/public/Privacy"
 import Terms from "../pages/public/Terms"
 import TelegramCommerce from "../pages/public/TelegramCommerce"
+import Unsubscribe from "../pages/public/Unsubscribe"
 import Track from "../pages/buyer/Track"
 import TrackOrder from "../pages/buyer/TrackOrder"
 import Search from "../pages/Search"
@@ -48,6 +49,9 @@ import AdminRevenue from "../pages/admin/Revenue"
 import AdminPayments from "../pages/admin/Payments"
 import AdminTelegram from "../pages/admin/Telegram"
 import AdminSubscriptions from "../pages/admin/Subscriptions"
+import AdminBroadcasts from "../pages/admin/Broadcasts"
+import AdminBroadcastCompose from "../pages/admin/BroadcastCompose"
+import AdminBroadcastDetail from "../pages/admin/BroadcastDetail"
 import AdminReports from "../pages/admin/Reports"
 import AdminSettings from "../pages/admin/Settings"
 import { Header } from "../components/layout/Header"
@@ -91,6 +95,8 @@ export function AppRoutes() {
         <Route path="/careers" element={<Careers />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
+        {/* Public on purpose: an opt-out link must work without signing in. */}
+        <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="/telegram-commerce" element={<TelegramCommerce />} />
         <Route path="/track" element={<Track />} />
         <Route path="/track/orders/:id" element={<TrackOrder />} />
@@ -140,6 +146,9 @@ export function AppRoutes() {
         <Route path="/admin/payments" element={<AdminPayments />} />
         <Route path="/admin/telegram" element={<AdminTelegram />} />
         <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
+        <Route path="/admin/broadcasts" element={<AdminBroadcasts />} />
+        <Route path="/admin/broadcasts/new" element={<AdminBroadcastCompose />} />
+        <Route path="/admin/broadcasts/:id" element={<AdminBroadcastDetail />} />
         <Route path="/admin/reports" element={<AdminReports />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
       </Route>

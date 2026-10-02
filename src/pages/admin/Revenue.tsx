@@ -53,7 +53,7 @@ export default function AdminRevenue() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">Platform revenue — Phase 8</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight">Platform revenue</h1>
           <p className="text-sm text-[#6b6b6b]">Every transaction: orderAmount, platformFee, sellerAmount, paystackFee, currency NGN, reference, status. Fee {data.fee.percentage}% + ₦{data.fee.fixed} per paid order.</p>
         </div>
         <div className="flex items-center gap-2">
