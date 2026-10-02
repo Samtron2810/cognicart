@@ -35,10 +35,12 @@ export default function Register() {
     setLoading(true)
     try {
       await register({ businessName: form.businessName, email: form.email, password: form.password, phone: form.phone })
-      // Account is created and the seller is already signed in - a
-      // verification email was sent in the background. Pause here instead
-      // of jumping straight to the dashboard so they actually see that.
-      setRegisteredEmail(form.email.trim())
+      // Account is created and the seller is already signed in - a one-time
+      // code was emailed in the background. Hand straight over to the code
+      // screen rather than dropping them on the dashboard unverified.
+      const email = form.email.trim().toLowerCase()
+      setRegisteredEmail(email)
+      navigate(`/verify-email?email=${encodeURIComponent(email)}`, { replace: true })
     } catch (err: unknown) {
       const msg = getApiErrorMessage(err, "Registration failed")
       setError(msg)
@@ -70,22 +72,22 @@ export default function Register() {
           </div>
           <h1 className="mt-4 font-display text-xl font-bold">Check your email</h1>
           <p className="mt-2 text-sm leading-6 text-[#6b6b6b]">
-            Your account is ready. We sent a verification link to <span className="font-bold text-[#1a1a1a]">{registeredEmail}</span> — confirm it
-            to secure your account.
+            Your account is ready. We sent a 6 digit verification code to{" "}
+            <span className="font-bold text-[#1a1a1a]">{registeredEmail}</span> — enter it to secure your account.
           </p>
 
           <button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate(`/verify-email?email=${encodeURIComponent(registeredEmail)}`)}
             className="mt-6 w-full rounded-full bg-[#0B9C74] py-3 text-sm font-bold text-white hover:bg-[#0a8a66] transition"
           >
-            Go to dashboard
+            Enter verification code
           </button>
 
           {resent ? (
-            <p className="mt-4 text-sm font-bold text-[#0B9C74]">Verification link resent — check your inbox.</p>
+            <p className="mt-4 text-sm font-bold text-[#0B9C74]">Verification code resent — check your inbox.</p>
           ) : (
             <button onClick={() => void handleResend()} disabled={resending} className="mt-4 text-sm font-bold text-[#0B9C74] hover:underline disabled:opacity-60">
-              {resending ? "Resending..." : "Didn't get it? Resend link"}
+              {resending ? "Resending..." : "Didn't get it? Resend code"}
             </button>
           )}
         </div>

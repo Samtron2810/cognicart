@@ -21,7 +21,7 @@ function EmailVerificationNotice() {
       await authService.resendVerification(user.email)
       setSent(true)
     } catch (err: unknown) {
-      setError(getApiErrorMessage(err, "Could not resend the verification email."))
+      setError(getApiErrorMessage(err, "Could not resend the verification code."))
     } finally {
       setSending(false)
     }
@@ -36,12 +36,17 @@ function EmailVerificationNotice() {
         </span>
       </div>
       {sent ? (
-        <span className="flex items-center gap-1.5 text-sm font-bold text-[#0B9C74]"><CheckCircle2 className="h-4 w-4" /> Link sent — check your inbox</span>
+        <span className="flex flex-wrap items-center gap-1.5 text-sm font-bold text-[#0B9C74]">
+          <CheckCircle2 className="h-4 w-4" /> Code sent — check your inbox.
+          <Link to={`/verify-email?email=${encodeURIComponent(user.email)}`} className="underline">
+            Enter code
+          </Link>
+        </span>
       ) : (
         <div className="flex items-center gap-3">
           {error && <span className="text-xs text-red-600">{error}</span>}
           <button onClick={() => void handleResend()} disabled={sending} className="rounded-full bg-[#1a1a1a] px-4 py-1.5 text-xs font-bold text-white hover:bg-black disabled:opacity-60">
-            {sending ? "Sending..." : "Resend link"}
+            {sending ? "Sending..." : "Send code"}
           </button>
         </div>
       )}

@@ -5,7 +5,11 @@ import type { ReactNode } from "react"
 /**
  * Wraps auth pages (/login, /register). A user with an active session has no
  * business on them, so they are redirected to their workspace instead:
- * admins to /admin, sellers to /dashboard.
+ * admins to /admin, verified sellers to /dashboard.
+ *
+ * Registration signs the seller in immediately, so without the unverified
+ * branch below this guard would fire on the signup response and bounce them
+ * straight past the OTP screen into the dashboard.
  */
 export function GuestRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading, user } = useAuth()
@@ -20,7 +24,11 @@ export function GuestRoute({ children }: { children: ReactNode }) {
 
   if (isAuthenticated) {
     const role = user?.role
-    return <Navigate to={role === "admin" || role === "platform_owner" ? "/admin" : "/dashboard"} replace />
+    if (role === "admin" || role === "platform_owner") return <Navigate to="/admin" replace />
+    if (user && user.isEmailVerified !== true) {
+      return <Navigate to={`/verify-email?email=${encodeURIComponent(user.email)}`} replace />
+    }
+    return <Navigate to="/dashboard" replace />
   }
 
   return <>{children}</>

@@ -3,6 +3,18 @@ import type { AuthResponse, LoginPayload, RegisterPayload, Seller } from "../typ
 import { isEmail, isNigerianPhone, isStrongPassword, sanitize } from "../utils/validation"
 import { logger } from "./logger"
 
+/** Digits in a seller signup verification code. Mirrors the backend generator. */
+export const OTP_LENGTH = 6
+
+export interface VerificationResendResponse {
+  success: boolean
+  message: string
+  expiresInSeconds?: number
+  resendAfterSeconds?: number
+  /** Only present when the backend runs with SELLER_OTP_DEBUG=true. */
+  devCode?: string
+}
+
 let currentUser: Seller | null = null
 
 function validateCredentials(email: string, password: string) {
@@ -57,15 +69,31 @@ export const authService = {
     }
   },
 
-  async resendVerification(email: string): Promise<{ success: boolean; message: string }> {
-    const { data } = await api.post("/auth/resend-verification", { email: email.trim().toLowerCase() })
+  /**
+   * Ask the backend to email a fresh 6 digit signup code. The response is
+   * deliberately generic server-side, so it never confirms the address exists.
+   */
+  async resendVerification(email: string): Promise<VerificationResendResponse> {
+    const { data } = await api.post<VerificationResendResponse>("/auth/resend-verification", {
+      email: email.trim().toLowerCase(),
+    })
     return data
   },
 
-  async verifyEmail(token: string): Promise<Seller> {
-    const { data } = await api.get<{ success: boolean; seller: Seller }>("/auth/verify-email", { params: { token } })
-    if (data?.seller) currentUser = data.seller
-    return data.seller
+  /**
+   * Exchange the emailed one-time code for a verified account plus a session,
+   * so verifying from a device that never signed in still lands logged in.
+   */
+  async verifyEmailOtp(email: string, code: string): Promise<AuthResponse> {
+    const cleanEmail = email.trim().toLowerCase()
+    const cleanCode = code.replace(/\D/g, "")
+    if (!isEmail(cleanEmail)) throw new Error("Enter a valid email address")
+    if (cleanCode.length !== OTP_LENGTH) throw new Error(`Enter the ${OTP_LENGTH} digit code from your email`)
+
+    const { data } = await api.post<AuthResponse>("/auth/verify-email", { email: cleanEmail, code: cleanCode })
+    const normalized = normalizeResponse(data)
+    currentUser = normalized.seller
+    return normalized
   },
 
   async forgotPassword(email: string): Promise<{ success: boolean; message: string }> {

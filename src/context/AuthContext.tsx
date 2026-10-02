@@ -10,6 +10,8 @@ type AuthContextValue = {
   register: (payload: RegisterPayload) => Promise<void>
   logout: () => Promise<void>
   refreshUser: () => Promise<void>
+  /** Redeem the emailed signup code; the backend returns a full session. */
+  verifyEmailOtp: (email: string, code: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -40,6 +42,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(seller)
   }
 
+  const verifyEmailOtp = async (email: string, code: string) => {
+    const { token, seller } = await authService.verifyEmailOtp(email, code)
+    authService.persist(token, seller)
+    setUser(seller)
+  }
+
   const logout = async () => {
     await authService.logout()
     setUser(null)
@@ -50,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(authenticatedUser)
   }
 
-  return <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, register, logout, refreshUser }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, register, logout, refreshUser, verifyEmailOtp }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {

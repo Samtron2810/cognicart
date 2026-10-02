@@ -64,6 +64,15 @@ api.interceptors.response.use(
     if (status === 401) {
       setAccessToken(null)
       logger.warn("api: unauthorized", { url })
+    } else if (status === 403 && error.response?.data?.code === "EMAIL_NOT_VERIFIED") {
+      // The backend gate fired on a route the UI should not have reached.
+      // Send the seller to the OTP screen instead of surfacing a dead 403.
+      logger.warn("api: email not verified", { url })
+      const email = error.response?.data?.email
+      const target = `/verify-email${email ? `?email=${encodeURIComponent(email)}` : ""}`
+      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/verify-email")) {
+        window.location.assign(target)
+      }
     } else if (!error.response) {
       logger.error("api: backend unavailable", { url, message: error.message })
     } else {

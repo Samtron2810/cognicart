@@ -15,6 +15,7 @@ function renderAt(path: string) {
     <MemoryRouter initialEntries={[path]}>
       <Routes>
         <Route path="/login" element={<div>Login form</div>} />
+        <Route path="/verify-email" element={<div>Verification code screen</div>} />
         <Route path="/dashboard" element={<ProtectedRoute><div>Seller dashboard</div></ProtectedRoute>} />
         <Route path="/admin" element={<AdminRoute><div>Admin dashboard</div></AdminRoute>} />
       </Routes>
@@ -34,20 +35,38 @@ describe("ProtectedRoute", () => {
   })
 
   it("lets sellers into the dashboard", () => {
-    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "seller" } })
+    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "seller", email: "s@x.com", isEmailVerified: true } })
     renderAt("/dashboard")
     expect(screen.getByText("Seller dashboard")).toBeInTheDocument()
   })
 
+  it("sends an unverified seller to the OTP screen, even on a hand-typed URL", () => {
+    mockUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      user: { role: "seller", email: "s@x.com", isEmailVerified: false },
+    })
+    renderAt("/dashboard")
+    expect(screen.queryByText("Seller dashboard")).not.toBeInTheDocument()
+    expect(screen.getByText("Verification code screen")).toBeInTheDocument()
+  })
+
+  it("fails closed when the verification flag is missing entirely", () => {
+    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "seller", email: "s@x.com" } })
+    renderAt("/dashboard")
+    expect(screen.queryByText("Seller dashboard")).not.toBeInTheDocument()
+    expect(screen.getByText("Verification code screen")).toBeInTheDocument()
+  })
+
   it("redirects admins from seller pages to their own workspace", () => {
-    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "admin" } })
+    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "admin", email: "a@x.com", isEmailVerified: true } })
     renderAt("/dashboard")
     expect(screen.queryByText("Seller dashboard")).not.toBeInTheDocument()
     expect(screen.getByText("Admin dashboard")).toBeInTheDocument()
   })
 
   it("redirects platform owners from seller pages too", () => {
-    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "platform_owner" } })
+    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "platform_owner", email: "o@x.com", isEmailVerified: true } })
     renderAt("/dashboard")
     expect(screen.getByText("Admin dashboard")).toBeInTheDocument()
   })
@@ -61,6 +80,17 @@ describe("ProtectedRoute", () => {
 })
 
 describe("AdminRoute", () => {
+  it("sends an unverified admin to the OTP screen too", () => {
+    mockUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      user: { role: "admin", email: "a@x.com", isEmailVerified: false },
+    })
+    renderAt("/admin")
+    expect(screen.queryByText("Admin dashboard")).not.toBeInTheDocument()
+    expect(screen.getByText("Verification code screen")).toBeInTheDocument()
+  })
+
   it("sends unauthenticated visitors to /login", () => {
     mockUseAuth.mockReturnValue({ isAuthenticated: false, isLoading: false, user: null })
     renderAt("/admin")
@@ -68,14 +98,18 @@ describe("AdminRoute", () => {
   })
 
   it("redirects sellers from admin pages to their dashboard", () => {
-    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "seller" } })
+    mockUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      user: { role: "seller", email: "s@x.com", isEmailVerified: true },
+    })
     renderAt("/admin")
     expect(screen.queryByText("Admin dashboard")).not.toBeInTheDocument()
     expect(screen.getByText("Seller dashboard")).toBeInTheDocument()
   })
 
   it("lets admins and platform owners in", () => {
-    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "admin" } })
+    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "admin", email: "a@x.com", isEmailVerified: true } })
     renderAt("/admin")
     expect(screen.getByText("Admin dashboard")).toBeInTheDocument()
   })

@@ -17,6 +17,7 @@ function renderAt(path: string) {
         <Route path="/register" element={<GuestRoute><div>Register form</div></GuestRoute>} />
         <Route path="/dashboard" element={<div>Seller dashboard</div>} />
         <Route path="/admin" element={<div>Admin dashboard</div>} />
+        <Route path="/verify-email" element={<div>Verification code screen</div>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -34,14 +35,14 @@ describe("GuestRoute", () => {
   })
 
   it("redirects a logged-in seller from /register to the dashboard", () => {
-    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "seller" } })
+    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "seller", email: "s@x.com", isEmailVerified: true } })
     renderAt("/register")
     expect(screen.queryByText("Register form")).not.toBeInTheDocument()
     expect(screen.getByText("Seller dashboard")).toBeInTheDocument()
   })
 
   it("redirects a logged-in seller from /login to the dashboard", () => {
-    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "seller" } })
+    mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "seller", email: "s@x.com", isEmailVerified: true } })
     renderAt("/login")
     expect(screen.getByText("Seller dashboard")).toBeInTheDocument()
   })
@@ -50,6 +51,17 @@ describe("GuestRoute", () => {
     mockUseAuth.mockReturnValue({ isAuthenticated: true, isLoading: false, user: { role: "admin" } })
     renderAt("/register")
     expect(screen.getByText("Admin dashboard")).toBeInTheDocument()
+  })
+
+  it("holds a freshly registered, unverified seller on the OTP screen", () => {
+    mockUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      user: { role: "seller", email: "new@x.com", isEmailVerified: false },
+    })
+    renderAt("/register")
+    expect(screen.queryByText("Seller dashboard")).not.toBeInTheDocument()
+    expect(screen.getByText("Verification code screen")).toBeInTheDocument()
   })
 
   it("waits for the session check before deciding", () => {
