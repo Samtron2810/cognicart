@@ -1,8 +1,53 @@
 import { useEffect, useState } from "react"
 import { useAuth } from "../../context/AuthContext"
 import { useBusiness } from "../../context/BusinessContext"
-import { Upload, Store, Truck, CreditCard, Send, Info } from "lucide-react"
+import { Upload, Store, Truck, CreditCard, Send, Info, MailWarning, CheckCircle2 } from "lucide-react"
 import { Link } from "react-router-dom"
+import { authService } from "../../services/authService"
+import { getApiErrorMessage } from "../../services/apiError"
+
+function EmailVerificationNotice() {
+  const { user } = useAuth()
+  const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  if (!user || user.isEmailVerified) return null
+
+  const handleResend = async () => {
+    setSending(true)
+    setError(null)
+    try {
+      await authService.resendVerification(user.email)
+      setSent(true)
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Could not resend the verification email."))
+    } finally {
+      setSending(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#E85D26]/25 bg-[#FFF1DA] px-4 py-3">
+      <div className="flex items-center gap-2 text-sm text-[#1a1a1a]">
+        <MailWarning className="h-4 w-4 shrink-0 text-[#E85D26]" />
+        <span>
+          <span className="font-bold">Verify your email</span> ({user.email}) to secure your account.
+        </span>
+      </div>
+      {sent ? (
+        <span className="flex items-center gap-1.5 text-sm font-bold text-[#0B9C74]"><CheckCircle2 className="h-4 w-4" /> Link sent — check your inbox</span>
+      ) : (
+        <div className="flex items-center gap-3">
+          {error && <span className="text-xs text-red-600">{error}</span>}
+          <button onClick={() => void handleResend()} disabled={sending} className="rounded-full bg-[#1a1a1a] px-4 py-1.5 text-xs font-bold text-white hover:bg-black disabled:opacity-60">
+            {sending ? "Sending..." : "Resend link"}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function Settings() {
   const { user } = useAuth()
@@ -94,6 +139,8 @@ export default function Settings() {
         <h1 className="font-display text-2xl font-bold tracking-tight">Business profile</h1>
         <p className="text-sm text-[#6b6b6b]">Sellers create their business profile, delivery and payment settings. This is the source AI uses to answer "where do you deliver?" and "how do I pay?"</p>
       </div>
+
+      <EmailVerificationNotice />
 
       {saved && <div className="rounded-xl bg-[#E6F7F1] border border-[#0B9C74]/20 px-3 py-2.5 text-sm font-medium text-[#0B9C74]">Business profile saved to the backend.</div>}
 

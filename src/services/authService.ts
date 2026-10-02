@@ -57,6 +57,29 @@ export const authService = {
     }
   },
 
+  async resendVerification(email: string): Promise<{ success: boolean; message: string }> {
+    const { data } = await api.post("/auth/resend-verification", { email: email.trim().toLowerCase() })
+    return data
+  },
+
+  async verifyEmail(token: string): Promise<Seller> {
+    const { data } = await api.get<{ success: boolean; seller: Seller }>("/auth/verify-email", { params: { token } })
+    if (data?.seller) currentUser = data.seller
+    return data.seller
+  },
+
+  async forgotPassword(email: string): Promise<{ success: boolean; message: string }> {
+    if (!isEmail(email.trim())) throw new Error("Enter a valid email address")
+    const { data } = await api.post("/auth/forgot-password", { email: email.trim().toLowerCase() })
+    return data
+  },
+
+  async resetPassword(token: string, password: string): Promise<AuthResponse> {
+    if (!isStrongPassword(password)) throw new Error("Password must be 8+ characters with an uppercase letter and number")
+    const { data } = await api.post<AuthResponse>("/auth/reset-password", { token, password })
+    return normalizeResponse(data)
+  },
+
   /** Keeps the JWT in memory while the secure backend cookie handles browser sessions. */
   persist(token: string, seller: Seller) {
     setAccessToken(token)

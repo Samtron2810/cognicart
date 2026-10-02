@@ -52,7 +52,10 @@ export default function Login() {
             <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@example.com" className="mt-1 w-full rounded-xl border border-[#F3E6D3] bg-white px-3 py-2.5 text-sm focus:border-[#0B9C74] focus:ring-2 focus:ring-[#0B9C74]/15 outline-none" />
           </label>
           <label className="block">
-            <span className="text-xs font-bold text-[#1a1a1a]">Password</span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#1a1a1a]">Password</span>
+              <Link to="/forgot-password" className="text-xs font-bold text-[#0B9C74] hover:underline">Forgot password?</Link>
+            </div>
             <PasswordInput value={form.password} onChange={(password) => setForm({ ...form, password })} placeholder="Your password" />
           </label>
 

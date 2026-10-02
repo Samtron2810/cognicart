@@ -5,6 +5,7 @@ export type Seller = {
   phone?: string
   role?: "seller" | "admin" | "platform_owner"
   isActive?: boolean
+  isEmailVerified?: boolean
   createdAt: string
 }
 

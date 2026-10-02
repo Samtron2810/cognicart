@@ -2,6 +2,9 @@ import { Routes, Route } from "react-router-dom"
 import Home from "../pages/Home"
 import Login from "../pages/auth/Login"
 import Register from "../pages/auth/Register"
+import ForgotPassword from "../pages/auth/ForgotPassword"
+import ResetPassword from "../pages/auth/ResetPassword"
+import VerifyEmail from "../pages/auth/VerifyEmail"
 import Dashboard from "../pages/dashboard/Dashboard"
 import Products from "../pages/products/Products"
 import CreateProduct from "../pages/products/CreateProduct"
@@ -72,6 +75,9 @@ export function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
       <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+      <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
+      <Route path="/reset-password" element={<GuestRoute><ResetPassword /></GuestRoute>} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
 
       <Route element={<PublicLayout />}>
         <Route path="/store" element={<Storefront />} />
