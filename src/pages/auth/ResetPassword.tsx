@@ -6,6 +6,7 @@ import { PasswordInput } from "../../components/forms/PasswordInput"
 import { AuthLayout } from "../../layouts/AuthLayout"
 import { authService } from "../../services/authService"
 import { getApiErrorMessage } from "../../services/apiError"
+import { isStrongPassword } from "../../utils/validation"
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams()
@@ -23,6 +24,10 @@ export default function ResetPassword() {
     setError(null)
     if (!token) {
       setError("This reset link is missing its token. Request a new one.")
+      return
+    }
+    if (!isStrongPassword(form.password)) {
+      setError("Password must be 8+ characters with an uppercase letter and a number")
       return
     }
     if (form.password !== form.confirm) {
@@ -59,7 +64,7 @@ export default function ResetPassword() {
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <label className="block">
               <span className="text-xs font-bold text-[#1a1a1a]">New password</span>
-              <PasswordInput value={form.password} onChange={(password) => setForm({ ...form, password })} placeholder="At least 8 characters" />
+              <PasswordInput value={form.password} onChange={(password) => setForm({ ...form, password })} placeholder="8+ characters, 1 uppercase, 1 number" />
             </label>
             <label className="block">
               <span className="text-xs font-bold text-[#1a1a1a]">Confirm new password</span>

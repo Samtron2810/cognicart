@@ -6,6 +6,7 @@ import { PasswordInput } from "../../components/forms/PasswordInput"
 import { AuthLayout } from "../../layouts/AuthLayout"
 import { getApiErrorMessage } from "../../services/apiError"
 import { authService } from "../../services/authService"
+import { isStrongPassword } from "../../utils/validation"
 
 export default function Register() {
   const { register } = useAuth()
@@ -24,8 +25,8 @@ export default function Register() {
       setError("Business name, email and password are required")
       return
     }
-    if (form.password.length < 6) {
-      setError("Password must be at least 6 characters")
+    if (!isStrongPassword(form.password)) {
+      setError("Password must be 8+ characters with an uppercase letter and a number")
       return
     }
     if (form.password !== form.confirm) {
@@ -118,7 +119,7 @@ export default function Register() {
           </label>
           <label className="block">
             <span className="text-xs font-bold text-[#1a1a1a]">Password</span>
-            <PasswordInput value={form.password} onChange={(password) => setForm({ ...form, password })} placeholder="At least 6 characters" />
+            <PasswordInput value={form.password} onChange={(password) => setForm({ ...form, password })} placeholder="8+ characters, 1 uppercase, 1 number" />
           </label>
           <label className="block">
             <span className="text-xs font-bold text-[#1a1a1a]">Confirm password</span>

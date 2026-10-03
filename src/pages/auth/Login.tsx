@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import { PasswordInput } from "../../components/forms/PasswordInput"
 import { AuthLayout } from "../../layouts/AuthLayout"
-import { authService } from "../../services/authService"
 import { getApiErrorMessage } from "../../services/apiError"
 
 export default function Login() {
@@ -23,12 +22,10 @@ export default function Login() {
     setLoading(true)
     try {
       await login(form)
-      const seller = authService.getStoredSeller()
-      if (seller?.role === "admin" || seller?.role === "platform_owner") {
-        navigate("/admin")
-      } else {
-        navigate("/dashboard")
-      }
+      // Land on /dashboard unconditionally: ProtectedRoute/AdminRoute already
+      // redirect admins to /admin and unverified sellers to /verify-email, so
+      // duplicating that branching here only risked drifting out of sync.
+      navigate("/dashboard")
     } catch (err: unknown) {
       const msg = getApiErrorMessage(err, "Login failed")
       setError(msg)
