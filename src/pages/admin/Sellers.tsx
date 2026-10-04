@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Search, Eye, Ban, CheckCircle, Store, Wallet } from "lucide-react"
 import { adminService, type AccountRoleFilter } from "../../services/adminService"
+import { BusinessAvatar } from "../../components/admin/BusinessAvatar"
 
 export default function AdminSellers() {
   const [sellers, setSellers] = useState<Awaited<ReturnType<typeof adminService.listSellers>>>([])
@@ -58,15 +59,18 @@ export default function AdminSellers() {
         </div>
         {filtered.map(({ seller, productsCount, ordersCount, revenue, telegramConnected, business }) => (
           <div key={seller.id} className="rounded-2xl bg-white border border-[#F3E6D3] p-4 lg:grid lg:grid-cols-[1fr_90px_90px_110px_110px_160px] lg:items-center gap-4">
-            <div className="min-w-0">
-              <div className="text-sm font-bold truncate flex items-center gap-2">
-                {seller.businessName}
-                {seller.role === "admin" && <span className="rounded-full bg-[#0B9C74] px-2 py-0.5 text-xs text-white">ADMIN</span>}
-                {seller.role === "platform_owner" && <span className="rounded-full bg-[#1a1a1a] px-2 py-0.5 text-xs text-white">OWNER</span>}
-                {seller.isActive === false && <span className="rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-xs font-bold text-red-700">SUSPENDED</span>}
+            <div className="min-w-0 flex items-center gap-3">
+              <BusinessAvatar logo={business?.logo} name={seller.businessName} className="h-10 w-10 rounded-xl" />
+              <div className="min-w-0">
+                <div className="text-sm font-bold truncate flex items-center gap-2">
+                  {seller.businessName}
+                  {seller.role === "admin" && <span className="rounded-full bg-[#0B9C74] px-2 py-0.5 text-xs text-white">ADMIN</span>}
+                  {seller.role === "platform_owner" && <span className="rounded-full bg-[#1a1a1a] px-2 py-0.5 text-xs text-white">OWNER</span>}
+                  {seller.isActive === false && <span className="rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-xs font-bold text-red-700">SUSPENDED</span>}
+                </div>
+                <div className="text-xs text-[#6b6b6b] truncate">{seller.email} • {seller.phone || "—"}</div>
+                <div className="text-xs text-[#9a9a9a]">{seller.role || "seller"} • {new Date(seller.createdAt).toLocaleDateString()}</div>
               </div>
-              <div className="text-xs text-[#6b6b6b] truncate">{seller.email} • {seller.phone || "—"}</div>
-              <div className="text-xs text-[#9a9a9a]">{seller.role || "seller"} • {new Date(seller.createdAt).toLocaleDateString()}</div>
             </div>
             <div className="hidden lg:block text-sm font-bold">{productsCount}</div>
             <div className="hidden lg:block text-sm font-bold">{ordersCount}</div>

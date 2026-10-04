@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { ArrowLeft, Ban, CheckCircle, Package, ShoppingCart, UserCircle, Send } from "lucide-react"
 import { adminService } from "../../services/adminService"
+import { BusinessAvatar } from "../../components/admin/BusinessAvatar"
 
 export default function SellerDetails() {
   const { id } = useParams<{ id: string }>()
@@ -45,7 +46,7 @@ export default function SellerDetails() {
       <div className="rounded-[22px] bg-white border border-[#F3E6D3] p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex gap-3">
-            <div className="h-12 w-12 rounded-xl bg-[#1a1a1a] text-white grid place-items-center font-bold">{seller.businessName.charAt(0)}</div>
+            <BusinessAvatar logo={business?.logo} name={seller.businessName} className="h-12 w-12 rounded-xl text-lg" />
             <div>
               <div className="font-display text-xl font-bold flex items-center gap-2">{seller.businessName} {seller.role === "admin" && <span className="rounded-full bg-[#0B9C74] px-2 py-0.5 text-xs text-white">ADMIN</span>} {seller.isActive === false && <span className="rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-xs font-bold text-red-700">SUSPENDED</span>}</div>
               <div className="text-sm text-[#6b6b6b]">{seller.email} • {seller.phone || "—"} • {seller.role}</div>
