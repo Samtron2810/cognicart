@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Megaphone, Plus, Trash2 } from "lucide-react"
+import { toast } from "sonner"
+import { useConfirm } from "../../context/ConfirmContext"
 import { broadcastService } from "../../services/broadcastService"
 import type { Broadcast, BroadcastStatus } from "../../types/broadcast"
 
@@ -15,6 +17,7 @@ export default function AdminBroadcasts() {
   const [rows, setRows] = useState<Broadcast[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const confirm = useConfirm()
 
   const load = async () => {
     try {
@@ -30,8 +33,14 @@ export default function AdminBroadcasts() {
   useEffect(() => { load() }, [])
 
   const remove = async (id: string) => {
-    if (!confirm("Delete this broadcast? Delivery history goes with it.")) return
+    const confirmed = await confirm({
+      title: "Delete this broadcast?",
+      description: "Its delivery history goes with it. This cannot be undone.",
+      confirmLabel: "Delete broadcast",
+    })
+    if (!confirmed) return
     await broadcastService.remove(id)
+    toast.success("Broadcast deleted")
     load()
   }
 

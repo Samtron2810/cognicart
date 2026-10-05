@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Search, Eye, Ban, CheckCircle, Store, Wallet } from "lucide-react"
+import { toast } from "sonner"
+import { useConfirm } from "../../context/ConfirmContext"
 import { adminService, type AccountRoleFilter } from "../../services/adminService"
 import { BusinessAvatar } from "../../components/admin/BusinessAvatar"
 
@@ -10,6 +12,7 @@ export default function AdminSellers() {
   // Sellers by default: admin accounts are User rows too, and mixing them in
   // is what made the platform counts disagree with this page.
   const [roleFilter, setRoleFilter] = useState<AccountRoleFilter>("seller")
+  const confirm = useConfirm()
 
   const load = useCallback(async () => {
     const data = await adminService.listSellers(roleFilter)
@@ -21,8 +24,16 @@ export default function AdminSellers() {
   const filtered = sellers.filter((s) => !search || s.seller.businessName.toLowerCase().includes(search.toLowerCase()) || s.seller.email.toLowerCase().includes(search.toLowerCase()))
 
   const toggle = async (sellerId: string, isActive: boolean) => {
-    if (!confirm(isActive ? "Suspend this account?" : "Activate this account?")) return
+    const confirmed = await confirm({
+      title: isActive ? "Suspend this account?" : "Activate this account?",
+      description: isActive
+        ? "The account loses dashboard access and its storefront stops taking orders until you reactivate it."
+        : "The account regains dashboard access and its storefront goes live again.",
+      confirmLabel: isActive ? "Suspend account" : "Activate account",
+    })
+    if (!confirmed) return
     await adminService.toggleSellerActive(sellerId, !isActive)
+    toast.success(isActive ? "Account suspended" : "Account activated")
     load()
   }
 

@@ -23,6 +23,9 @@ export default defineConfig([
       'react-hooks/set-state-in-effect': 'off',
       'react-hooks/purity': 'off',
       'react-refresh/only-export-components': 'off',
+      // UI feedback goes through the ConfirmDialog (useConfirm) and sonner toasts,
+      // so the blocking native dialogs stay out of the codebase.
+      'no-alert': 'error',
     },
   },
 ])

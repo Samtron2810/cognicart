@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { ArrowLeft, RefreshCw, Send } from "lucide-react"
+import { toast } from "sonner"
+import { useConfirm } from "../../context/ConfirmContext"
 import { broadcastService } from "../../services/broadcastService"
 import type { Broadcast } from "../../types/broadcast"
 
@@ -17,6 +19,7 @@ export default function AdminBroadcastDetail() {
   const [error, setError] = useState("")
   const [busy, setBusy] = useState(false)
   const [filter, setFilter] = useState<"all" | "sent" | "failed" | "pending">("all")
+  const confirm = useConfirm()
 
   const load = useCallback(async () => {
     try {
@@ -36,18 +39,30 @@ export default function AdminBroadcastDetail() {
   }, [broadcast?.status, load])
 
   const act = async (action: "send" | "retry") => {
+    // Ask before sending, and only then enter the busy state: the modal is async,
+    // so flipping the buttons to "disabled" first would freeze them behind it.
+    if (action === "send") {
+      const confirmed = await confirm({
+        title: "Send this broadcast now?",
+        description: "Emails go out immediately to every seller in the audience. It cannot be recalled.",
+        confirmLabel: "Send now",
+      })
+      if (!confirmed) return
+    }
     setBusy(true); setError("")
     try {
       if (action === "send") {
-        if (!confirm("Send this broadcast now? It cannot be recalled.")) return
         await broadcastService.send(id)
+        toast.success("Broadcast queued for delivery")
       } else {
         await broadcastService.retryFailed(id)
+        toast.success("Retrying failed deliveries")
       }
       await load()
     } catch (err) {
       const message = (err as { response?: { data?: { message?: string } } }).response?.data?.message
       setError(message || "Action failed.")
+      toast.error(message || "Action failed.")
     } finally {
       setBusy(false)
     }

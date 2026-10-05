@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Search, Plus, Pencil, Trash2, Power, Package, Tag, Palette } from "lucide-react"
+import { toast } from "sonner"
+import { useConfirm } from "../../context/ConfirmContext"
 import { productService } from "../../services/productService"
 import { PRODUCT_CATEGORIES } from "../../types/product"
 import { getDisplayPrice, getTotalStock } from "../../types/product"
@@ -11,6 +13,7 @@ export default function Products() {
   const [search, setSearch] = useState("")
   const [category, setCategory] = useState("")
   const [loading, setLoading] = useState(true)
+  const confirm = useConfirm()
 
   const load = async () => {
     setLoading(true)
@@ -31,8 +34,14 @@ export default function Products() {
   }, [search, category])
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this product? This cannot be undone.")) return
+    const confirmed = await confirm({
+      title: "Delete this product?",
+      description: "It is removed from your catalog, storefront and Telegram bot. This cannot be undone.",
+      confirmLabel: "Delete product",
+    })
+    if (!confirmed) return
     await productService.remove(id)
+    toast.success("Product deleted")
     load()
   }
 
@@ -43,7 +52,7 @@ export default function Products() {
 
   const handleToggleDiscount = async (p: Product) => {
     if (!p.discount) {
-      alert("No discount configured. Edit product to add discount.")
+      toast.warning("No discount configured. Edit product to add discount.")
       return
     }
     await productService.toggleDiscount(p.id, { ...p.discount, active: !p.discount.active })

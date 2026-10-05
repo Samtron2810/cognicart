@@ -3,8 +3,10 @@ import { AuthProvider } from "./context/AuthContext"
 import { BusinessProvider } from "./context/BusinessContext"
 import { CartProvider } from "./context/CartContext"
 import { ShopperProvider } from "./context/ShopperContext"
+import { ConfirmProvider } from "./context/ConfirmContext"
 import { AppRoutes } from "./routes/AppRoutes"
 import { ErrorBoundary } from "./components/ErrorBoundary"
+import { AppToaster } from "./components/ui/Toaster"
 
 export default function App() {
   return (
@@ -14,7 +16,11 @@ export default function App() {
           <BusinessProvider>
             <ShopperProvider>
               <CartProvider>
-                <AppRoutes />
+                {/* Confirmation modal + toasts replace window.confirm() and alert() app-wide. */}
+                <ConfirmProvider>
+                  <AppRoutes />
+                  <AppToaster />
+                </ConfirmProvider>
               </CartProvider>
             </ShopperProvider>
           </BusinessProvider>

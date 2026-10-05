@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { ArrowLeft, Ban, CheckCircle, Package, ShoppingCart, UserCircle, Send } from "lucide-react"
+import { toast } from "sonner"
+import { useConfirm } from "../../context/ConfirmContext"
 import { adminService } from "../../services/adminService"
 import { BusinessAvatar } from "../../components/admin/BusinessAvatar"
 
@@ -8,6 +10,7 @@ export default function SellerDetails() {
   const { id } = useParams<{ id: string }>()
   const [data, setData] = useState<Awaited<ReturnType<typeof adminService.getSellerDetails>> | null>(null)
   const [loading, setLoading] = useState(true)
+  const confirm = useConfirm()
 
   const load = async () => {
     if (!id) return
@@ -28,8 +31,16 @@ export default function SellerDetails() {
   const toggle = async () => {
     if (!data) return
     const isActive = data.seller.isActive !== false
-    if (!confirm(isActive ? "Suspend seller?" : "Activate seller?")) return
+    const confirmed = await confirm({
+      title: isActive ? `Suspend ${data.seller.businessName}?` : `Activate ${data.seller.businessName}?`,
+      description: isActive
+        ? "The seller loses dashboard access and their storefront stops taking orders until you reactivate them."
+        : "The seller regains dashboard access and their storefront goes live again.",
+      confirmLabel: isActive ? "Suspend seller" : "Activate seller",
+    })
+    if (!confirmed) return
     await adminService.toggleSellerActive(data.seller.id, !isActive)
+    toast.success(isActive ? "Seller suspended" : "Seller activated")
     load()
   }
 

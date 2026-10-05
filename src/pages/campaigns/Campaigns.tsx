@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { AlarmClock, Megaphone, Plus, RefreshCw, Send, Users } from "lucide-react"
+import { useConfirm } from "../../context/ConfirmContext"
 import { campaignService } from "../../services/campaignService"
 import { CAMPAIGN_SEGMENTS, CAMPAIGN_SEGMENT_LABELS } from "../../types/campaign"
 import type { Campaign, CampaignSegment, SegmentPreview } from "../../types/campaign"
@@ -28,6 +29,7 @@ export default function Campaigns() {
   const [previewLoading, setPreviewLoading] = useState(false)
   const [creating, setCreating] = useState(false)
   const [triggeringReminders, setTriggeringReminders] = useState(false)
+  const confirm = useConfirm()
 
   const load = async () => {
     setError(null)
@@ -77,7 +79,12 @@ export default function Campaigns() {
   }
 
   const handleAbandonedReminders = async () => {
-    if (!confirm("Send Telegram reminders now for unpaid Telegram orders?")) return
+    const confirmed = await confirm({
+      title: "Send Telegram reminders now?",
+      description: "Every customer with an unpaid Telegram order gets a reminder message right away.",
+      confirmLabel: "Send reminders",
+    })
+    if (!confirmed) return
     setTriggeringReminders(true)
     setError(null)
     try {

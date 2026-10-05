@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { ArrowLeft, ShoppingBag, Heart, Check, Truck, Shield, Share2, Copy, Send, Store, ChevronRight, Tag, Palette } from "lucide-react"
+import { toast } from "sonner"
 import { productService } from "../../services/productService"
 import { useCart } from "../../context/CartContext"
 import { useSEO } from "../../hooks/useSEO"
@@ -85,12 +86,12 @@ export default function ProductDetail() {
   const handleAdd = () => {
     if (!product) return
     if (product.variants && product.variants.length > 0 && !selectedVariant) {
-      alert("Please select size and color")
+      toast.error("Please select size and color")
       return
     }
     if (isOut) return
     if (cartItems.length > 0 && cartItems[0].sellerId !== product.sellerId) {
-      alert("Checkout supports one store at a time. Complete or clear your current cart first.")
+      toast.error("Checkout supports one store at a time. Complete or clear your current cart first.")
       return
     }
     addItem({ productId: product.id, sellerId: product.sellerId, variantId: selectedVariant || undefined })
