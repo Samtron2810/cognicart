@@ -165,7 +165,7 @@ export default function VerifyEmail() {
         <div className="rounded-2xl bg-white border border-[#F3E6D3] p-6 sm:p-8 shadow-sm text-center">
           <CheckCircle2 className="mx-auto h-10 w-10 text-[#0B9C74]" />
           <h1 className="mt-3 font-display text-xl font-bold">Email verified</h1>
-          <p className="mt-1 text-sm text-[#6b6b6b]">Your Cognicart account is fully set up.</p>
+          <p className="mt-1 text-sm text-[#6b6b6b]">Your Chatstand account is fully set up.</p>
           <button
             onClick={() => navigate("/dashboard")}
             className="mt-6 inline-flex rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66]"

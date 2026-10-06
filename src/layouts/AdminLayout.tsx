@@ -39,7 +39,7 @@ export function AdminLayout() {
               <span className="h-8 w-8 rounded-lg bg-[#0B9C74] grid place-items-center text-white">
                 <Shield className="h-4 w-4" />
               </span>
-              <span className="font-display font-bold hover:text-[#0B9C74] transition">Cognicart</span>
+              <span className="font-display font-bold hover:text-[#0B9C74] transition">Chatstand</span>
               <span className="hidden sm:inline-flex text-[11px] font-bold tracking-widest bg-[#E6F7F1] text-[#0B9C74] px-2 py-0.5 rounded">PLATFORM</span>
             </Link>
           </div>

@@ -19,18 +19,18 @@ export default function Contact() {
             </div>
             <label className="text-sm block"><span className="text-xs font-bold">How can we help</span><textarea required rows={4} placeholder="I sell fashion in Lagos, need help connecting my Telegram bot..." className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none resize-none" /></label>
             <button type="submit" className="rounded-full bg-[#0B9C74] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66]">Send message</button>
-            <p className="text-xs text-[#9a9a9a]">Or email hello@cognicart.ng • We never share your contact.</p>
+            <p className="text-xs text-[#9a9a9a]">Or email hello@chatstand.ng • We never share your contact.</p>
           </form>
 
           <div className="space-y-4">
             <div className="rounded-[22px] bg-[#1a1a1a] text-white p-6">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold"><MessageCircle className="h-3.5 w-3.5" /> Telegram AI</div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold"><MessageCircle className="h-3.5 w-3.5" /> Telegram</div>
               <h3 className="mt-3 font-display text-xl font-bold leading-tight">Chat to sell smarter</h3>
               <p className="mt-2 text-sm text-white/70 leading-6">Sellers get priority support on Telegram. Customers chat naturally with your bot and AI checks stock, price and delivery from your live catalog.</p>
-              <a href="https://t.me/cognicart" target="_blank" rel="noreferrer" className="mt-4 inline-flex rounded-full bg-[#229ED9] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#1c82b3]">Open Telegram</a>
+              <a href="https://t.me/chatstand" target="_blank" rel="noreferrer" className="mt-4 inline-flex rounded-full bg-[#229ED9] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#1c82b3]">Open Telegram</a>
             </div>
             <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5 space-y-3 text-sm">
-              <div className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 text-[#0B9C74]" /><div><div className="font-bold">Email</div><div className="text-[#6b6b6b]">hello@cognicart.ng</div></div></div>
+              <div className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 text-[#0B9C74]" /><div><div className="font-bold">Email</div><div className="text-[#6b6b6b]">hello@chatstand.ng</div></div></div>
               <div className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 text-[#0B9C74]" /><div><div className="font-bold">Phone</div><div className="text-[#6b6b6b]">+234 800 000 0000</div></div></div>
               <div className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 text-[#0B9C74]" /><div><div className="font-bold">Port Harcourt</div><div className="text-[#6b6b6b]">Built for sellers everywhere</div></div></div>
             </div>

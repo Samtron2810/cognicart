@@ -10,12 +10,12 @@ import { useSEO } from "../hooks/useSEO"
 
 export default function Home() {
   useSEO({
-    title: "Cognicart — Telegram AI Commerce for African Sellers",
-    description: "Sell online and in chat. Your Telegram bot answers buyers from your live catalog, your storefront takes guest checkout, and every order lands in one dashboard.",
-    ogTitle: "Cognicart — Telegram AI Commerce",
-    ogDescription: "Give every seller an AI salesperson on Telegram plus a public storefront. Search, price, stock, orders — one unified dashboard.",
+    title: "Chatstand — AI Chat Commerce for African Sellers",
+    description: "Sell online and in chat. An AI assistant answers buyers from your live catalog, your storefront takes guest checkout, and every order lands in one dashboard.",
+    ogTitle: "Chatstand — AI Chat Commerce",
+    ogDescription: "Give every seller an AI salesperson in chat plus a public storefront. Search, price, stock, orders — one unified dashboard.",
     ogImage: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=1200&h=630&fit=crop",
-    ogUrl: typeof window !== "undefined" ? window.location.origin : "https://cognicart.ng",
+    ogUrl: typeof window !== "undefined" ? window.location.origin : "https://chatstand.ng",
   })
   return (
     <div className="min-h-screen bg-[#FFFBF5] text-[#1a1a1a] selection:bg-[#0B9C74]/20">

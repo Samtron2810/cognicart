@@ -199,7 +199,7 @@ export default function Settings() {
 
             <label className="sm:col-span-2">
               <span className="text-xs font-bold">Business name *</span>
-              <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Cognicart Fashion" className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none" required />
+              <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Vivid Fashions" className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none" required />
             </label>
 
             <label className="sm:col-span-2">
@@ -284,7 +284,7 @@ export default function Settings() {
               </label>
               <label className="sm:col-span-2">
                 <span className="text-xs font-bold">Account name</span>
-                <input value={form.accountName} onChange={(e) => setForm({ ...form, accountName: e.target.value })} placeholder="Cognicart Fashion" className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none" />
+                <input value={form.accountName} onChange={(e) => setForm({ ...form, accountName: e.target.value })} placeholder="Vivid Fashions" className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none" />
               </label>
             </div>
           </div>

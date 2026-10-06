@@ -1,6 +1,6 @@
-# Cognicart web client
+# Chatstand web client
 
-The Cognicart web client is a React + TypeScript application for the [Cognicart backend](https://github.com/Samtron2810/cognicart-backend). It powers:
+The Chatstand web client is a React + TypeScript application for the [Chatstand backend](https://github.com/Samtron2810/chatstand-backend). It powers:
 
 - **Telegram conversational commerce** — sellers connect their own Telegram bot; an AI assistant answers buyers from the seller's live catalog and captures orders in chat.
 - **Public storefronts with guest checkout** — buyers purchase with name, phone, email and delivery address. No account or password is required. Order updates for storefront buyers are sent by email (Brevo) from the backend.
@@ -15,7 +15,7 @@ WhatsApp is **not** an automated channel. It appears only as (a) a selectable so
 
 ## Connect the backend
 
-1. Deploy and configure [`Samtron2810/cognicart-backend`](https://github.com/Samtron2810/cognicart-backend) with MongoDB, Paystack, Brevo, and an AI provider key.
+1. Deploy and configure [`Samtron2810/chatstand-backend`](https://github.com/Samtron2810/chatstand-backend) with MongoDB, Paystack, Brevo, and an AI provider key.
 2. Copy the environment example:
 
    ```bash

@@ -38,8 +38,8 @@ export default function Track() {
   const [savingProfile, setSavingProfile] = useState(false)
 
   useSEO({
-    title: "Track your orders — Cognicart",
-    description: "View your order history across Cognicart stores. Passwordless: verify with the code or link sent to your email — no account or password needed.",
+    title: "Track your orders — Chatstand",
+    description: "View your order history across Chatstand stores. Passwordless: verify with the code or link sent to your email — no account or password needed.",
   })
 
   useEffect(() => {
@@ -148,7 +148,7 @@ export default function Track() {
     <div className="min-h-screen bg-[#FFFBF5] py-10">
       <div className="mx-auto max-w-[880px] px-4 sm:px-6">
         <h1 className="font-display text-[34px] font-bold tracking-tight">Your orders</h1>
-        <p className="text-sm text-[#6b6b6b]">Order history across every Cognicart store you've bought from. No password — verify with your email whenever you need access.</p>
+        <p className="text-sm text-[#6b6b6b]">Order history across every Chatstand store you've bought from. No password — verify with your email whenever you need access.</p>
 
         {error && <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700" role="alert">{error}</div>}
         {notice && <div className="mt-4 rounded-xl border border-[#0B9C74]/20 bg-[#E6F7F1] px-3 py-2.5 text-sm text-[#0B9C74]">{notice}</div>}

@@ -11,7 +11,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             <span className="h-8 w-8 rounded-lg bg-[#0B9C74] grid place-items-center text-white">
               <MessageCircle className="h-4 w-4 fill-white/20" />
             </span>
-            <span className="font-display font-bold text-lg">Cognicart</span>
+            <span className="font-display font-bold text-lg">Chatstand</span>
           </Link>
           <Link to="/" className="text-sm font-medium text-[#6b6b6b] hover:text-[#1a1a1a]">
             Back to home
@@ -23,7 +23,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         <div className="w-full max-w-[420px]">{children}</div>
       </main>
 
-      <footer className="py-6 text-center text-xs text-[#9a9a9a]">© 2026 Cognicart. Built in Port Harcourt.</footer>
+      <footer className="py-6 text-center text-xs text-[#9a9a9a]">© 2026 Chatstand. Built in Port Harcourt.</footer>
     </div>
   )
 }

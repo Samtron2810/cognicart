@@ -22,9 +22,9 @@ export default function Storefront() {
   const [stores, setStores] = useState<Record<string, StorefrontProfile>>({})
   const [loading, setLoading] = useState(true)
 
-  const title = q ? `Search "${q}" — Storefront | Cognicart` : category ? `${category} — Storefront | Cognicart` : "Storefront — Shop African Sellers Online | Cognicart"
-  const desc = "Public catalog on Cognicart. Buy online with guest checkout, or chat with sellers' Telegram bots for the same live prices and stock."
-  const canonical = typeof window !== "undefined" ? window.location.href : "https://cognicart.ng/store"
+  const title = q ? `Search "${q}" — Storefront | Chatstand` : category ? `${category} — Storefront | Chatstand` : "Storefront — Shop African Sellers Online | Chatstand"
+  const desc = "Public catalog on Chatstand. Buy online with guest checkout, or chat with sellers' AI assistants for the same live prices and stock."
+  const canonical = typeof window !== "undefined" ? window.location.href : "https://chatstand.ng/store"
 
   useSEO({
     title,

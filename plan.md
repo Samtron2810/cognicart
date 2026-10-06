@@ -1,8 +1,8 @@
-# Cognicart — Telegram AI Commerce Platform Plan
+# Chatstand — AI Chat Commerce Platform Plan
 
 ## 1. Project Overview
 
-Cognicart is a multi-tenant commerce platform for African sellers built around three sales channels that feed a single seller dashboard:
+Chatstand is a multi-tenant commerce platform for African sellers built around three sales channels that feed a single seller dashboard:
 
 1. **Telegram conversational commerce** — each seller connects their own Telegram bot. An AI assistant answers buyers from the seller's live catalog (products, variants, prices, stock) and captures orders in chat.
 2. **Public storefront** — every seller gets an SEO-friendly public store with product pages and guest checkout (name, phone, email, delivery address — no account, no password). Storefront buyers receive transactional email via Brevo.
@@ -62,7 +62,7 @@ Sellers list products once. The same catalog powers the storefront and the Teleg
 - **Axios** — one client with Bearer token in memory + `withCredentials` cookies. Telegram bot-management calls derive the server root from `VITE_API_URL` because those routes are mounted outside `/api`.
 - **Vitest + Testing Library** — unit and component tests.
 
-## Backend (separate repository: `Samtron2810/cognicart-backend`)
+## Backend (separate repository: `Samtron2810/chatstand-backend`)
 
 - Node.js + Express, MongoDB/Mongoose.
 - Telegram Bot API webhooks (per-bot secret verification, provider message-id dedupe).

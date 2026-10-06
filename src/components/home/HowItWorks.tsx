@@ -30,10 +30,10 @@ export function HowItWorks() {
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full bg-[#E6F7F1] border border-[#0B9C74]/10 px-3 py-1 text-xs font-bold text-[#0B9C74]">
-            <Sparkles className="h-3.5 w-3.5" /> How Cognicart works
+            <Sparkles className="h-3.5 w-3.5" /> How Chatstand works
           </span>
           <h2 className="font-display text-[32px] lg:text-[40px] font-bold tracking-tight leading-none mt-4">From chat to checkout in 3 taps</h2>
-          <p className="mt-3 text-sm leading-6 text-[#5a5a5a]">Your AI shop lives on Telegram and your free storefront — where your customers already are.</p>
+          <p className="mt-3 text-sm leading-6 text-[#5a5a5a]">Your AI shop lives in chat and on your free storefront — where your customers already are.</p>
         </div>
 
         <div className="mt-10 grid lg:grid-cols-3 gap-6">

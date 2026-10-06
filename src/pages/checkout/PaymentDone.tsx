@@ -84,7 +84,7 @@ export default function PaymentDone() {
         {/* Brand mark */}
         <div className="mb-8 text-center">
           <span className="inline-block rounded-2xl bg-[#0B9C74] px-4 py-1.5 text-sm font-bold text-white tracking-wide">
-            Cognicart
+            Chatstand
           </span>
         </div>
 

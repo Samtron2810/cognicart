@@ -29,7 +29,7 @@ export default function Careers() {
             ))}
           </div>
           <div className="rounded-[22px] bg-[#1a1a1a] text-white p-6">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold"><Briefcase className="h-3.5 w-3.5" /> Why Cognicart</div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold"><Briefcase className="h-3.5 w-3.5" /> Why Chatstand</div>
             <h3 className="mt-3 font-display text-xl font-bold leading-tight">Small team, large impact</h3>
             <p className="mt-2 text-sm text-white/70 leading-6">We are sellers serving sellers. You will talk to real traders, ride with delivery partners, and see your code handle orders on Telegram the same day.</p>
             <Link to="/about" className="mt-4 inline-flex rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#1a1a1a] hover:bg-[#FFF1DA]">Learn about us</Link>

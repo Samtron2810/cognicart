@@ -61,7 +61,7 @@ export function DashboardLayout() {
                 <Store className="h-4 w-4" />
               </span>
               <span className="font-display font-bold hover:text-[#0B9C74] transition">
-                Cognicart
+                Chatstand
               </span>
               <span className="hidden sm:inline-flex text-[11px] font-bold tracking-widest text-[#0B9C74] bg-[#E6F7F1] px-2 py-0.5 rounded">
                 SELLER

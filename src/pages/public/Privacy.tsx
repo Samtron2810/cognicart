@@ -20,7 +20,7 @@ export default function Privacy() {
           </section>
           <section>
             <h2 className="font-bold text-base">4. Your rights</h2>
-            <p className="mt-1 text-[#5a5a5a]">You can export or delete your business data. Contact hello@cognicart.ng for data requests. Telegram conversations follow Telegram’s Bot API terms.</p>
+            <p className="mt-1 text-[#5a5a5a]">You can export or delete your business data. Contact hello@chatstand.ng for data requests. Telegram conversations follow Telegram’s Bot API terms.</p>
           </section>
           <section>
             <h2 className="font-bold text-base">5. Terms</h2>

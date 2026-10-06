@@ -7,7 +7,7 @@ export function FinalCTA() {
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
         <div className="rounded-[24px] bg-white p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-8">
           <div>
-            <h3 className="font-display text-[28px] lg:text-[36px] font-bold leading-none tracking-tight">Open your Telegram-powered store today.</h3>
+            <h3 className="font-display text-[28px] lg:text-[36px] font-bold leading-none tracking-tight">Open your chat-powered store today.</h3>
             <p className="mt-3 max-w-[560px] text-sm leading-6 text-[#5a5a5a]">Import from Instagram or catalog in minutes. Your AI starts selling while you sleep and you keep the profit.</p>
             <div className="mt-2 flex items-center gap-4 text-xs font-bold text-[#6b6b6b]">
               <span className="inline-flex items-center gap-1">

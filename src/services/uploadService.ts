@@ -4,7 +4,7 @@ import { logger } from "./logger"
 /**
  * Signed direct-to-Cloudinary uploads.
  *
- * The file never passes through the Cognicart API. We ask the backend for a
+ * The file never passes through the Chatstand API. We ask the backend for a
  * short-lived signature scoped to this seller's folder, then POST the file
  * straight to Cloudinary and keep only the returned URL + public_id.
  *

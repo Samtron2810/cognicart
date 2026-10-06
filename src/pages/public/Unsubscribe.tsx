@@ -52,7 +52,7 @@ export default function Unsubscribe() {
               Undo — keep sending announcements
             </button>
           )}
-          <Link to="/" className="rounded-full bg-[#0B9C74] px-5 py-2 text-sm font-bold text-white hover:bg-[#0a8a66]">Back to Cognicart</Link>
+          <Link to="/" className="rounded-full bg-[#0B9C74] px-5 py-2 text-sm font-bold text-white hover:bg-[#0a8a66]">Back to Chatstand</Link>
         </div>
       </div>
     </div>

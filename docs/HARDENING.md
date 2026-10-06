@@ -2,7 +2,7 @@
 
 ## Backend authority
 
-The frontend does not keep a local data store or provide mock fallbacks. Authentication, business profiles, product inventory, customers, orders, payments, Telegram transcripts, campaigns, and platform administration are all served by the Cognicart API configured in `VITE_API_URL`.
+The frontend does not keep a local data store or provide mock fallbacks. Authentication, business profiles, product inventory, customers, orders, payments, Telegram transcripts, campaigns, and platform administration are all served by the Chatstand API configured in `VITE_API_URL`.
 
 The only short-lived client state is the active React checkout basket. It is not persisted and live product records are re-fetched before checkout.
 

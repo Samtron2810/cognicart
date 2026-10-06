@@ -3,7 +3,7 @@ export default function Terms() {
     <div className="min-h-screen bg-[#FFFBF5]">
       <div className="mx-auto max-w-[800px] px-4 sm:px-6 lg:px-8 py-10">
         <h1 className="font-display text-[34px] font-bold tracking-tight">Terms of service</h1>
-        <p className="mt-2 text-sm text-[#5a5a5a]">Simple terms for sellers and customers using Cognicart.</p>
+        <p className="mt-2 text-sm text-[#5a5a5a]">Simple terms for sellers and customers using Chatstand.</p>
         <div className="mt-8 rounded-[22px] bg-white border border-[#F3E6D3] p-6 sm:p-8 space-y-6 text-sm leading-6 text-[#2b2b2b]">
           <section><h2 className="font-bold">1. Accepting terms</h2><p className="mt-1 text-[#5a5a5a]">By creating a seller account you agree to these terms and, when you connect a bot, to Telegram’s Bot API terms.</p></section>
           <section><h2 className="font-bold">2. Seller responsibilities</h2><p className="mt-1 text-[#5a5a5a]">Keep product name, description, price and stock accurate. AI answers from your database. You handle packing, delivery and refunds per your policy shown at checkout.</p></section>

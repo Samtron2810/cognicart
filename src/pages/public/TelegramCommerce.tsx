@@ -4,10 +4,10 @@ import { useSEO } from "../../hooks/useSEO"
 
 export default function TelegramCommerce() {
   useSEO({
-    title: "Telegram Commerce — Sell in chat with your own AI bot | Cognicart",
-    description: "Connect your own Telegram bot to Cognicart. An AI assistant answers buyers from your live catalog, takes orders in chat, and every sale lands in one unified dashboard alongside storefront and manual orders.",
-    canonical: "https://cognicart.ng/telegram-commerce",
-    ogTitle: "Telegram Commerce on Cognicart",
+    title: "Telegram Commerce — Sell in chat with your own AI bot | Chatstand",
+    description: "Connect your own Telegram bot to Chatstand. An AI assistant answers buyers from your live catalog, takes orders in chat, and every sale lands in one unified dashboard alongside storefront and manual orders.",
+    canonical: "https://chatstand.ng/telegram-commerce",
+    ogTitle: "Telegram Commerce on Chatstand",
     ogDescription: "Your own Telegram bot, powered by AI that only speaks from your catalog. Orders sync to one dashboard with your storefront and manual sales.",
   })
 
@@ -19,7 +19,7 @@ export default function TelegramCommerce() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-[#229ED9]/20 border border-[#229ED9]/40 px-3 py-1 text-xs font-bold text-[#7fd0f5]"><Send className="h-3.5 w-3.5" /> TELEGRAM COMMERCE</div>
             <h1 className="mt-4 font-display text-[36px] sm:text-[44px] font-bold tracking-tight leading-tight">Your store, inside Telegram — answered by AI, run by you.</h1>
-            <p className="mt-4 text-sm sm:text-base leading-7 text-white/70">Connect a Telegram bot you own and Cognicart turns it into a shop assistant. It answers product questions, quotes live prices and stock, and takes orders — all from your real catalog, never invented data. Every conversation and order shows up in your seller dashboard.</p>
+            <p className="mt-4 text-sm sm:text-base leading-7 text-white/70">Connect a Telegram bot you own and Chatstand turns it into a shop assistant. It answers product questions, quotes live prices and stock, and takes orders — all from your real catalog, never invented data. Every conversation and order shows up in your seller dashboard.</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/register" className="rounded-full bg-[#229ED9] px-6 py-3 text-sm font-bold text-white hover:bg-[#1c82b3]">Start selling on Telegram</Link>
               <Link to="/store" className="rounded-full bg-white/10 border border-white/20 px-6 py-3 text-sm font-bold text-white hover:bg-white/20">Browse stores</Link>
@@ -87,7 +87,7 @@ export default function TelegramCommerce() {
             {[
               { q: "Do I need my own Telegram bot?", a: "Yes — you create it free with @BotFather and connect it with its token. Buyers chat with your brand, not ours." },
               { q: "Can the AI make up prices or discounts?", a: "No. It only reads your live catalog through controlled tools. If it doesn't know, it says so." },
-              { q: "What about WhatsApp?", a: "Cognicart doesn't automate WhatsApp. You can still log WhatsApp-negotiated sales as manual orders and share order updates via wa.me links you open yourself." },
+              { q: "What about WhatsApp?", a: "Chatstand doesn't automate WhatsApp. You can still log WhatsApp-negotiated sales as manual orders and share order updates via wa.me links you open yourself." },
               { q: "How do buyers who don't use Telegram order?", a: "Through your public storefront — guest checkout with name, phone, email and address. They get email updates and can track orders with a passwordless code." },
             ].map(({ q, a }) => (
               <div key={q} className="rounded-2xl bg-white border border-[#F3E6D3] p-5">

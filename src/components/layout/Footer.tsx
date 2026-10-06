@@ -11,15 +11,15 @@ export function Footer() {
               <span className="h-8 w-8 rounded-lg bg-white text-[#1a1a1a] grid place-items-center font-bold text-sm">
                 C
               </span>
-              <span className="font-display font-bold text-lg">Cognicart</span>
+              <span className="font-display font-bold text-lg">Chatstand</span>
             </Link>
             <p className="mt-3 text-sm leading-6 text-white/60 max-w-[320px]">
-              Telegram AI commerce and online storefronts for African sellers.
+              AI chat commerce and online storefronts for African sellers.
               Sell where your customers chat.
             </p>
             <div className="mt-4 flex gap-2">
               <a
-                href="https://t.me/cognicart"
+                href="https://t.me/chatstand"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Telegram"
@@ -154,7 +154,7 @@ export function Footer() {
 
         <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50">
           <span>
-            © 2026 Cognicart. Built in Port Harcourt for sellers everywhere.
+            © 2026 Chatstand. Built in Port Harcourt for sellers everywhere.
           </span>
           <span>
             Made with love in Port Harcourt •{" "}

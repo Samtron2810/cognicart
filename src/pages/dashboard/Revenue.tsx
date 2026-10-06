@@ -89,7 +89,7 @@ export default function Revenue() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `cognicart_transactions_${new Date().toISOString().slice(0, 10)}.csv`
+    a.download = `chatstand_transactions_${new Date().toISOString().slice(0, 10)}.csv`
     a.click()
     URL.revokeObjectURL(url)
   }

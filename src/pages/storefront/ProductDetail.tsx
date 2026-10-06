@@ -20,7 +20,7 @@ export default function ProductDetail() {
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null)
   const { items: cartItems, addItem } = useCart()
 
-  const sellerName = store?.name || "Cognicart Seller"
+  const sellerName = store?.name || "Chatstand Seller"
 
   useEffect(() => {
     if (!id) return
@@ -51,9 +51,9 @@ export default function ProductDetail() {
   const variantStock = variant ? variant.stock : totalStock
   const isOut = variant ? variant.stock === 0 : totalStock === 0
 
-  const url = typeof window !== "undefined" ? window.location.href : `https://cognicart.ng/store/${id}`
-  const title = product ? `${product.name} — ₦${effectivePrice.toLocaleString()}${display.hasDiscount ? ` (was ₦${display.original.toLocaleString()})` : ""} | ${sellerName} on Cognicart` : "Product — Cognicart"
-  const desc = product ? `${product.description.slice(0, 155)} • ${product.category}${product.variants ? ` • ${product.variants.length} variants` : ""} • ${totalStock > 0 ? `In stock ${totalStock}` : "Out of stock"} • Guest checkout online${store?.telegramBotUrl ? " or order in Telegram chat" : ""}.` : "Product on Cognicart"
+  const url = typeof window !== "undefined" ? window.location.href : `https://chatstand.ng/store/${id}`
+  const title = product ? `${product.name} — ₦${effectivePrice.toLocaleString()}${display.hasDiscount ? ` (was ₦${display.original.toLocaleString()})` : ""} | ${sellerName} on Chatstand` : "Product — Chatstand"
+  const desc = product ? `${product.description.slice(0, 155)} • ${product.category}${product.variants ? ` • ${product.variants.length} variants` : ""} • ${totalStock > 0 ? `In stock ${totalStock}` : "Out of stock"} • Guest checkout online${store?.telegramBotUrl ? " or order in Telegram chat" : ""}.` : "Product on Chatstand"
   const ogImage = product?.images[0] || "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=1200&h=630&fit=crop"
 
   useSEO({
@@ -108,7 +108,7 @@ export default function ProductDetail() {
   const variantLabel = variant ? [variant.size, variant.color].filter(Boolean).join(" / ") || variant.sku || "" : ""
   // Share-only wa.me link: opens the visitor's own WhatsApp with pre-filled
   // text so they can share the product. Not a checkout or notification channel.
-  const waShareText = product ? `${product.name}${variantLabel ? ` (${variantLabel})` : ""} — ₦${effectivePrice.toLocaleString()} from ${sellerName} on Cognicart: ${url}` : ""
+  const waShareText = product ? `${product.name}${variantLabel ? ` (${variantLabel})` : ""} — ₦${effectivePrice.toLocaleString()} from ${sellerName} on Chatstand: ${url}` : ""
   const waShareLink = `https://wa.me/?text=${encodeURIComponent(waShareText)}`
 
   if (loading) return <div className="min-h-[50vh] grid place-items-center"><div className="h-8 w-8 rounded-full border-2 border-[#0B9C74] border-t-transparent animate-spin" /></div>
