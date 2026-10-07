@@ -2,7 +2,7 @@ import axios from "axios"
 import { logger } from "./logger"
 
 /**
- * API client for the WABAC backend.
+ * API client for the Chatstand backend.
  *
  * Set VITE_API_URL to the deployed backend's `/api` URL in production. The
  * localhost default only points to a running backend during local development;
