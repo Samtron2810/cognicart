@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom"
-import { LayoutDashboard, Users, ShoppingCart, UserCircle, Wallet, CreditCard, Send, Crown, BarChart3, Settings, LogOut, Menu, X, Shield, Megaphone } from "lucide-react"
+import { LayoutDashboard, Users, ShoppingCart, UserCircle, Wallet, CreditCard, Send, Crown, BarChart3, Settings, LogOut, Menu, X, Megaphone } from "lucide-react"
 import { useAuth } from "../context/AuthContext"
 import { useState } from "react"
 
@@ -36,9 +36,7 @@ export function AdminLayout() {
               {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
             <Link to="/" className="flex items-center gap-2.5" title="Go to homepage">
-              <span className="h-8 w-8 rounded-lg bg-[#0B9C74] grid place-items-center text-white">
-                <Shield className="h-4 w-4" />
-              </span>
+              <img src="/logo.png" alt="" aria-hidden="true" width={32} height={32} className="h-8 w-8 object-contain" />
               <span className="font-display font-bold hover:text-[#0B9C74] transition">Chatstand</span>
               <span className="hidden sm:inline-flex text-[11px] font-bold tracking-widest bg-[#E6F7F1] text-[#0B9C74] px-2 py-0.5 rounded">PLATFORM</span>
             </Link>

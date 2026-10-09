@@ -8,9 +8,7 @@ export function Footer() {
         <div className="grid lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-8">
           <div>
             <Link to="/" className="flex items-center gap-2.5">
-              <span className="h-8 w-8 rounded-lg bg-white text-[#1a1a1a] grid place-items-center font-bold text-sm">
-                C
-              </span>
+              <img src="/logo.png" alt="" aria-hidden="true" width={32} height={32} className="h-8 w-8 object-contain" />
               <span className="font-display font-bold text-lg">Chatstand</span>
             </Link>
             <p className="mt-3 text-sm leading-6 text-white/60 max-w-[320px]">

@@ -57,9 +57,7 @@ export function DashboardLayout() {
               className="flex items-center gap-2.5"
               title="Go to homepage"
             >
-              <span className="h-8 w-8 rounded-lg bg-[#0B9C74] grid place-items-center text-white">
-                <Store className="h-4 w-4" />
-              </span>
+              <img src="/logo.png" alt="" aria-hidden="true" width={32} height={32} className="h-8 w-8 object-contain" />
               <span className="font-display font-bold hover:text-[#0B9C74] transition">
                 Chatstand
               </span>
