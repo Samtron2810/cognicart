@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
 import Home from "../pages/Home"
 import Login from "../pages/auth/Login"
 import Register from "../pages/auth/Register"
@@ -21,6 +21,8 @@ import ManualOrderForm from "../pages/orders/ManualOrderForm"
 import Storefront from "../pages/storefront/Storefront"
 import ProductDetail from "../pages/storefront/ProductDetail"
 import SellerStorefront from "../pages/storefront/SellerStorefront"
+import Stores from "../pages/storefront/Stores"
+import { ProductRedirect, SellerStoreRedirect } from "./LegacyRedirects"
 import { DashboardLayout } from "../layouts/DashboardLayout"
 import { AdminLayout } from "../layouts/AdminLayout"
 import { PublicLayout } from "../layouts/PublicLayout"
@@ -84,10 +86,20 @@ export function AppRoutes() {
       <Route path="/verify-email" element={<VerifyEmail />} />
 
       <Route element={<PublicLayout />}>
-        <Route path="/store" element={<Storefront />} />
-        <Route path="/store/:id" element={<ProductDetail />} />
-        <Route path="/store/seller/:sellerId" element={<SellerStorefront />} />
-        <Route path="/s/:sellerId" element={<SellerStorefront />} />
+        {/* Seller-first directory. /stores lists STORES; /marketplace keeps
+            the older all-products grid. */}
+        <Route path="/stores" element={<Stores />} />
+        <Route path="/store" element={<Navigate to="/stores" replace />} />
+
+        {/* Canonical store + nested product URLs. A static segment such as
+            "seller" outranks :identifier in React Router, so the legacy
+            redirects below still match. */}
+        <Route path="/store/seller/:sellerId" element={<SellerStoreRedirect />} />
+        <Route path="/s/:sellerId" element={<SellerStoreRedirect />} />
+        <Route path="/p/:productId" element={<ProductRedirect />} />
+        <Route path="/store/:identifier" element={<SellerStorefront />} />
+        <Route path="/store/:identifier/products/:productId" element={<ProductDetail />} />
+
         <Route path="/marketplace" element={<Storefront />} />
 
         <Route path="/about" element={<About />} />

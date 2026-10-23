@@ -18,7 +18,7 @@ export default function ProductDetail() {
   const [added, setAdded] = useState(false)
   const [copied, setCopied] = useState(false)
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null)
-  const { items: cartItems, addItem } = useCart()
+  const { addItem } = useCart()
 
   const sellerName = store?.name || "Chatstand Seller"
 
@@ -90,10 +90,7 @@ export default function ProductDetail() {
       return
     }
     if (isOut) return
-    if (cartItems.length > 0 && cartItems[0].sellerId !== product.sellerId) {
-      toast.error("Checkout supports one store at a time. Complete or clear your current cart first.")
-      return
-    }
+    // Items from different stores can share a basket; checkout splits them.
     addItem({ productId: product.id, sellerId: product.sellerId, variantId: selectedVariant || undefined })
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)

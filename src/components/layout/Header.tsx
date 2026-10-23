@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { GlobalSearch } from "../search/GlobalSearch";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -46,6 +47,12 @@ export function Header() {
                 AI COMMERCE
               </span>
             </Link>
+            {/* Global search: reachable from every page, which is the point
+                of the "easy navigation" requirement. */}
+            <div className="hidden min-w-0 flex-1 px-6 lg:block lg:max-w-sm">
+              <GlobalSearch />
+            </div>
+
             <nav className="hidden lg:flex items-center gap-1 text-[14px] font-medium text-[#2b2b2b]">
               <button
                 onClick={() => scrollTo("features")}
@@ -54,10 +61,10 @@ export function Header() {
                 Features
               </button>
               <Link
-                to="/store"
+                to="/stores"
                 className="px-3 py-2 rounded-full hover:bg-[#FFF1DA] transition flex items-center gap-1"
               >
-                Marketplace <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+                Stores <ChevronDown className="h-3.5 w-3.5 opacity-60" />
               </Link>
               <button
                 onClick={() => scrollTo("sellers")}
@@ -148,6 +155,10 @@ export function Header() {
 
         {mobileOpen && (
           <div className="lg:hidden pb-6 border-t border-[#F3E6D3] pt-4 bg-[#FFFBF5]">
+            <div className="mb-3 lg:hidden">
+              <GlobalSearch onNavigate={() => setMobileOpen(false)} />
+            </div>
+
             <nav className="grid gap-1 text-sm font-medium">
               <button
                 onClick={() => scrollTo("features")}
@@ -156,7 +167,7 @@ export function Header() {
                 Features
               </button>
               <Link
-                to="/store"
+                to="/stores"
                 onClick={() => setMobileOpen(false)}
                 className="px-3 py-2.5 rounded-xl bg-white border border-[#F3E6D3]"
               >

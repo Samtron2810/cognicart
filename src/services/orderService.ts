@@ -11,6 +11,8 @@ import type {
   UpdateManualOrderPayload,
 } from "../types/order"
 import { getIdempotencyKey } from "../utils/idempotency"
+import type { OrderGroupPayload } from "../utils/checkout"
+import type { OrderGroup } from "../types/orderGroup"
 
 export type OrderFilters = {
   search?: string
@@ -44,6 +46,26 @@ export const orderService = {
     const { data } = await api.post<Order>("/orders", payload, {
       headers: { "X-Idempotency-Key": getIdempotencyKey("order") },
     })
+    return data
+  },
+
+  /**
+   * Multi-store checkout: one parent order, one sub-order per seller.
+   * The backend owns pricing and stock for every sub-order.
+   */
+  async createGroup(payload: OrderGroupPayload): Promise<OrderGroup> {
+    const { data } = await api.post<OrderGroup>("/orders/group", payload, {
+      headers: { "X-Idempotency-Key": getIdempotencyKey("ordergroup") },
+    })
+    return data
+  },
+
+  /** Start the single Paystack charge covering the whole group. */
+  async payGroup(groupId: string, email: string): Promise<{ reference: string; authorization_url?: string }> {
+    const { data } = await api.post<{ reference: string; authorization_url?: string }>(
+      `/orders/group/${groupId}/pay`,
+      { email },
+    )
     return data
   },
 

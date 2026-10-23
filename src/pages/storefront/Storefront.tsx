@@ -13,7 +13,7 @@ import { useCart } from "../../context/CartContext"
 export default function Storefront() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { items: cartItems, addItem } = useCart()
+  const { addItem } = useCart()
   const [addedId, setAddedId] = useState<string | null>(null)
   const [cartError, setCartError] = useState<string | null>(null)
   const category = searchParams.get("category") || ""
@@ -71,10 +71,8 @@ export default function Storefront() {
       return
     }
     if (p.stock < 1) return
-    if (cartItems.length > 0 && cartItems[0].sellerId !== p.sellerId) {
-      setCartError("Checkout supports one store at a time. Complete or clear your current cart before adding from another store.")
-      return
-    }
+    // Multi-store baskets are supported: the cart groups by seller and
+    // checkout splits one payment into a sub-order per store.
     addItem({ productId: p.id, sellerId: p.sellerId })
     setAddedId(p.id)
     setTimeout(() => setAddedId((current) => (current === p.id ? null : current)), 1600)

@@ -47,3 +47,45 @@ export function buildCheckoutPayload(
     deliveryAddress: customer.address.trim(),
   }
 }
+
+/** A cart line that knows which store it came from. */
+export type MultiStoreItem = CheckoutItem & { sellerId: string }
+
+export type OrderGroupPayload = {
+  customer: { name: string; phone: string; email: string; address: string }
+  items: { sellerId: string; productId: string; variantId?: string; quantity: number }[]
+  deliveryAddress: string
+}
+
+/**
+ * Build the payload for a basket spanning several stores.
+ *
+ * Deliberately carries no prices or totals. The backend groups by sellerId,
+ * prices each sub-order itself and returns the authoritative grand total —
+ * so a tampered browser cannot decide what anything costs.
+ */
+export function buildOrderGroupPayload(
+  customer: CheckoutCustomer,
+  items: MultiStoreItem[],
+): OrderGroupPayload {
+  return {
+    customer: {
+      name: customer.name.trim(),
+      phone: customer.phone.trim(),
+      email: customer.email.trim().toLowerCase(),
+      address: customer.address.trim(),
+    },
+    items: items.map((item) => ({
+      sellerId: item.sellerId,
+      productId: item.productId,
+      variantId: item.variantId,
+      quantity: item.quantity ?? 1,
+    })),
+    deliveryAddress: customer.address.trim(),
+  }
+}
+
+/** Distinct stores in a basket, in the order the buyer added them. */
+export function sellersInCart(items: { sellerId: string }[]): string[] {
+  return [...new Set(items.map((item) => item.sellerId))]
+}
