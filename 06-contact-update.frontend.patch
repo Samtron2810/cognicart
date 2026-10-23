@@ -1,0 +1,324 @@
+From 43ca5399deeb2d670acb5f6fdb497c3401bfedd2 Mon Sep 17 00:00:00 2001
+From: dev <dev@chatstand.ng>
+Date: Tue, 13 Oct 2026 10:23:02 +0000
+Subject: [PATCH] contact: remove Port Harcourt copy, route the form to email,
+ update contact address
+
+Outstanding work on top of 7834d64. Two parts:
+
+1. Contact update (not previously pushed)
+   - Drop every Port Harcourt mention from brand copy (Footer, AuthLayout,
+     About, Careers, Contact) and from a checkout test fixture. Replacements
+     are location-neutral rather than naming a different city.
+   - Contact form now hands off to the device mail app via mailto: with name,
+     phone-or-email and message prefilled under a generic subject. The form
+     previously captured nothing: the inputs were uncontrolled and submit only
+     flashed a false "Message received" banner.
+   - Contact address is now trewallaffiliates@gmail.com (Contact + Privacy).
+   - Add Contact.test.tsx covering recipient, subject, body and URL escaping.
+
+2. Leftover from the logo commit
+   - Remove public/favicon.svg, the purple #863bff bolt. It is referenced
+     nowhere since index.html was repointed, so it was dead weight.
+---
+ public/favicon.svg                |  1 -
+ src/components/layout/Footer.tsx  |  4 +-
+ src/layouts/AuthLayout.tsx        |  2 +-
+ src/pages/public/About.tsx        |  4 +-
+ src/pages/public/Careers.tsx      |  4 +-
+ src/pages/public/Contact.test.tsx | 85 +++++++++++++++++++++++++++++++
+ src/pages/public/Contact.tsx      | 49 +++++++++++++++---
+ src/pages/public/Privacy.tsx      |  2 +-
+ src/utils/checkout.test.ts        |  6 +--
+ 9 files changed, 137 insertions(+), 20 deletions(-)
+ delete mode 100644 public/favicon.svg
+ create mode 100644 src/pages/public/Contact.test.tsx
+
+diff --git a/public/favicon.svg b/public/favicon.svg
+deleted file mode 100644
+index 6893eb1..0000000
+--- a/public/favicon.svg
++++ /dev/null
+@@ -1 +0,0 @@
+-<svg xmlns="http://www.w3.org/2000/svg" width="48" height="46" fill="none" viewBox="0 0 48 46"><path fill="#863bff" d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z" style="fill:#863bff;fill:color(display-p3 .5252 .23 1);fill-opacity:1"/><mask id="a" width="48" height="46" x="0" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#000" d="M25.842 44.938c-.664.844-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.183c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.498 0-3.579-1.842-3.579H1.133c-.92 0-1.456-1.04-.92-1.787L9.91.473c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.578 1.842 3.578h11.377c.943 0 1.473 1.088.89 1.832L25.843 44.94z" style="fill:#000;fill-opacity:1"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="5.508" cy="14.704" fill="#ede6ff" rx="5.508" ry="14.704" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -4.47 31.516)"/></g><g filter="url(#c)"><ellipse cx="10.399" cy="29.851" fill="#ede6ff" rx="10.399" ry="29.851" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -39.328 7.883)"/></g><g filter="url(#d)"><ellipse cx="5.508" cy="30.487" fill="#7e14ff" rx="5.508" ry="30.487" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.814 -25.913 -14.639)scale(1 -1)"/></g><g filter="url(#e)"><ellipse cx="5.508" cy="30.599" fill="#7e14ff" rx="5.508" ry="30.599" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.814 -32.644 -3.334)scale(1 -1)"/></g><g filter="url(#f)"><ellipse cx="5.508" cy="30.599" fill="#7e14ff" rx="5.508" ry="30.599" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -34.34 30.47)"/></g><g filter="url(#g)"><ellipse cx="14.072" cy="22.078" fill="#ede6ff" rx="14.072" ry="22.078" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="rotate(93.35 24.506 48.493)scale(-1 1)"/></g><g filter="url(#h)"><ellipse cx="3.47" cy="21.501" fill="#7e14ff" rx="3.47" ry="21.501" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.009 28.708 47.59)scale(-1 1)"/></g><g filter="url(#i)"><ellipse cx="3.47" cy="21.501" fill="#7e14ff" rx="3.47" ry="21.501" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.009 28.708 47.59)scale(-1 1)"/></g><g filter="url(#j)"><ellipse cx=".387" cy="8.972" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(39.51 .387 8.972)"/></g><g filter="url(#k)"><ellipse cx="47.523" cy="-6.092" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 47.523 -6.092)"/></g><g filter="url(#l)"><ellipse cx="41.412" cy="6.333" fill="#47bfff" rx="5.971" ry="9.665" style="fill:#47bfff;fill:color(display-p3 .2799 .748 1);fill-opacity:1" transform="rotate(37.892 41.412 6.333)"/></g><g filter="url(#m)"><ellipse cx="-1.879" cy="38.332" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 -1.88 38.332)"/></g><g filter="url(#n)"><ellipse cx="-1.879" cy="38.332" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 -1.88 38.332)"/></g><g filter="url(#o)"><ellipse cx="35.651" cy="29.907" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 35.651 29.907)"/></g><g filter="url(#p)"><ellipse cx="38.418" cy="32.4" fill="#47bfff" rx="5.971" ry="15.297" style="fill:#47bfff;fill:color(display-p3 .2799 .748 1);fill-opacity:1" transform="rotate(37.892 38.418 32.4)"/></g></g><defs><filter id="b" width="60.045" height="41.654" x="-19.77" y="16.149" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="c" width="90.34" height="51.437" x="-54.613" y="-7.533" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="d" width="79.355" height="29.4" x="-49.64" y="2.03" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="e" width="79.579" height="29.4" x="-45.045" y="20.029" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="f" width="79.579" height="29.4" x="-43.513" y="21.178" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="g" width="74.749" height="58.852" x="15.756" y="-17.901" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="h" width="61.377" height="25.362" x="23.548" y="2.284" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="i" width="61.377" height="25.362" x="23.548" y="2.284" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="j" width="56.045" height="63.649" x="-27.636" y="-22.853" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="k" width="54.814" height="64.646" x="20.116" y="-38.415" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="l" width="33.541" height="35.313" x="24.641" y="-11.323" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="m" width="54.814" height="64.646" x="-29.286" y="6.009" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="n" width="54.814" height="64.646" x="-29.286" y="6.009" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="o" width="54.814" height="64.646" x="8.244" y="-2.416" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="p" width="39.409" height="43.623" x="18.713" y="10.588" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter></defs></svg>
+\ No newline at end of file
+diff --git a/src/components/layout/Footer.tsx b/src/components/layout/Footer.tsx
+index 56819a5..b492310 100644
+--- a/src/components/layout/Footer.tsx
++++ b/src/components/layout/Footer.tsx
+@@ -152,10 +152,10 @@ export function Footer() {
+ 
+         <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50">
+           <span>
+-            © 2026 Chatstand. Built in Port Harcourt for sellers everywhere.
++            © 2026 Chatstand. Built for sellers everywhere.
+           </span>
+           <span>
+-            Made with love in Port Harcourt •{" "}
++            Made with love for African sellers •{" "}
+             <Link to="/privacy" className="hover:text-white underline">
+               Privacy and Terms
+             </Link>
+diff --git a/src/layouts/AuthLayout.tsx b/src/layouts/AuthLayout.tsx
+index a62d1e4..9ae805e 100644
+--- a/src/layouts/AuthLayout.tsx
++++ b/src/layouts/AuthLayout.tsx
+@@ -20,7 +20,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
+         <div className="w-full max-w-[420px]">{children}</div>
+       </main>
+ 
+-      <footer className="py-6 text-center text-xs text-[#9a9a9a]">© 2026 Chatstand. Built in Port Harcourt.</footer>
++      <footer className="py-6 text-center text-xs text-[#9a9a9a]">© 2026 Chatstand. Built for sellers everywhere.</footer>
+     </div>
+   )
+ }
+diff --git a/src/pages/public/About.tsx b/src/pages/public/About.tsx
+index 7915088..4d7918f 100644
+--- a/src/pages/public/About.tsx
++++ b/src/pages/public/About.tsx
+@@ -13,7 +13,7 @@ export default function About() {
+         <div className="mt-8 grid lg:grid-cols-2 gap-6">
+           <div className="rounded-[22px] bg-white border border-[#F3E6D3] p-6">
+             <h2 className="font-display text-xl font-bold">Our story</h2>
+-            <p className="mt-2 text-sm leading-6 text-[#5a5a5a]">Chatstand started in Port Harcourt listening to Instagram vendors who stayed up replying DMs. We built an AI that knows a seller's products, prices and stock and replies in chat in seconds. No invented prices. No hallucinations. Just the seller's database through controlled tools.</p>
++            <p className="mt-2 text-sm leading-6 text-[#5a5a5a]">Chatstand started by listening to Instagram vendors who stayed up replying DMs. We built an AI that knows a seller's products, prices and stock and replies in chat in seconds. No invented prices. No hallucinations. Just the seller's database through controlled tools.</p>
+             <p className="mt-3 text-sm leading-6 text-[#5a5a5a]">Today sellers on Chatstand list once and let AI handle FAQs, upsells and "where is my order" in chat — Telegram today — while storefront and manual sales flow into the same dashboard.</p>
+             <div className="mt-5 flex gap-3">
+               <Link to="/register" className="rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66]">Start selling</Link>
+@@ -26,7 +26,7 @@ export default function About() {
+               <li className="flex gap-2"><Target className="h-4 w-4 mt-0.5 text-[#0B9C74]" /> Commerce should be conversational, not catalog browsing.</li>
+               <li className="flex gap-2"><Users className="h-4 w-4 mt-0.5 text-[#0B9C74]" /> Sellers deserve calm dashboards, not chaos.</li>
+               <li className="flex gap-2"><MessageCircle className="h-4 w-4 mt-0.5 text-[#0B9C74]" /> AI must be constrained to the seller's truth.</li>
+-              <li className="flex gap-2"><Heart className="h-4 w-4 mt-0.5 text-[#0B9C74]" /> Built in Port Harcourt for sellers everywhere.</li>
++              <li className="flex gap-2"><Heart className="h-4 w-4 mt-0.5 text-[#0B9C74]" /> Built for sellers everywhere.</li>
+             </ul>
+           </div>
+         </div>
+diff --git a/src/pages/public/Careers.tsx b/src/pages/public/Careers.tsx
+index 07e0c8c..2ed10ec 100644
+--- a/src/pages/public/Careers.tsx
++++ b/src/pages/public/Careers.tsx
+@@ -2,9 +2,9 @@ import { Link } from "react-router-dom"
+ import { Briefcase, MapPin, Clock } from "lucide-react"
+ 
+ const roles = [
+-  { title: "Product Engineer (React + Node)", location: "Port Harcourt / Remote", type: "Full-time", desc: "Ship seller dashboard, storefront, and Telegram tools. TypeScript and Tailwind." },
++  { title: "Product Engineer (React + Node)", location: "Remote", type: "Full-time", desc: "Ship seller dashboard, storefront, and Telegram tools. TypeScript and Tailwind." },
+   { title: "AI Engineer (OpenAI tools)", location: "Remote", type: "Full-time", desc: "Build constrained tools searchProducts, checkStock, createOrder for the AI seller." },
+-  { title: "Seller Success", location: "Lagos / Port Harcourt", type: "Part-time", desc: "Help fashion and beauty sellers onboard, list products and connect their Telegram bots." },
++  { title: "Seller Success", location: "Lagos / Remote", type: "Part-time", desc: "Help fashion and beauty sellers onboard, list products and connect their Telegram bots." },
+ ]
+ 
+ export default function Careers() {
+diff --git a/src/pages/public/Contact.test.tsx b/src/pages/public/Contact.test.tsx
+new file mode 100644
+index 0000000..d975290
+--- /dev/null
++++ b/src/pages/public/Contact.test.tsx
+@@ -0,0 +1,85 @@
++import { describe, it, expect, beforeEach, afterEach } from "vitest"
++import { render, screen, fireEvent } from "@testing-library/react"
++import Contact from "./Contact"
++
++// The form hands off to the device's mail app by assigning window.location.href.
++// jsdom has no navigation, so swap location for a recorder.
++let assigned = ""
++const realLocation = window.location
++
++beforeEach(() => {
++  assigned = ""
++  Object.defineProperty(window, "location", {
++    configurable: true,
++    value: {
++      get href() { return assigned },
++      set href(v: string) { assigned = v },
++    },
++  })
++})
++
++afterEach(() => {
++  Object.defineProperty(window, "location", { configurable: true, value: realLocation })
++})
++
++function fillAndSubmit(name: string, contact: string, message: string) {
++  render(<Contact />)
++  fireEvent.change(screen.getByPlaceholderText("Amara"), { target: { value: name } })
++  fireEvent.change(screen.getByPlaceholderText("+234 ... or you@mail.com"), { target: { value: contact } })
++  fireEvent.change(screen.getByPlaceholderText(/need help connecting my Telegram bot/i), { target: { value: message } })
++  fireEvent.click(screen.getByRole("button", { name: /send message/i }))
++}
++
++/** Pull the decoded subject/body back out of the generated mailto URL. */
++function parseMailto(url: string) {
++  const [scheme, query] = url.split("?")
++  const params = new URLSearchParams(query)
++  return {
++    to: scheme.replace(/^mailto:/, ""),
++    subject: params.get("subject") ?? "",
++    body: params.get("body") ?? "",
++  }
++}
++
++describe("Contact form -> mailto handoff", () => {
++  it("opens the mail app addressed to the support inbox", () => {
++    fillAndSubmit("Amara", "+234 801 234 5678", "Please help me connect my bot.")
++    expect(assigned.startsWith("mailto:")).toBe(true)
++    expect(parseMailto(assigned).to).toBe("trewallaffiliates@gmail.com")
++  })
++
++  it("uses a generic subject that suits any enquiry", () => {
++    fillAndSubmit("Amara", "amara@example.com", "Hello")
++    expect(parseMailto(assigned).subject).toBe("Chatstand support request")
++  })
++
++  it("carries name, contact and message into the body", () => {
++    fillAndSubmit("Amara Obi", "+234 801 234 5678", "Please help me connect my bot.")
++    const { body } = parseMailto(assigned)
++    expect(body).toContain("Name: Amara Obi")
++    expect(body).toContain("Phone or email: +234 801 234 5678")
++    expect(body).toContain("Please help me connect my bot.")
++  })
++
++  it("survives characters that would otherwise break the URL", () => {
++    // &, ?, # and newlines all terminate or corrupt a mailto query if unescaped.
++    fillAndSubmit("A & B Ltd", "a+b@x.ng", "Line one\nLine two & #3 — 50% off?")
++    const { to, subject, body } = parseMailto(assigned)
++    expect(to).toBe("trewallaffiliates@gmail.com")
++    expect(subject).toBe("Chatstand support request")
++    expect(body).toContain("Name: A & B Ltd")
++    expect(body).toContain("Phone or email: a+b@x.ng")
++    expect(body).toContain("Line two & #3 — 50% off?")
++  })
++
++  it("does not claim the message was received, only that the app is opening", () => {
++    fillAndSubmit("Amara", "amara@example.com", "Hello")
++    expect(screen.getByRole("status").textContent).toMatch(/opening your email app/i)
++  })
++
++  it("will not submit while a required field is empty", () => {
++    render(<Contact />)
++    fireEvent.click(screen.getByRole("button", { name: /send message/i }))
++    expect(assigned).toBe("")
++  })
++})
+diff --git a/src/pages/public/Contact.tsx b/src/pages/public/Contact.tsx
+index b7c3ef5..1bffbd8 100644
+--- a/src/pages/public/Contact.tsx
++++ b/src/pages/public/Contact.tsx
+@@ -1,9 +1,37 @@
+ import { useState } from "react"
+ import { Mail, Phone, MapPin, MessageCircle } from "lucide-react"
+ 
++const CONTACT_EMAIL = "trewallaffiliates@gmail.com"
++// Generic on purpose: one subject that reads correctly whether the sender wants
++// help, has a request, or is reporting a problem.
++const CONTACT_SUBJECT = "Chatstand support request"
++
+ export default function Contact() {
++  const [name, setName] = useState("")
++  const [contact, setContact] = useState("")
++  const [message, setMessage] = useState("")
+   const [sent, setSent] = useState(false)
+-  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); setSent(true); setTimeout(() => setSent(false), 2500) }
++
++  const handleSubmit = (e: React.FormEvent) => {
++    e.preventDefault()
++    // CRLF rather than \n: Outlook and several mobile clients collapse bare
++    // newlines in a mailto body.
++    const body = [
++      `Name: ${name}`,
++      `Phone or email: ${contact}`,
++      "",
++      "Message:",
++      message,
++    ].join("\r\n")
++    const href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(CONTACT_SUBJECT)}&body=${encodeURIComponent(body)}`
++    // Hands the draft to whatever mail app the device has registered. Nothing
++    // is sent until the sender hits send there, so the notice below says
++    // "opening" rather than claiming we received anything.
++    window.location.href = href
++    setSent(true)
++    setTimeout(() => setSent(false), 8000)
++  }
++
+   return (
+     <div className="min-h-screen bg-[#FFFBF5]">
+       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-10">
+@@ -12,14 +40,19 @@ export default function Contact() {
+ 
+         <div className="mt-8 grid lg:grid-cols-[1.1fr_0.9fr] gap-6">
+           <form onSubmit={handleSubmit} className="rounded-[22px] bg-white border border-[#F3E6D3] p-6 space-y-4">
+-            {sent && <div className="rounded-xl bg-[#E6F7F1] border border-[#0B9C74]/20 px-3 py-2.5 text-sm font-medium text-[#0B9C74]">Message received. We will reply by email or Telegram.</div>}
++            {sent && (
++              <div className="rounded-xl bg-[#E6F7F1] border border-[#0B9C74]/20 px-3 py-2.5 text-sm font-medium text-[#0B9C74]" role="status">
++                Opening your email app with the message ready to send. If nothing happened, email{" "}
++                <a href={`mailto:${CONTACT_EMAIL}`} className="underline">{CONTACT_EMAIL}</a> directly.
++              </div>
++            )}
+             <div className="grid sm:grid-cols-2 gap-4">
+-              <label className="text-sm"><span className="text-xs font-bold">Name</span><input required placeholder="Amara" className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none" /></label>
+-              <label className="text-sm"><span className="text-xs font-bold">Phone or email</span><input required placeholder="+234 ... or you@mail.com" className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none" /></label>
++              <label className="text-sm"><span className="text-xs font-bold">Name</span><input required value={name} onChange={(e) => setName(e.target.value)} name="name" autoComplete="name" placeholder="Amara" className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none" /></label>
++              <label className="text-sm"><span className="text-xs font-bold">Phone or email</span><input required value={contact} onChange={(e) => setContact(e.target.value)} name="contact" placeholder="+234 ... or you@mail.com" className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none" /></label>
+             </div>
+-            <label className="text-sm block"><span className="text-xs font-bold">How can we help</span><textarea required rows={4} placeholder="I sell fashion in Lagos, need help connecting my Telegram bot..." className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none resize-none" /></label>
++            <label className="text-sm block"><span className="text-xs font-bold">How can we help</span><textarea required value={message} onChange={(e) => setMessage(e.target.value)} name="message" rows={4} placeholder="I sell fashion, need help connecting my Telegram bot..." className="mt-1 w-full rounded-xl border border-[#F3E6D3] px-3 py-2.5 text-sm focus:border-[#0B9C74] outline-none resize-none" /></label>
+             <button type="submit" className="rounded-full bg-[#0B9C74] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66]">Send message</button>
+-            <p className="text-xs text-[#9a9a9a]">Or email hello@chatstand.ng • We never share your contact.</p>
++            <p className="text-xs text-[#9a9a9a]">Opens in your email app. Or email {CONTACT_EMAIL} • We never share your contact.</p>
+           </form>
+ 
+           <div className="space-y-4">
+@@ -30,9 +63,9 @@ export default function Contact() {
+               <a href="https://t.me/chatstand" target="_blank" rel="noreferrer" className="mt-4 inline-flex rounded-full bg-[#229ED9] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#1c82b3]">Open Telegram</a>
+             </div>
+             <div className="rounded-2xl bg-white border border-[#F3E6D3] p-5 space-y-3 text-sm">
+-              <div className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 text-[#0B9C74]" /><div><div className="font-bold">Email</div><div className="text-[#6b6b6b]">hello@chatstand.ng</div></div></div>
++              <div className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 text-[#0B9C74]" /><div><div className="font-bold">Email</div><div className="text-[#6b6b6b]"><a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-[#0B9C74]">{CONTACT_EMAIL}</a></div></div></div>
+               <div className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 text-[#0B9C74]" /><div><div className="font-bold">Phone</div><div className="text-[#6b6b6b]">+234 800 000 0000</div></div></div>
+-              <div className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 text-[#0B9C74]" /><div><div className="font-bold">Port Harcourt</div><div className="text-[#6b6b6b]">Built for sellers everywhere</div></div></div>
++              <div className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 text-[#0B9C74]" /><div><div className="font-bold">Nigeria</div><div className="text-[#6b6b6b]">Built for sellers everywhere</div></div></div>
+             </div>
+           </div>
+         </div>
+diff --git a/src/pages/public/Privacy.tsx b/src/pages/public/Privacy.tsx
+index f6888e3..646bf8a 100644
+--- a/src/pages/public/Privacy.tsx
++++ b/src/pages/public/Privacy.tsx
+@@ -20,7 +20,7 @@ export default function Privacy() {
+           </section>
+           <section>
+             <h2 className="font-bold text-base">4. Your rights</h2>
+-            <p className="mt-1 text-[#5a5a5a]">You can export or delete your business data. Contact hello@chatstand.ng for data requests. Telegram conversations follow Telegram’s Bot API terms.</p>
++            <p className="mt-1 text-[#5a5a5a]">You can export or delete your business data. Contact trewallaffiliates@gmail.com for data requests. Telegram conversations follow Telegram’s Bot API terms.</p>
+           </section>
+           <section>
+             <h2 className="font-bold text-base">5. Terms</h2>
+diff --git a/src/utils/checkout.test.ts b/src/utils/checkout.test.ts
+index 0d2368c..690e718 100644
+--- a/src/utils/checkout.test.ts
++++ b/src/utils/checkout.test.ts
+@@ -5,7 +5,7 @@ const validCustomer: CheckoutCustomer = {
+   name: "Ada Obi",
+   phone: "+2348012345678",
+   email: "Ada.Obi@Example.com",
+-  address: "12 Aba Road, Port Harcourt",
++  address: "12 Market Road, Lagos",
+ }
+ 
+ describe("validateCheckoutCustomer", () => {
+@@ -37,9 +37,9 @@ describe("buildCheckoutPayload", () => {
+       name: "Ada Obi",
+       phone: "+2348012345678",
+       email: "ada.obi@example.com",
+-      address: "12 Aba Road, Port Harcourt",
++      address: "12 Market Road, Lagos",
+     })
+-    expect(payload.deliveryAddress).toBe("12 Aba Road, Port Harcourt")
++    expect(payload.deliveryAddress).toBe("12 Market Road, Lagos")
+   })
+ 
+   it("normalizes email casing and trims whitespace", () => {
+-- 
+2.47.3
+

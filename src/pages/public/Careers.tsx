@@ -2,9 +2,9 @@ import { Link } from "react-router-dom"
 import { Briefcase, MapPin, Clock } from "lucide-react"
 
 const roles = [
-  { title: "Product Engineer (React + Node)", location: "Port Harcourt / Remote", type: "Full-time", desc: "Ship seller dashboard, storefront, and Telegram tools. TypeScript and Tailwind." },
+  { title: "Product Engineer (React + Node)", location: "Remote", type: "Full-time", desc: "Ship seller dashboard, storefront, and Telegram tools. TypeScript and Tailwind." },
   { title: "AI Engineer (OpenAI tools)", location: "Remote", type: "Full-time", desc: "Build constrained tools searchProducts, checkStock, createOrder for the AI seller." },
-  { title: "Seller Success", location: "Lagos / Port Harcourt", type: "Part-time", desc: "Help fashion and beauty sellers onboard, list products and connect their Telegram bots." },
+  { title: "Seller Success", location: "Lagos / Remote", type: "Part-time", desc: "Help fashion and beauty sellers onboard, list products and connect their Telegram bots." },
 ]
 
 export default function Careers() {

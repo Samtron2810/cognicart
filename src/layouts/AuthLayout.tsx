@@ -20,7 +20,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         <div className="w-full max-w-[420px]">{children}</div>
       </main>
 
-      <footer className="py-6 text-center text-xs text-[#9a9a9a]">© 2026 Chatstand. Built in Port Harcourt.</footer>
+      <footer className="py-6 text-center text-xs text-[#9a9a9a]">© 2026 Chatstand. Built for sellers everywhere.</footer>
     </div>
   )
 }

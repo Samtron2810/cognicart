@@ -152,10 +152,10 @@ export function Footer() {
 
         <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50">
           <span>
-            © 2026 Chatstand. Built in Port Harcourt for sellers everywhere.
+            © 2026 Chatstand. Built for sellers everywhere.
           </span>
           <span>
-            Made with love in Port Harcourt •{" "}
+            Made with love for African sellers •{" "}
             <Link to="/privacy" className="hover:text-white underline">
               Privacy and Terms
             </Link>

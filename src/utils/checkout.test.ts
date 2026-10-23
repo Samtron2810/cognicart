@@ -5,7 +5,7 @@ const validCustomer: CheckoutCustomer = {
   name: "Ada Obi",
   phone: "+2348012345678",
   email: "Ada.Obi@Example.com",
-  address: "12 Aba Road, Port Harcourt",
+  address: "12 Market Road, Lagos",
 }
 
 describe("validateCheckoutCustomer", () => {
@@ -37,9 +37,9 @@ describe("buildCheckoutPayload", () => {
       name: "Ada Obi",
       phone: "+2348012345678",
       email: "ada.obi@example.com",
-      address: "12 Aba Road, Port Harcourt",
+      address: "12 Market Road, Lagos",
     })
-    expect(payload.deliveryAddress).toBe("12 Aba Road, Port Harcourt")
+    expect(payload.deliveryAddress).toBe("12 Market Road, Lagos")
   })
 
   it("normalizes email casing and trims whitespace", () => {

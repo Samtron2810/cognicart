@@ -13,7 +13,7 @@ export default function About() {
         <div className="mt-8 grid lg:grid-cols-2 gap-6">
           <div className="rounded-[22px] bg-white border border-[#F3E6D3] p-6">
             <h2 className="font-display text-xl font-bold">Our story</h2>
-            <p className="mt-2 text-sm leading-6 text-[#5a5a5a]">Chatstand started in Port Harcourt listening to Instagram vendors who stayed up replying DMs. We built an AI that knows a seller's products, prices and stock and replies in chat in seconds. No invented prices. No hallucinations. Just the seller's database through controlled tools.</p>
+            <p className="mt-2 text-sm leading-6 text-[#5a5a5a]">Chatstand started by listening to Instagram vendors who stayed up replying DMs. We built an AI that knows a seller's products, prices and stock and replies in chat in seconds. No invented prices. No hallucinations. Just the seller's database through controlled tools.</p>
             <p className="mt-3 text-sm leading-6 text-[#5a5a5a]">Today sellers on Chatstand list once and let AI handle FAQs, upsells and "where is my order" in chat — Telegram today — while storefront and manual sales flow into the same dashboard.</p>
             <div className="mt-5 flex gap-3">
               <Link to="/register" className="rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0a8a66]">Start selling</Link>
@@ -26,7 +26,7 @@ export default function About() {
               <li className="flex gap-2"><Target className="h-4 w-4 mt-0.5 text-[#0B9C74]" /> Commerce should be conversational, not catalog browsing.</li>
               <li className="flex gap-2"><Users className="h-4 w-4 mt-0.5 text-[#0B9C74]" /> Sellers deserve calm dashboards, not chaos.</li>
               <li className="flex gap-2"><MessageCircle className="h-4 w-4 mt-0.5 text-[#0B9C74]" /> AI must be constrained to the seller's truth.</li>
-              <li className="flex gap-2"><Heart className="h-4 w-4 mt-0.5 text-[#0B9C74]" /> Built in Port Harcourt for sellers everywhere.</li>
+              <li className="flex gap-2"><Heart className="h-4 w-4 mt-0.5 text-[#0B9C74]" /> Built for sellers everywhere.</li>
             </ul>
           </div>
         </div>
