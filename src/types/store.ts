@@ -112,6 +112,9 @@ export type SearchProduct = {
   sellerId: string
   storeName: string
   storeSlug: string
+  /** Total across variants when the product has them. */
+  stock?: number
+  hasVariants?: boolean
 }
 
 export type SearchResults = {

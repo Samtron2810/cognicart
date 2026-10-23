@@ -3,11 +3,10 @@ import { Link, useParams } from "react-router-dom"
 import { ChevronRight, MapPin, Send, Share2, ShoppingBag, Store } from "lucide-react"
 import { productService } from "../../services/productService"
 import { storeService } from "../../services/storeService"
-import { getDisplayPrice, getEffectivePrice, getTotalStock } from "../../types/product"
-import { productPath, storePath } from "../../types/store"
+import { storePath } from "../../types/store"
+import { ProductCard } from "../../components/products/ProductCard"
 import { StarRating } from "../../components/reviews/StarRating"
 import { StoreReviews } from "../../components/reviews/StoreReviews"
-import { StoreChatWidget } from "../../components/chat/StoreChatWidget"
 import type { StorefrontProfile } from "../../types/business"
 import type { Product } from "../../types/product"
 import type { StoreSummary } from "../../types/store"
@@ -173,27 +172,13 @@ export default function SellerStorefront() {
 
         {products.length ? (
           <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {products.map((product) => {
-              const display = getDisplayPrice(product)
-              const price = getEffectivePrice(product)
-              return (
-                <Link key={product.id} to={productPath(store, product.id)} className="group overflow-hidden rounded-2xl border border-[#F3E6D3] bg-white hover:shadow-md">
-                  <img src={product.images[0]} alt={product.name} className="aspect-square w-full bg-[#FFFBF5] object-contain p-4" />
-                  <div className="p-3.5">
-                    <div className="truncate text-sm font-bold">{product.name}</div>
-                    <div className="mt-1 text-xs text-[#6b6b6b]">{getTotalStock(product)} in stock</div>
-                    <div className="mt-2 font-bold">
-                      {display.hasDiscount ? (
-                        <>
-                          <span className="text-[#E85D26]">₦{price.toLocaleString()}</span>
-                          <span className="ml-1 text-xs text-[#9a9a9a] line-through">₦{display.original.toLocaleString()}</span>
-                        </>
-                      ) : `₦${price.toLocaleString()}`}
-                    </div>
-                  </div>
-                </Link>
-              )
-            })}
+            {products.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                storeIdentifier={identifier || store.sellerId}
+              />
+            ))}
           </div>
         ) : (
           <div className="mt-5 rounded-2xl border border-[#F3E6D3] bg-white p-10 text-center text-sm text-[#6b6b6b]">
@@ -210,8 +195,6 @@ export default function SellerStorefront() {
           />
         </div>
       </div>
-
-      <StoreChatWidget identifier={identifier as string} storeName={store.name} />
     </div>
   )
 }

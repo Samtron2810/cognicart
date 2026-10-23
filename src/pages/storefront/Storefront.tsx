@@ -8,6 +8,7 @@ import type { StorefrontProfile } from "../../types/business"
 import { getEffectivePrice, getDisplayPrice } from "../../types/product"
 import { useSEO } from "../../hooks/useSEO"
 import { useCart } from "../../context/CartContext"
+import { productPath, storePath } from "../../types/store"
 
 
 export default function Storefront() {
@@ -123,7 +124,7 @@ export default function Storefront() {
           <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-1">
             <span className="shrink-0 text-xs font-bold tracking-widest text-[#9a9a9a]">STORES</span>
             {Object.entries(stores).map(([id, s]) => (
-              <Link key={id} to={`/store/seller/${id}`} className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[#F3E6D3] bg-white py-1.5 pl-1.5 pr-3.5 text-sm font-bold hover:bg-[#FFF1DA]">
+              <Link key={id} to={storePath(stores[id] ?? { sellerId: id })} className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[#F3E6D3] bg-white py-1.5 pl-1.5 pr-3.5 text-sm font-bold hover:bg-[#FFF1DA]">
                 <span className="grid h-6 w-6 place-items-center overflow-hidden rounded-full border border-[#F3E6D3] bg-[#FFF1DA]">{s.logo ? <img src={s.logo} alt="" className="h-full w-full object-cover" /> : <Store className="h-3 w-3 text-[#E85D26]" />}</span>
                 {s.name}
               </Link>
@@ -148,9 +149,9 @@ export default function Storefront() {
                   {p.stock === 0 && <span className="rounded-full bg-red-50 border border-red-200 px-2 py-1 text-[11px] font-bold text-red-700">Out</span>}
                 </div>
                 <button type="button" aria-label="Wishlist" className="absolute right-2 top-2 z-10 h-8 w-8 rounded-full bg-white border border-[#F3E6D3] grid place-items-center shadow-sm hover:bg-[#FFF1DA]"><Heart className="h-4 w-4" /></button>
-                <Link to={`/store/${p.id}`} className="block aspect-square bg-[#FFFBF5] p-4 flex items-center justify-center"><img src={p.images[0]} alt={p.name} className="h-full w-full object-contain mix-blend-multiply group-hover:scale-[1.02] transition" /></Link>
+                <Link to={productPath(stores[p.sellerId] ?? p.sellerId, p.id)} className="block aspect-square bg-[#FFFBF5] p-4 flex items-center justify-center"><img src={p.images[0]} alt={p.name} className="h-full w-full object-contain mix-blend-multiply group-hover:scale-[1.02] transition" /></Link>
                 <div className="p-3.5">
-                  <Link to={`/store/${p.id}`} className="block text-[13px] font-bold leading-tight line-clamp-1 hover:text-[#0B9C74]">{p.name}</Link>
+                  <Link to={productPath(stores[p.sellerId] ?? p.sellerId, p.id)} className="block text-[13px] font-bold leading-tight line-clamp-1 hover:text-[#0B9C74]">{p.name}</Link>
                   <div className="mt-1 text-xs text-[#6b6b6b] line-clamp-1">{p.category} • {p.description.slice(0, 44)}{p.variants?.length ? ` • ${p.variants.length} variants` : ""}</div>
                   <div className="mt-2">
                     {(() => { const d = getDisplayPrice(p); const ep = getEffectivePrice(p); return d.hasDiscount ? <span className="flex items-center gap-1"><span className="text-sm font-bold text-[#E85D26]">₦{ep.toLocaleString()}</span><span className="text-xs line-through text-[#9a9a9a]">₦{d.original.toLocaleString()}</span></span> : <span className="text-sm font-bold">₦{ep.toLocaleString()}</span> })()}
@@ -160,7 +161,7 @@ export default function Storefront() {
                     <button type="button" onClick={() => handleQuickAdd(p)} disabled={p.stock < 1 && !(p.variants && p.variants.length > 0)} className={`flex-1 inline-flex items-center justify-center gap-1.5 rounded-full px-2 py-2 text-xs font-bold text-white transition disabled:cursor-not-allowed disabled:opacity-50 ${addedId === p.id ? "bg-[#0a8a66]" : "bg-[#0B9C74] hover:bg-[#0a8a66]"}`}>
                       <ShoppingBag className="h-3.5 w-3.5" /> {addedId === p.id ? "Added ✓" : p.variants && p.variants.length > 0 ? "Options" : p.stock < 1 ? "Out" : "Add to cart"}
                     </button>
-                    <Link to={`/store/${p.id}`} className="flex-1 inline-flex items-center justify-center rounded-full border border-[#F3E6D3] bg-white px-2 py-2 text-xs font-bold hover:bg-[#FFF1DA]">Details</Link>
+                    <Link to={productPath(stores[p.sellerId] ?? p.sellerId, p.id)} className="flex-1 inline-flex items-center justify-center rounded-full border border-[#F3E6D3] bg-white px-2 py-2 text-xs font-bold hover:bg-[#FFF1DA]">Details</Link>
                   </div>
                 </div>
               </div>

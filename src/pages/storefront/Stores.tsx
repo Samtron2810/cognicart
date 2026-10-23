@@ -4,8 +4,11 @@ import { ChevronRight, Search, ShoppingBag, Store as StoreIcon } from "lucide-re
 import { storeService } from "../../services/storeService"
 import { PromotedStrip } from "../../components/stores/PromotedStrip"
 import { StoreCard } from "../../components/stores/StoreCard"
+import { ProductCard } from "../../components/products/ProductCard"
+import { productService } from "../../services/productService"
 import { useSEO } from "../../hooks/useSEO"
 import type { PromotedProduct, StoreCard as StoreCardType, StorePagination, StoreSort } from "../../types/store"
+import type { Product } from "../../types/product"
 
 const SORTS: { value: StoreSort; label: string }[] = [
   { value: "ranked", label: "Recommended" },
@@ -29,6 +32,7 @@ export default function Stores() {
 
   const [stores, setStores] = useState<StoreCardType[]>([])
   const [promoted, setPromoted] = useState<PromotedProduct[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [pagination, setPagination] = useState<StorePagination | null>(null)
   const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)
@@ -93,6 +97,29 @@ export default function Stores() {
     }
   }, [q, sort, page])
 
+  // A query searches products as well as stores. Full Product objects are
+  // used rather than the lighter /search projection so the cards know about
+  // stock and variants and can add to the cart correctly.
+  useEffect(() => {
+    if (!q) {
+      setProducts([])
+      return
+    }
+    let active = true
+    productService
+      .listPublic({ search: q })
+      .then((data) => {
+        if (active) setProducts(data.filter((item) => item.isActive))
+      })
+      .catch(() => {
+        // Products are a bonus here; a failure must not break the directory.
+        if (active) setProducts([])
+      })
+    return () => {
+      active = false
+    }
+  }, [q])
+
   // The promoted strip is independent of the seller query: it never filters
   // down to nothing just because someone searched for one shop.
   useEffect(() => {
@@ -110,6 +137,12 @@ export default function Stores() {
       active = false
     }
   }, [])
+
+  // Products can belong to sellers outside the current page of store
+  // results, in which case the card falls back to the sellerId URL and
+  // shows its category instead of a store name.
+  const storeSlugFor = (sellerId: string) => stores.find((store) => store.sellerId === sellerId)?.slug || sellerId
+  const storeNameFor = (sellerId: string) => stores.find((store) => store.sellerId === sellerId)?.name
 
   const setParam = (key: string, value: string | null) => {
     const next = new URLSearchParams(searchParams)
@@ -154,8 +187,8 @@ export default function Stores() {
             <input
               value={term}
               onChange={(event) => setTerm(event.target.value)}
-              placeholder="Search stores by name"
-              aria-label="Search stores"
+              placeholder="Search stores and products"
+              aria-label="Search stores and products"
               className="w-full rounded-xl border border-[#F3E6D3] py-2.5 pl-9 pr-3 text-sm outline-none focus:border-[#0B9C74] focus:ring-2 focus:ring-[#0B9C74]/15"
             />
           </div>
@@ -186,14 +219,14 @@ export default function Stores() {
             <div className="font-bold">Could not load stores</div>
             <p className="mt-1 text-sm text-[#6b6b6b]">The backend did not respond. Try again in a moment.</p>
           </div>
-        ) : stores.length === 0 ? (
+        ) : stores.length === 0 && products.length === 0 ? (
           <div className="mt-6 rounded-2xl border border-[#F3E6D3] bg-white p-10 text-center">
             <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-[#E6F7F1]">
               <StoreIcon className="h-6 w-6 text-[#0B9C74]" />
             </span>
-            <div className="mt-3 font-bold">{q ? `No stores match "${q}"` : "No stores yet"}</div>
+            <div className="mt-3 font-bold">{q ? `Nothing matches "${q}"` : "No stores yet"}</div>
             <p className="mt-1 text-sm text-[#6b6b6b]">
-              {q ? "Try a different name." : "Stores appear here once a seller publishes their first product."}
+              {q ? "No stores or products with that name. Try a different term." : "Stores appear here once a seller publishes their first product."}
             </p>
             {q && (
               <button
@@ -207,17 +240,23 @@ export default function Stores() {
           </div>
         ) : (
           <>
-            <div className="mt-6 flex items-baseline justify-between">
-              <p className="text-sm text-[#6b6b6b]">
-                {pagination?.total ?? stores.length} {(pagination?.total ?? stores.length) === 1 ? "store" : "stores"}
-              </p>
-            </div>
+            {stores.length > 0 && (
+              <>
+                <div className="mt-6 flex items-baseline justify-between">
+                  <p className="text-sm text-[#6b6b6b]">
+                    {pagination?.total ?? stores.length}{" "}
+                    {(pagination?.total ?? stores.length) === 1 ? "store" : "stores"}
+                    {q ? " matching" : ""}
+                  </p>
+                </div>
 
-            <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {stores.map((store) => (
-                <StoreCard key={store.sellerId} store={store} />
-              ))}
-            </div>
+                <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {stores.map((store) => (
+                    <StoreCard key={store.sellerId} store={store} />
+                  ))}
+                </div>
+              </>
+            )}
 
             {pagination && pagination.totalPages > 1 && (
               <div className="mt-8 flex items-center justify-center gap-3">
@@ -241,6 +280,26 @@ export default function Stores() {
                   Next
                 </button>
               </div>
+            )}
+
+            {q && products.length > 0 && (
+              <section className="mt-10">
+                <div className="flex items-baseline justify-between">
+                  <h2 className="font-display text-xl font-bold">
+                    {products.length} {products.length === 1 ? "product" : "products"} matching &ldquo;{q}&rdquo;
+                  </h2>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-4 lg:grid-cols-4">
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      storeIdentifier={storeSlugFor(product.sellerId)}
+                      storeName={storeNameFor(product.sellerId)}
+                    />
+                  ))}
+                </div>
+              </section>
             )}
           </>
         )}

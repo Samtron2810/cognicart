@@ -10,7 +10,9 @@ import type { StorefrontProfile } from "../../types/business"
 import { getEffectivePrice, getDisplayPrice, getTotalStock } from "../../types/product"
 
 export default function ProductDetail() {
-  const { id } = useParams<{ id: string }>()
+  // Route is /store/:identifier/products/:productId. `id` used to come from
+  // the old flat /store/:id route, which now resolves to the store page.
+  const { identifier, productId: id } = useParams<{ identifier: string; productId: string }>()
   const [product, setProduct] = useState<Product | null>(null)
   const [store, setStore] = useState<StorefrontProfile | null>(null)
   const [sellerId, setSellerId] = useState("")
@@ -21,6 +23,9 @@ export default function ProductDetail() {
   const { addItem } = useCart()
 
   const sellerName = store?.name || "Chatstand Seller"
+  // Prefer the identifier already in the URL so the slug survives the round
+  // trip; fall back to the resolved sellerId, then the directory.
+  const backToStore = identifier ? `/store/${identifier}` : sellerId ? `/store/${sellerId}` : "/stores"
 
   useEffect(() => {
     if (!id) return
@@ -109,19 +114,19 @@ export default function ProductDetail() {
   const waShareLink = `https://wa.me/?text=${encodeURIComponent(waShareText)}`
 
   if (loading) return <div className="min-h-[50vh] grid place-items-center"><div className="h-8 w-8 rounded-full border-2 border-[#0B9C74] border-t-transparent animate-spin" /></div>
-  if (!product) return <div className="min-h-[50vh] grid place-items-center px-4"><div className="text-center"><div className="font-bold">Product not found</div><Link to="/store" className="mt-3 inline-flex rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white">Back to store</Link></div></div>
+  if (!product) return <div className="min-h-[50vh] grid place-items-center px-4"><div className="text-center"><div className="font-bold">Product not found</div><Link to="/stores" className="mt-3 inline-flex rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white">Browse stores</Link></div></div>
 
   return (
     <div className="min-h-screen bg-[#FFFBF5]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <nav className="flex items-center gap-1.5 text-xs text-[#6b6b6b]">
           <Link to="/" className="hover:text-[#1a1a1a]">Home</Link> <ChevronRight className="h-3 w-3" />
-          <Link to="/store" className="hover:text-[#1a1a1a]">Store</Link> <ChevronRight className="h-3 w-3" />
-          {sellerName && <><Link to={sellerId ? `/store/seller/${sellerId}` : "/store"} className="hover:text-[#1a1a1a] inline-flex items-center gap-1"><Store className="h-3 w-3" /> {sellerName}</Link> <ChevronRight className="h-3 w-3" /></>}
+          <Link to="/stores" className="hover:text-[#1a1a1a]">Stores</Link> <ChevronRight className="h-3 w-3" />
+          {sellerName && <><Link to={backToStore} className="hover:text-[#1a1a1a] inline-flex items-center gap-1"><Store className="h-3 w-3" /> {sellerName}</Link> <ChevronRight className="h-3 w-3" /></>}
           <span className="font-bold text-[#1a1a1a] line-clamp-1">{product.name}</span>
         </nav>
 
-        <Link to="/store" className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-[#6b6b6b] hover:text-[#1a1a1a]"><ArrowLeft className="h-4 w-4" /> Back to store</Link>
+        <Link to={backToStore} className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-[#6b6b6b] hover:text-[#1a1a1a]"><ArrowLeft className="h-4 w-4" /> Back to store</Link>
 
         <div className="mt-6 grid lg:grid-cols-2 gap-8">
           <div className="rounded-[22px] bg-white border border-[#F3E6D3] p-4">
@@ -137,7 +142,7 @@ export default function ProductDetail() {
             <div className="inline-flex items-center gap-2 rounded-full bg-[#E6F7F1] border border-[#0B9C74]/15 px-3 py-1 text-xs font-bold text-[#0B9C74]">{product.category} {product.isActive ? "• Active" : "• Inactive"}</div>
             <h1 className="font-display text-[30px] font-bold leading-tight mt-3">{product.name}</h1>
             <div className="mt-2 flex items-center gap-2 text-xs">
-              <Link to={sellerId ? `/store/seller/${sellerId}` : "/store"} className="inline-flex items-center gap-1.5 rounded-full bg-white border border-[#F3E6D3] py-1 pl-1.5 pr-3 font-bold hover:bg-[#FFF1DA]">{store?.logo ? <img src={store.logo} alt="" className="h-4 w-4 rounded-full object-cover" /> : <Store className="h-3 w-3" />} {sellerName}</Link>
+              <Link to={backToStore} className="inline-flex items-center gap-1.5 rounded-full bg-white border border-[#F3E6D3] py-1 pl-1.5 pr-3 font-bold hover:bg-[#FFF1DA]">{store?.logo ? <img src={store.logo} alt="" className="h-4 w-4 rounded-full object-cover" /> : <Store className="h-3 w-3" />} {sellerName}</Link>
               {store?.telegramBotUrl && <a href={store.telegramBotUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-[#E7F4FB] border border-[#229ED9]/25 px-3 py-1 font-bold text-[#1c82b3]"><Send className="h-3 w-3" /> Open in Telegram</a>}
             </div>
             <p className="mt-3 text-sm leading-6 text-[#5a5a5a]">{product.description}</p>
@@ -205,7 +210,7 @@ export default function ProductDetail() {
               <div className="flex items-center gap-2.5"><span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-[#FFF1DA] border border-[#F3E6D3]">{store?.logo ? <img src={store.logo} alt="" className="h-full w-full object-cover" /> : <Store className="h-4 w-4 text-[#E85D26]" />}</span><div className="text-sm font-bold">Seller — {sellerName}</div></div>
               <p className="text-xs text-[#6b6b6b] leading-5 mt-1">View all products from this seller in their SEO-friendly store. Shareable link for Google and social.</p>
               <div className="mt-3 flex gap-2">
-                <Link to={sellerId ? `/store/seller/${sellerId}` : "/store"} className="inline-flex rounded-full bg-[#FFF1DA] border border-[#F3E6D3] px-4 py-2 text-xs font-bold hover:bg-white">Visit {sellerName} store</Link>
+                <Link to={backToStore} className="inline-flex rounded-full bg-[#FFF1DA] border border-[#F3E6D3] px-4 py-2 text-xs font-bold hover:bg-white">Visit {sellerName} store</Link>
                 {store?.telegramBotUrl && <a href={store.telegramBotUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-[#229ED9] px-4 py-2 text-xs font-bold text-white hover:bg-[#1c82b3]"><Send className="h-3 w-3" /> Chat on Telegram</a>}
               </div>
             </div>

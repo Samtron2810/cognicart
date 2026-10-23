@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
-import { Search as SearchIcon, ArrowRight } from "lucide-react"
+import { Search as SearchIcon } from "lucide-react"
 import { productService } from "../services/productService"
+import { ProductCard } from "../components/products/ProductCard"
 import type { Product } from "../types/product"
 
 export default function Search() {
@@ -44,15 +45,12 @@ export default function Search() {
         {q && results.length === 0 ? (
           <div className="mt-6 rounded-2xl bg-white border border-[#F3E6D3] p-10 text-center">
             <div className="font-bold">No results</div>
-            <div className="text-sm text-[#6b6b6b]">Try another term or <Link to="/store" className="font-bold text-[#0B9C74] underline">browse all</Link></div>
+            <div className="text-sm text-[#6b6b6b]">Try another term or <Link to="/stores" className="font-bold text-[#0B9C74] underline">browse all stores</Link></div>
           </div>
         ) : (
           <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
             {results.map((p) => (
-              <Link key={p.id} to={`/store/${p.id}`} className="rounded-[20px] bg-white border border-[#F3E6D3] overflow-hidden hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)] transition">
-                <div className="aspect-square bg-[#FFFBF5] p-4 flex items-center justify-center"><img src={p.images[0]} alt={p.name} className="h-full w-full object-contain mix-blend-multiply" /></div>
-                <div className="p-3.5"><div className="text-[13px] font-bold line-clamp-1">{p.name}</div><div className="text-xs text-[#6b6b6b]">{p.category}</div><div className="mt-2 flex items-center justify-between"><span className="text-sm font-bold">₦{p.price.toLocaleString()}</span><span className="inline-flex items-center gap-1 text-xs font-bold text-[#0B9C74]">View <ArrowRight className="h-3 w-3" /></span></div></div>
-              </Link>
+              <ProductCard key={p.id} product={p} />
             ))}
           </div>
         )}

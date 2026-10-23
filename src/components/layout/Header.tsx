@@ -1,12 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  Search,
-  ShoppingBag,
-  Menu,
-  X,
-  ChevronDown,
-} from "lucide-react";
+import { Link } from "react-router-dom";
+import { ShoppingBag, Menu, X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { GlobalSearch } from "../search/GlobalSearch";
@@ -15,23 +9,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const { items } = useCart();
-  const navigate = useNavigate();
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
-
-  const scrollTo = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      navigate(`/#${id}`);
-      setTimeout(
-        () =>
-          document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }),
-        100,
-      );
-    }
-    setMobileOpen(false);
-  };
 
   return (
     <header className="sticky top-0 z-50 bg-[#FFFBF5]/90 backdrop-blur-md border-b border-[#F3E6D3]">
@@ -53,31 +31,17 @@ export function Header() {
               <GlobalSearch />
             </div>
 
+            {/* Buyer-facing destinations only. The landing-page anchors
+                (Features / Sellers / Pricing) were dropped: they scrolled
+                nowhere from any route except "/", and seller acquisition is
+                already covered by the Start Selling button. */}
             <nav className="hidden lg:flex items-center gap-1 text-[14px] font-medium text-[#2b2b2b]">
-              <button
-                onClick={() => scrollTo("features")}
-                className="px-3 py-2 rounded-full hover:bg-[#FFF1DA] transition"
-              >
-                Features
-              </button>
               <Link
                 to="/stores"
-                className="px-3 py-2 rounded-full hover:bg-[#FFF1DA] transition flex items-center gap-1"
+                className="px-3 py-2 rounded-full hover:bg-[#FFF1DA] transition"
               >
-                Stores <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+                Stores
               </Link>
-              <button
-                onClick={() => scrollTo("sellers")}
-                className="px-3 py-2 rounded-full hover:bg-[#FFF1DA] transition"
-              >
-                Sellers
-              </button>
-              <button
-                onClick={() => scrollTo("pricing")}
-                className="px-3 py-2 rounded-full hover:bg-[#FFF1DA] transition"
-              >
-                Pricing
-              </button>
               <Link
                 to="/track"
                 className="px-3 py-2 rounded-full hover:bg-[#FFF1DA] transition"
@@ -94,13 +58,6 @@ export function Header() {
           </div>
 
           <div className="hidden lg:flex items-center gap-3">
-            <Link
-              to="/search"
-              aria-label="Search"
-              className="h-10 w-10 grid place-items-center rounded-full bg-white border border-[#F3E6D3] hover:bg-[#FFF1DA] transition"
-            >
-              <Search className="h-4 w-4 text-[#6b6b6b]" />
-            </Link>
             <Link
               to="/cart"
               aria-label="Cart"
@@ -160,31 +117,13 @@ export function Header() {
             </div>
 
             <nav className="grid gap-1 text-sm font-medium">
-              <button
-                onClick={() => scrollTo("features")}
-                className="text-left px-3 py-2.5 rounded-xl bg-white border border-[#F3E6D3]"
-              >
-                Features
-              </button>
               <Link
                 to="/stores"
                 onClick={() => setMobileOpen(false)}
                 className="px-3 py-2.5 rounded-xl bg-white border border-[#F3E6D3]"
               >
-                Marketplace
+                Stores
               </Link>
-              <button
-                onClick={() => scrollTo("sellers")}
-                className="text-left px-3 py-2.5 rounded-xl bg-white border border-[#F3E6D3]"
-              >
-                Sellers
-              </button>
-              <button
-                onClick={() => scrollTo("pricing")}
-                className="text-left px-3 py-2.5 rounded-xl bg-white border border-[#F3E6D3]"
-              >
-                Pricing
-              </button>
               <Link
                 to="/track"
                 onClick={() => setMobileOpen(false)}
