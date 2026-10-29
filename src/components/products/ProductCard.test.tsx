@@ -105,4 +105,38 @@ describe("ProductCard", () => {
     fireEvent.click(screen.getByRole("button", { name: /add beaded sandals to cart/i }))
     expect(screen.getByTestId("cart").textContent).toBe("p1:seller-1:1|p2:seller-2:1")
   })
+
+  it("clamps a long name to two lines so one card cannot stretch the grid", () => {
+    // The whole point of the fixed-height card: content length must not
+    // change the card's height.
+    renderCard({
+      ...baseProduct,
+      name: "Hand-dyed Ankara wrap dress with adjustable waist tie and matching head wrap, made to order in Aba",
+    })
+
+    const title = screen.getAllByText(/Hand-dyed Ankara wrap dress/)[0]
+    expect(title.className).toContain("line-clamp-2")
+    expect(title.className).toContain("h-[2.1rem]")
+  })
+
+  it("gives the image a fixed height rather than a width-driven square", () => {
+    // An aspect-ratio box grows with the column and made cards enormous on
+    // a desktop; a pixel height keeps every card the same size.
+    const { container } = renderCard(baseProduct)
+    const imageBox = container.querySelector("a[aria-label]")
+    expect(imageBox?.className).toContain("h-32")
+    expect(imageBox?.className).not.toContain("aspect-square")
+  })
+
+  it("flags low stock without blocking the add", () => {
+    renderCard({ ...baseProduct, stock: 3 })
+    expect(screen.getByText("Low stock")).toBeTruthy()
+    const button = screen.getByRole("button", { name: /add .* to cart/i }) as HTMLButtonElement
+    expect(button.disabled).toBe(false)
+  })
+
+  it("does not flag low stock at comfortable levels", () => {
+    renderCard({ ...baseProduct, stock: 40 })
+    expect(screen.queryByText("Low stock")).toBeNull()
+  })
 })

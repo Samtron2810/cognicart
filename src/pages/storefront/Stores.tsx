@@ -4,7 +4,7 @@ import { ChevronRight, Search, ShoppingBag, Store as StoreIcon } from "lucide-re
 import { storeService } from "../../services/storeService"
 import { PromotedStrip } from "../../components/stores/PromotedStrip"
 import { StoreCard } from "../../components/stores/StoreCard"
-import { ProductCard } from "../../components/products/ProductCard"
+import { ProductCard, PRODUCT_GRID } from "../../components/products/ProductCard"
 import { productService } from "../../services/productService"
 import { useSEO } from "../../hooks/useSEO"
 import type { PromotedProduct, StoreCard as StoreCardType, StorePagination, StoreSort } from "../../types/store"
@@ -289,7 +289,7 @@ export default function Stores() {
                     {products.length} {products.length === 1 ? "product" : "products"} matching &ldquo;{q}&rdquo;
                   </h2>
                 </div>
-                <div className="mt-3 grid grid-cols-2 gap-4 lg:grid-cols-4">
+                <div className={`mt-3 ${PRODUCT_GRID}`}>
                   {products.map((product) => (
                     <ProductCard
                       key={product.id}

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { Search as SearchIcon } from "lucide-react"
 import { productService } from "../services/productService"
-import { ProductCard } from "../components/products/ProductCard"
+import { ProductCard, PRODUCT_GRID } from "../components/products/ProductCard"
 import type { Product } from "../types/product"
 
 export default function Search() {
@@ -48,7 +48,7 @@ export default function Search() {
             <div className="text-sm text-[#6b6b6b]">Try another term or <Link to="/stores" className="font-bold text-[#0B9C74] underline">browse all stores</Link></div>
           </div>
         ) : (
-          <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className={`mt-6 ${PRODUCT_GRID}`}>
             {results.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

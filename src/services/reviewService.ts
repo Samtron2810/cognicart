@@ -20,6 +20,23 @@ export const reviewService = {
     return data
   },
 
+  /** Published reviews for a single product. Public — no session needed. */
+  async listForProduct(productId: string, page = 1, limit = 10): Promise<ReviewListResponse> {
+    const { data } = await api.get<ReviewListResponse>(`/products/${productId}/reviews`, {
+      params: { page, limit },
+    })
+    return data
+  },
+
+  /**
+   * Whether the signed-in buyer may review this product, and against which
+   * delivered orders. Callers treat a failure as "not eligible".
+   */
+  async getProductEligibility(productId: string): Promise<ReviewEligibility> {
+    const { data } = await api.get<ReviewEligibility>("/reviews/eligibility", { params: { productId } })
+    return data
+  },
+
   async create(payload: CreateReviewPayload): Promise<Review> {
     const { data } = await api.post<Review>("/reviews", payload)
     return data

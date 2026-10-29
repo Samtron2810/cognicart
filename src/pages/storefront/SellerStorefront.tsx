@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useSearchParams } from "react-router-dom"
 import { ChevronRight, MapPin, Send, Share2, ShoppingBag, Store } from "lucide-react"
 import { productService } from "../../services/productService"
 import { storeService } from "../../services/storeService"
 import { storePath } from "../../types/store"
-import { ProductCard } from "../../components/products/ProductCard"
+import { ProductCard, PRODUCT_GRID } from "../../components/products/ProductCard"
 import { StarRating } from "../../components/reviews/StarRating"
 import { StoreReviews } from "../../components/reviews/StoreReviews"
 import type { StorefrontProfile } from "../../types/business"
@@ -23,6 +23,16 @@ export default function SellerStorefront() {
   const { identifier } = useParams<{ identifier: string }>()
   const [store, setStore] = useState<StorefrontProfile | null>(null)
   const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<string[]>([])
+  const [productsLoading, setProductsLoading] = useState(true)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // The chosen category lives in the URL so a filtered store page can be
+  // shared, bookmarked and returned to with the back button.
+  const category = searchParams.get("category") || ""
+
+  // "Rate this store" in My Orders links here with ?review=1.
+  const openReviewForm = searchParams.get("review") === "1"
   const [others, setOthers] = useState<StoreSummary[]>([])
   const [rating, setRating] = useState<{ average: number; total: number }>({ average: 0, total: 0 })
   const [loading, setLoading] = useState(true)
@@ -34,13 +44,9 @@ export default function SellerStorefront() {
 
     const load = async () => {
       try {
-        const [nextStore, nextProducts] = await Promise.all([
-          productService.getStorefront(identifier),
-          productService.listStorefrontProducts(identifier),
-        ])
+        const nextStore = await productService.getStorefront(identifier)
         if (!active) return
         setStore(nextStore)
-        setProducts(nextProducts)
 
         // Quick-jump bar. A failure here must not take the store down with
         // it, so it is fetched separately and swallowed.
@@ -60,6 +66,41 @@ export default function SellerStorefront() {
       active = false
     }
   }, [identifier])
+
+  // Products reload on their own when the category changes, so switching
+  // filters never re-fetches the store header or the quick-jump bar.
+  useEffect(() => {
+    if (!identifier) return
+    let active = true
+    setProductsLoading(true)
+
+    productService
+      .listStorefrontCatalog(identifier, { category: category || undefined })
+      .then((result) => {
+        if (!active) return
+        setProducts(result.products)
+        // The backend derives these from the store's whole catalog, so the
+        // chips stay stable while a filter is applied.
+        if (result.categories.length) setCategories(result.categories)
+      })
+      .catch(() => {
+        if (active) setProducts([])
+      })
+      .finally(() => {
+        if (active) setProductsLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [identifier, category])
+
+  const selectCategory = (next: string) => {
+    const params = new URLSearchParams(searchParams)
+    if (next) params.set("category", next)
+    else params.delete("category")
+    setSearchParams(params, { replace: true })
+  }
 
   if (loading) {
     return (
@@ -170,8 +211,44 @@ export default function SellerStorefront() {
           </Link>
         </div>
 
-        {products.length ? (
-          <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {categories.length > 1 && (
+          <div className="mt-5 -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+            <button
+              type="button"
+              onClick={() => selectCategory("")}
+              aria-pressed={category === ""}
+              className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold transition ${
+                category === ""
+                  ? "border-[#0B9C74] bg-[#0B9C74] text-white"
+                  : "border-[#F3E6D3] bg-white text-[#4a4a4a] hover:border-[#0B9C74]"
+              }`}
+            >
+              All
+            </button>
+            {categories.map((name) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => selectCategory(name)}
+                aria-pressed={category === name}
+                className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold transition ${
+                  category === name
+                    ? "border-[#0B9C74] bg-[#0B9C74] text-white"
+                    : "border-[#F3E6D3] bg-white text-[#4a4a4a] hover:border-[#0B9C74]"
+                }`}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {productsLoading ? (
+          <div className="grid place-items-center py-16">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0B9C74] border-t-transparent" />
+          </div>
+        ) : products.length ? (
+          <div className={`mt-5 ${PRODUCT_GRID}`}>
             {products.map((product) => (
               <ProductCard
                 key={product.id}
@@ -179,6 +256,17 @@ export default function SellerStorefront() {
                 storeIdentifier={identifier || store.sellerId}
               />
             ))}
+          </div>
+        ) : category ? (
+          <div className="mt-5 rounded-2xl border border-[#F3E6D3] bg-white p-10 text-center">
+            <div className="text-sm text-[#6b6b6b]">Nothing in {category} right now.</div>
+            <button
+              type="button"
+              onClick={() => selectCategory("")}
+              className="mt-3 rounded-full bg-[#0B9C74] px-4 py-2 text-xs font-bold text-white hover:bg-[#0a8a66]"
+            >
+              Show all products
+            </button>
           </div>
         ) : (
           <div className="mt-5 rounded-2xl border border-[#F3E6D3] bg-white p-10 text-center text-sm text-[#6b6b6b]">
@@ -188,6 +276,7 @@ export default function SellerStorefront() {
 
         <div className="mt-10">
           <StoreReviews
+            openForm={openReviewForm}
             identifier={identifier as string}
             sellerId={store.sellerId}
             storeName={store.name}

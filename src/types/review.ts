@@ -2,6 +2,10 @@ export type Review = {
   id: string
   sellerId: string
   orderId: string
+  /** null for a store review, set for a review of one product. */
+  productId?: string | null
+  /** Snapshot of the product name at review time. */
+  productName?: string
   /** Already anonymised server-side to "Adaobi N." — never a full name. */
   buyerName: string
   rating: number
@@ -33,16 +37,27 @@ export type EligibleOrder = {
   reference: string
   createdAt: string
   itemSummary: string
+  /** Present on product eligibility: which store the order was placed with. */
+  sellerId?: string
 }
 
 export type ReviewEligibility = {
   canReview: boolean
   eligibleOrders: EligibleOrder[]
+  /**
+   * Product eligibility only. Separates "you never bought this" from "you
+   * bought it and already reviewed it" — the page says something different
+   * for each, and conflating them reads as a bug to the shopper.
+   */
+  hasPurchased?: boolean
+  hasReviewed?: boolean
 }
 
 export type CreateReviewPayload = {
   sellerId: string
   orderId: string
+  /** Omit to review the store; set to review one product in that order. */
+  productId?: string
   rating: number
   comment?: string
 }

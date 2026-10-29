@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams, Link } from "react-router-dom"
+import { useParams, useSearchParams, Link } from "react-router-dom"
 import { ArrowLeft, ShoppingBag, Heart, Check, Truck, Shield, Share2, Copy, Send, Store, ChevronRight, Tag, Palette } from "lucide-react"
 import { toast } from "sonner"
 import { productService } from "../../services/productService"
@@ -8,11 +8,16 @@ import { useSEO } from "../../hooks/useSEO"
 import type { Product } from "../../types/product"
 import type { StorefrontProfile } from "../../types/business"
 import { getEffectivePrice, getDisplayPrice, getTotalStock } from "../../types/product"
+import { ProductReviews } from "../../components/reviews/ProductReviews"
 
 export default function ProductDetail() {
   // Route is /store/:identifier/products/:productId. `id` used to come from
   // the old flat /store/:id route, which now resolves to the store page.
   const { identifier, productId: id } = useParams<{ identifier: string; productId: string }>()
+  // "Rate this product" in My Orders links here with ?review=1 so the form
+  // is scrolled to rather than buried under the gallery.
+  const [searchParams] = useSearchParams()
+  const openReviewForm = searchParams.get("review") === "1"
   const [product, setProduct] = useState<Product | null>(null)
   const [store, setStore] = useState<StorefrontProfile | null>(null)
   const [sellerId, setSellerId] = useState("")
@@ -216,6 +221,14 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
+
+        <ProductReviews
+          productId={product.id}
+          productName={product.name}
+          sellerId={sellerId || product.sellerId}
+          storeName={sellerName}
+          openForm={openReviewForm}
+        />
       </div>
     </div>
   )

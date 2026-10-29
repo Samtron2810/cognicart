@@ -15,6 +15,8 @@ type StoreReviewsProps = {
   storeName: string
   /** Called when the average changes, so the store header can stay in step. */
   onSummaryChange?: (summary: ReviewSummary) => void
+  /** Scroll the form into view — set by ?review=1 from "Rate this store". */
+  openForm?: boolean
 }
 
 const STARS = [5, 4, 3, 2, 1] as const
@@ -23,7 +25,13 @@ const STARS = [5, 4, 3, 2, 1] as const
  * The reviews block on a store page: the score breakdown, the list, and the
  * write form for a buyer who has earned the right to post.
  */
-export function StoreReviews({ identifier, sellerId, storeName, onSummaryChange }: StoreReviewsProps) {
+export function StoreReviews({
+  identifier,
+  sellerId,
+  storeName,
+  onSummaryChange,
+  openForm = false,
+}: StoreReviewsProps) {
   const { isVerified } = useShopper()
   const [reviews, setReviews] = useState<Review[]>([])
   const [summary, setSummary] = useState<ReviewSummary>({
@@ -147,6 +155,7 @@ export function StoreReviews({ identifier, sellerId, storeName, onSummaryChange 
               storeName={storeName}
               eligibleOrders={eligibleOrders}
               onSubmitted={handleSubmitted}
+              autoFocus={openForm}
             />
           )}
 

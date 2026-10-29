@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
-import { KeyRound, LogOut, Mail, Package, ShieldCheck, Store, UserCircle } from "lucide-react"
+import { KeyRound, LogOut, Mail, ShieldCheck, Store, UserCircle } from "lucide-react"
 import { useShopper } from "../../context/ShopperContext"
+import { MyOrdersPanel } from "../../components/orders/MyOrdersPanel"
 import { shopperService } from "../../services/shopperService"
 import { useSEO } from "../../hooks/useSEO"
 import type { ShopperOrder } from "../../types/shopper"
@@ -213,34 +214,7 @@ export default function Track() {
               </div>
             )}
 
-            <div className="rounded-2xl border border-[#F3E6D3] bg-white p-5">
-              <h2 className="flex items-center gap-2 font-bold"><Package className="h-4 w-4 text-[#0B9C74]" />Order history</h2>
-              {ordersLoading ? (
-                <div className="grid place-items-center py-10"><div className="h-7 w-7 animate-spin rounded-full border-2 border-[#0B9C74] border-t-transparent" /></div>
-              ) : orders.length === 0 ? (
-                <div className="py-8 text-center">
-                  <p className="text-sm text-[#6b6b6b]">No orders linked to this profile yet.</p>
-                  <Link to="/store" className="mt-3 inline-flex rounded-full bg-[#0B9C74] px-5 py-2.5 text-sm font-bold text-white">Browse stores</Link>
-                </div>
-              ) : (
-                <div className="mt-3 space-y-2">
-                  {orders.map((order) => (
-                    <Link key={order.id} to={`/track/orders/${order.id}`} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#F3E6D3] p-3 transition hover:bg-[#FFFBF5]">
-                      <div className="min-w-0">
-                        <div className="text-sm font-bold">{order.reference || `#${order.id.slice(-6).toUpperCase()}`} {order.store ? <span className="font-normal text-[#6b6b6b]">• {order.store.name}</span> : null}</div>
-                        <div className="truncate text-xs text-[#6b6b6b]">{order.items.map((item) => item.name).join(", ")}</div>
-                        <div className="text-xs text-[#9a9a9a]">{new Date(order.createdAt).toLocaleDateString()}</div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold">₦{order.total.toLocaleString()}</span>
-                        <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${order.paymentStatus === "Paid" ? "border-[#0B9C74]/20 bg-[#E6F7F1] text-[#0B9C74]" : "border-[#F3E6D3] bg-[#FFF1DA] text-[#E85D26]"}`}>{order.paymentStatus}</span>
-                        <span className="inline-flex rounded-full border border-[#F3E6D3] bg-white px-2.5 py-1 text-xs font-bold">{order.orderStatus}</span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            <MyOrdersPanel orders={orders} loading={ordersLoading} title="Order history" />
           </div>
         )}
       </div>

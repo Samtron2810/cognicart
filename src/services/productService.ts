@@ -36,6 +36,22 @@ export const productService = {
     return data.products
   },
 
+  /**
+   * Same endpoint, but keeps the category list the backend computes from the
+   * store's whole catalog — the filter chips must not shrink to whatever the
+   * current page happens to contain.
+   */
+  async listStorefrontCatalog(
+    identifier: string,
+    filters: ProductFilters = {},
+  ): Promise<{ products: Product[]; categories: string[] }> {
+    const { data } = await api.get<{ products: Product[]; categories?: string[] }>(
+      `/storefront/${identifier}/products`,
+      { params: filters },
+    )
+    return { products: data.products, categories: data.categories || [] }
+  },
+
   async getStorefrontProduct(identifier: string, productId: string): Promise<{ store: StorefrontProfile; product: Product; relatedProducts: Product[] }> {
     const { data } = await api.get<{ store: StorefrontProfile; product: Product; relatedProducts: Product[] }>(`/storefront/${identifier}/products/${productId}`)
     return data

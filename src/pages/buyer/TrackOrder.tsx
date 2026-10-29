@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { AlertTriangle, ArrowLeft, MapPin, Package, Store, X } from "lucide-react"
 import { useShopper } from "../../context/ShopperContext"
+import { MyOrdersPanel } from "../../components/orders/MyOrdersPanel"
 import { shopperService } from "../../services/shopperService"
 import type { ShopperOrder } from "../../types/shopper"
 import { getApiErrorMessage } from "../../services/apiError"
@@ -25,6 +26,12 @@ export default function TrackOrder() {
   const [order, setOrder] = useState<ShopperOrder | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // A verified buyer sees their whole order list beside the one they are
+  // tracking, so they can jump between orders and rate delivered items
+  // without going back to /track first.
+  const [myOrders, setMyOrders] = useState<ShopperOrder[]>([])
+  const [myOrdersLoading, setMyOrdersLoading] = useState(false)
 
   // Cancel state
   const [cancelMode, setCancelMode] = useState<CancelMode>("idle")
@@ -51,6 +58,21 @@ export default function TrackOrder() {
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
   }, [id, isVerified, isLoading])
+
+  useEffect(() => {
+    if (!isVerified) {
+      setMyOrders([])
+      return
+    }
+    let active = true
+    setMyOrdersLoading(true)
+    shopperService.listOrders()
+      .then((next) => { if (active) setMyOrders(next) })
+      // The panel is secondary: a failure here must not break tracking.
+      .catch(() => { if (active) setMyOrders([]) })
+      .finally(() => { if (active) setMyOrdersLoading(false) })
+    return () => { active = false }
+  }, [isVerified])
 
   const handleCancelVerified = async () => {
     if (!order || !id) return
@@ -166,10 +188,14 @@ export default function TrackOrder() {
 
   return (
     <div className="min-h-screen bg-[#FFFBF5] py-10">
-      <div className="mx-auto max-w-[760px] px-4 sm:px-6">
+      <div className="mx-auto max-w-[1180px] px-4 sm:px-6">
         <Link to="/track" className="inline-flex items-center gap-2 text-sm font-medium text-[#6b6b6b] hover:text-[#1a1a1a]"><ArrowLeft className="h-4 w-4" /> Back to your orders</Link>
 
-        <div className="mt-4 rounded-[22px] border border-[#F3E6D3] bg-white p-6">
+        {/* Tracking on the left, the buyer's other orders on the right. */}
+        <div className="mt-4 grid items-start gap-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+          <div>
+
+        <div className="rounded-[22px] border border-[#F3E6D3] bg-white p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h1 className="font-display text-xl font-bold">{order.reference || `#${order.id.slice(-6).toUpperCase()}`}</h1>
@@ -291,6 +317,18 @@ export default function TrackOrder() {
             <span className="text-sm text-[#6b6b6b]">Cancelling your order…</span>
           </div>
         )}
+
+          </div>
+
+          <aside>
+            <MyOrdersPanel
+              orders={myOrders}
+              loading={myOrdersLoading}
+              activeOrderId={order.id}
+              compact
+            />
+          </aside>
+        </div>
       </div>
     </div>
   )
