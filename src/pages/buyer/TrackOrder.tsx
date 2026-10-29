@@ -321,8 +321,12 @@ export default function TrackOrder() {
           </div>
 
           <aside>
+            {/* The buyer is demonstrably looking at one of their own orders,
+                so an empty list here means the fetch failed — not that they
+                have none. Falling back to the order on screen avoids telling
+                someone "no orders yet" next to their order. */}
             <MyOrdersPanel
-              orders={myOrders}
+              orders={myOrders.length > 0 ? myOrders : [order]}
               loading={myOrdersLoading}
               activeOrderId={order.id}
               compact
